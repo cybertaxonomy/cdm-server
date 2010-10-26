@@ -15,6 +15,7 @@ import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP;
+import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,6 +51,7 @@ import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import eu.etaxonomy.cdm.server.CdmInstanceProperties.Status;
+import eu.etaxonomy.cdm.server.win32service.Win32Service;
 
 
 /**
@@ -324,6 +326,13 @@ public final class Bootloader {
 			mBeanContainer.start();
 		}
 		
+		if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
+			Win32Service win32Service = new Win32Service();
+			win32Service.setServer(server);
+			server.setStopAtShutdown(true);
+			server.addBean(win32Service);
+		}
+		
 		// add servelet contexts
 		
 		
@@ -377,11 +386,15 @@ public final class Bootloader {
         
         logger.info("setting contexts ...");
         server.setHandler(contexts);
-        logger.info("starting jetty ...");
-        server.start();
-        server.join();
-        logger.info(APPLICATION_NAME+" stopped.");
-    	System.exit(0);
+        if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
+        	logger.info("jetty is waiting to be started as win32 service");
+        } else {
+	        logger.info("starting jetty ...");
+	        server.start();
+	        server.join();
+	        logger.info(APPLICATION_NAME+" stopped.");
+	    	System.exit(0);
+        }
 	}
 
 	/**

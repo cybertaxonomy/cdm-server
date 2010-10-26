@@ -24,6 +24,7 @@ public class CommandOptions{
 			"   -Dcom.sun.management.jmxremote.ssl=false\n" +
 			"   -Dcom.sun.management.jmxremote.authenticate=false\n" +
 			"   -Dcom.sun.management.jmxremote.port=9999" );
+	public static final Option WIN32SERVICE= new Option("win32service", "ONLY USED INTERNALLY - prepare for running as win32 service, the server will not be started automatically!");
 	
 	@SuppressWarnings("static-access")
 	public static final Option WEBAPP = OptionBuilder
@@ -49,6 +50,7 @@ public class CommandOptions{
 	.hasArg()
 	.withDescription( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
 	.create("datasources");
+	
 		
 
 	
@@ -60,6 +62,7 @@ public class CommandOptions{
 			options.addOption(HTTP_PORT);
 			options.addOption(DATASOURCES_FILE);
 			options.addOption(JMX);
+			options.addOption(WIN32SERVICE);
 		}
 		return options;
 	}
