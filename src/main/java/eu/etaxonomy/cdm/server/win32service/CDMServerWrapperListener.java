@@ -39,6 +39,9 @@ public class CDMServerWrapperListener implements WrapperListener
     {
     }
 
+    /* (non-Javadoc)
+     * @see org.tanukisoftware.wrapper.WrapperListener#controlEvent(int)
+     */
     public void controlEvent(int event)
     {
         if (!WrapperManager.isControlledByNativeWrapper())
@@ -51,6 +54,9 @@ public class CDMServerWrapperListener implements WrapperListener
 
     }
 
+    /* (non-Javadoc)
+     * @see org.tanukisoftware.wrapper.WrapperListener#start(java.lang.String[])
+     */
     public Integer start(String[] args)
     {
         for(int i=0; i<args.length; i++)
@@ -59,12 +65,16 @@ public class CDMServerWrapperListener implements WrapperListener
         }
         try {
 			eu.etaxonomy.cdm.server.Bootloader.main(args);
+			logger.info("The CDM Server Bootloader has started.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.tanukisoftware.wrapper.WrapperListener#stop(int)
+     */
     public int stop(int code)
     {
         try
@@ -76,8 +86,7 @@ public class CDMServerWrapperListener implements WrapperListener
         }
         catch (Exception e)
         {
-        	logger.error("Stop Server Error");
-            e.printStackTrace();
+        	logger.error("Stop Server Error", e);
             return -1;
         }
 

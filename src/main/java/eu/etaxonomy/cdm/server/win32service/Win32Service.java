@@ -19,6 +19,7 @@
 
 package eu.etaxonomy.cdm.server.win32service;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
@@ -30,19 +31,19 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
  */
 public class Win32Service extends AbstractLifeCycle implements Runnable
 {
+	public static final Logger logger = Logger.getLogger(Win32Service.class);
+	
     private Server server;
+    
     public void doStart()
     {
-        
-        
+    	logger.info("doStart");
         CDMServerWrapperListener.setServer(server);
-         
     }
     
     public void doStop()
     {
-        System.out.println("Listener is stopping CDM Server Instance!!!");
-        
+    	logger.info("Listener is stopping CDM Server Instance!!!"); 
     }
     
     public void run()
@@ -55,7 +56,7 @@ public class Win32Service extends AbstractLifeCycle implements Runnable
     {
         try
         {
-            System.out.println("Thread Test Stopper!!!");
+        	logger.info("Thread Test Stopper!!!");
             server.stop();
             //WrapperManager.stop(0);
         }

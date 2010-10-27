@@ -386,12 +386,12 @@ public final class Bootloader {
         
         logger.info("setting contexts ...");
         server.setHandler(contexts);
+        logger.info("starting jetty ...");
+        server.start();
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
-        	logger.info("jetty is waiting to be started as win32 service");
+        	logger.info("jetty has started as win32 service");
         } else {
-	        logger.info("starting jetty ...");
-	        server.start();
-	        server.join();
+        	server.join();
 	        logger.info(APPLICATION_NAME+" stopped.");
 	    	System.exit(0);
         }
