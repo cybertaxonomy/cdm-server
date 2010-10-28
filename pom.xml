@@ -15,6 +15,18 @@
 	<version>2.5</version>
 	<packaging>jar</packaging>
 	<name>CDM Community Standalone Server</name>
+	
+	<properties>
+	   <!-- 
+	       the third number in the version string 
+	   -->
+	   <project.patchversion>0</project.patchversion>
+	   <!-- 
+	       ${project.fullversionstring} is being used by some build plugins
+	    -->
+	   <project.fullversionstring>${project.version}.${project.patchversion}.${maven.build.timestamp}</project.fullversionstring>
+       <jetty-version>7.0.1.v20091125</jetty-version>
+	</properties>
 
 	<scm>
 		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server/</connection>
@@ -116,11 +128,6 @@
 			<id>jboss-repository</id>
 			<name>JBoss Repository</name>
 			<url>http://repository.jboss.com/maven2</url>
-		</repository>
-		<!-- codehaus mule repository needed for yourkit  -->
-		<repository>
-			<id>CodehausMuleRepository</id>
-			<url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
 		</repository>
 		<!-- current spring source repositories -->
 		<repository>
@@ -295,30 +302,15 @@
 				<executions>
 					<execution>
 						<phase>install</phase>
-						<!--
-							must run after winstone-maven-plugin
-						-->
 						<configuration>
 							<tasks>
 								<!--
-									${project.patchversion} is explicitely set in this pom
-
-									${buildNumber} is set by the buildnumber-maven-plugin Cannot
-									create the build number if you have local modifications, to
-									allow creating a buildnumber anyway you can ommit
+									${project.patchversion} is explicitly set in this pom
 								-->
-								<!--
-									FIXME <property name="project.fullversionstring"
-									value="${project.version}.${project.patchversion}.r${buildNumber}"/>
-									<property name="project.fullversionstring"
-									value="${project.version}.0.r0000"/>
-								-->
-								<property name="project.fullversionstring"
-									value="${project.version}.0.${maven.build.timestamp}" />
+								<property name="project.fullversionstring" 
+								    value="${project.fullversionstring}" />
 								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml"
 									dir="${project.basedir}" />
-
-
 							</tasks>
 						</configuration>
 						<goals>
@@ -421,11 +413,6 @@
 			</url>
 		</repository>
 	</distributionManagement>
-
-
-	<properties>
-		<jetty-version>7.0.1.v20091125</jetty-version>
-	</properties>
 
 	<dependencies>
 		<dependency>
