@@ -39,7 +39,7 @@ OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\EDIT CDM-Server"
 CRCCheck on
 XPStyle on
-Icon "${NSISDIR}\Contrib\Graphics\Icons\classic-install.ico"
+Icon "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 ShowInstDetails show
 AutoCloseWindow false
 LicenseData ..\..\..\..\LICENSE.TXT
@@ -52,7 +52,7 @@ VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription ""
 VIAddVersionKey LegalCopyright ""
 InstallDirRegKey HKLM "${REGKEY}" Path
-UninstallIcon "${NSISDIR}\Contrib\Graphics\Icons\classic-uninstall.ico"
+UninstallIcon "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 ShowUninstDetails show
 
 # Installer sections
@@ -60,10 +60,12 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     File /r /x .svn /x *.log /x *.jar program-folder\* 
-    File /r /x .svn ${CDMLIBRARY_TEMPLATE}
-    File ${JAR_FILE}
-    SetOverwrite off
     SetOutPath "$INSTDIR\lib"
+    File ${JAR_FILE}
+    # last but not least the .cdmLibrary folder unlesses it already exists
+    SetOverwrite off
+    SetOutPath $INSTDIR
+    File /r /x .svn ${CDMLIBRARY_TEMPLATE}
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
 
