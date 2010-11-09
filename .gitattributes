@@ -43,3 +43,9 @@ src/main/webapp/js/jquery.js -text
 src/main/webapp/js/jquery.min.js -text
 src/main/webapp/js/oai-pmh-status.js -text
 src/main/webapp/robots.txt -text
+src/site/apt/download.apt -text
+src/site/apt/getting-started.apt -text
+src/site/apt/index.apt -text
+src/site/fml/faq.fml -text
+src/site/fml/troubleshooting.fml -text
+src/site/site.xml -text
