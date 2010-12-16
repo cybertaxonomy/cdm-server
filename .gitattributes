@@ -48,4 +48,5 @@ src/site/apt/getting-started.apt -text
 src/site/apt/index.apt -text
 src/site/fml/faq.fml -text
 src/site/fml/troubleshooting.fml -text
+src/site/resources/images/cdmlib_overview_webservices.png -text
 src/site/site.xml -text

@@ -8,16 +8,12 @@
   <part id="general">
     <title>General</title>
 
-    <faq id="whats-foo">
+    <faq id="run-cdmlib-webapp">
       <question>
-        What is Foo?
+        How can I get help?
       </question>
       <answer>
-        <p>some markup goes here</p>
-
-        <source>some source code</source>
-
-        <p>some markup goes here</p>
+        <p>The troubelshooting section is still under construction. I order to get help, please contact us by email: editsupport@bgbm.org</p>
       </answer>
     </faq>
 
@@ -30,20 +26,5 @@
       </answer>
     </faq>
   </part>
-
-  <part id="install">
-
-    <title>Installation</title>
-
-    <faq id="how-install">
-      <question>
-        How do I install Foo?
-      </question>
-      <answer>
-        <p>some markup goes here</p>
-      </answer>
-    </faq>
-
-  </part>
-
+  
 </faqs>
