@@ -8,13 +8,13 @@
 	<body>
 		<menu name="General Information">
 			<item name="Overview" href="index.html"/>
-			<!--<item name="FAQ" href="faq.html"/>
-			--><item name="Download" href="http://wp5.e-taxonomy.eu/download/cdmserver/stable/"/>
+			<!--item name="FAQ" href="faq.html"/-->
+			<item name="Download" href="http://wp5.e-taxonomy.eu/download/cdmserver/stable/"/>
 		</menu>
 		<menu name="Developer">
 			<item name="Getting started" href="http://wp5.e-taxonomy.eu/cdm-setups/cdmserver-installation"/>
-			<!--<item name="Troubleshooting" href="troubleshooting.html"/>
-			--><item name="Wiki" href="http://dev.e-taxonomy.eu/trac/wiki/CommunityServer"/>
+			<!--item name="Troubleshooting" href="troubleshooting.html"/-->
+			<item name="Wiki" href="http://dev.e-taxonomy.eu/trac/wiki/CdmServerDev"/>
 		</menu>
 		<menu name="Project">
 			<item name="Mailing Lists" href="mail-lists.html"/>
