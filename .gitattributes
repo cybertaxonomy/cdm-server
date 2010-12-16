@@ -15,7 +15,6 @@ src/main/installer/linux/postinst -text
 src/main/installer/linux/postrm -text
 src/main/installer/templates/.cdmLibrary/datasources.xml -text
 src/main/installer/templates/copyright.txt -text
-src/main/installer/win32/Launch4JavaCDMSERVER.xml -text
 src/main/installer/win32/program-folder/CDMServer.exe -text
 src/main/installer/win32/program-folder/etc/CDMServer.conf -text
 src/main/installer/win32/program-folder/install-service.bat -text
