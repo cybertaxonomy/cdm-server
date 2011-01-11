@@ -7,7 +7,7 @@ Name "EDIT CDM-Server"
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.5
+!define VERSION 3.0
 !define COMPANY "EDIT - European Distributed Institute of Taxonomy"
 !define EDIT_PLATFORM "EDIT Platform for Cybertaxonomy"
 !define URL http://wp5.e-taxonomy.eu/
