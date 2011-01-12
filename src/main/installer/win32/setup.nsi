@@ -2,12 +2,19 @@
 # 28.10.2010 13:58:54
 
 # TODO : preserve $INSTDIR/.cdmLibrary from being deleted if the user desides to keep it, or just warn the user.
+# 
+#  Wiki: http://nsis.sourceforge.net/Main_Page
+#  see http://nsis.sourceforge.net/Docs/Chapter5.html for Compile Time Command reference
+#
+
 
 Name "EDIT CDM-Server"
 
 # General Symbol Definitions
+!define /date BUILD_TIMESTAMP "%Y%m%d-%H%M%S"
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 3.0
+!define PATCH_VERSION 1-${BUILD_TIMESTAMP}
 !define COMPANY "EDIT - European Distributed Institute of Taxonomy"
 !define EDIT_PLATFORM "EDIT Platform for Cybertaxonomy"
 !define URL http://wp5.e-taxonomy.eu/
@@ -35,7 +42,7 @@ Page custom StartMenuGroupSelect "" ": Start Menu Folder"
 Page instfiles
 
 # Installer attributes
-OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}.exe"
+OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}.${PATCH_VERSION}.exe"
 InstallDir "$PROGRAMFILES\EDIT CDM-Server"
 CRCCheck on
 XPStyle on
@@ -43,7 +50,7 @@ Icon "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 ShowInstDetails show
 AutoCloseWindow false
 LicenseData ..\..\..\..\LICENSE.TXT
-VIProductVersion 2.5.0.0
+VIProductVersion 3.0.0.0
 VIAddVersionKey ProductName "$(^Name)"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
