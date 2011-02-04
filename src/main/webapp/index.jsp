@@ -52,7 +52,7 @@
 									<div class="block" id="datasources">
 										<h2 class="title block-title pngfix">CDM Server Instances</h2>
 										<table>
-											<tr><th>Path</th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
+											<tr><th>Path</th><th> </th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
                                             <%
                                            // the servelt context must use the class loader of the Bootloader class otherwise 
                                            // getting the status will not work in mulithreading environments !!!
@@ -72,7 +72,8 @@
                                                    String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\"" : "";
                                                    
 	                                        	   out.append("<tr class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
-	                                        	   out.append("<td class=\"base-url\"><a href=\"" + fullURL + "/portal/classification\">" + basePath + "</a></td>");
+	                                        	   out.append("<td class=\"base-url\"><a href=\"" + fullURL + "\">" + basePath + "</a></td>");
+	                                        	   out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
                                                    out.append("<td class=\"db-url\">" + props.getUrl() + "</td>");
                                                    out.append("<td class=\"status " + props.getStatus() + "\">" + props.getStatus() + "</td>");
                                                    

@@ -28,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
 
 import javax.naming.NamingException;
@@ -42,10 +44,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
+import org.apache.tools.ant.types.CommandlineJava.SysProperties;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.ContextHandler.Context;
 import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -74,6 +80,65 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
 public final class Bootloader {
 	//private static final String DEFAULT_WARFILE = "target/";
 
+	/**
+	 * @author a.kohlbecker
+	 * @date 03.02.2011
+	 *
+	 */
+	private class WebAppContextListener implements Listener {
+		
+		WebAppContext cdmWebappContext;
+		/**
+		 * @param cdmWebappContext
+		 */
+		public WebAppContextListener(WebAppContext cdmWebappContext) {
+			this.cdmWebappContext = cdmWebappContext;
+		}
+
+		@Override
+		public void lifeCycleStopping(LifeCycle event) {
+			logger.error("lifeCycleStopping");
+		}
+
+		@Override
+		public void lifeCycleStopped(LifeCycle event) {
+			logger.error("lifeCycleStopped");
+			
+		}
+
+		@Override
+		public void lifeCycleStarting(LifeCycle event) {
+			logger.error("lifeCycleStarting");
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void lifeCycleStarted(LifeCycle event) {
+			logger.error("lifeCycleStarted");
+			
+			List<String> messages = getServletContextAttribute(cdmWebappContext, ATTRIBUTE_ERROR_MESSAGES, List.class);
+			String dataSourceName = getServletContextAttribute(cdmWebappContext, ATTRIBUTE_DATASOURCE_NAME, String.class);
+			
+			if(messages != null && dataSourceName != null){
+				CdmInstanceProperties configAndStatus = findConfigAndStatusFor(dataSourceName);
+				configAndStatus.getProblems().addAll(messages);
+				configAndStatus.setStatus(Status.error);
+				try {
+					logger.warn("Stopping context '" + dataSourceName + "' due to errors reported in ServletContext");
+					cdmWebappContext.stop();
+				} catch (Exception e) {
+					logger.error(e);
+				}
+			}
+		}
+
+
+		@Override
+		public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+			logger.error("lifeCycleFailure");
+		}
+	}
+
 	private static final Logger logger = Logger.getLogger(Bootloader.class);
 	
 	private static final String DATASOURCE_BEANDEF_FILE = "datasources.xml";
@@ -90,7 +155,13 @@ public final class Bootloader {
     private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP_WAR_NAME);
     
     private static final String ATTRIBUTE_JDBC_JNDI_NAME = "cdm.jdbcJndiName";
-    private static final String CDM_LOGFILE = "cdm.logfile";
+    private static final String ATTRIBUTE_DATASOURCE_NAME = "cdm.datasource";
+    private static final String ATTRIBUTE_CDM_LOGFILE = "cdm.logfile";
+    /**
+     * same as in eu.etaxonomy.cdm.remote.config.DataSourceConfigurer
+     */
+    private static final String ATTRIBUTE_ERROR_MESSAGES = "cdm.errorMessages";
+
     
     // memory requirements
     private static final long MB = 1024 * 1024;
@@ -99,10 +170,11 @@ public final class Bootloader {
     
     private static final int KB = 1024;
     
-    private Set<CdmInstanceProperties> configAndStatus = null;
+    
+    private Set<CdmInstanceProperties> configAndStatusSet = null;
     
     public Set<CdmInstanceProperties> getConfigAndStatus() {
-		return configAndStatus;
+		return configAndStatusSet;
 	}
 
 	private File webappFile = null;
@@ -126,12 +198,12 @@ public final class Bootloader {
     /* end of singleton implementation */
     
     private Set<CdmInstanceProperties> loadDataSources(){
-    	if(configAndStatus == null){
+    	if(configAndStatusSet == null){
     		File datasourcesFile = new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE); 
-    		configAndStatus = DataSourcePropertyParser.parseDataSourceConfigs(datasourcesFile);
-        	logger.info("cdm server instance names loaded: "+ configAndStatus.toString());
+    		configAndStatusSet = DataSourcePropertyParser.parseDataSourceConfigs(datasourcesFile);
+        	logger.info("cdm server instance names loaded: "+ configAndStatusSet.toString());
     	}
-    	return configAndStatus;
+    	return configAndStatusSet;
     }
 
     public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
@@ -213,11 +285,30 @@ public final class Bootloader {
 	private File extractWar(String warName) throws IOException, FileNotFoundException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String warFileName = warName + WAR_POSTFIX;
-    	URL resource = classLoader.getResource(warFileName);
+
+		// 1. find in classpath
+		URL resource = classLoader.getResource(warFileName);
     	if (resource == null) {
     		logger.error("Could not find the " + warFileName + " on classpath!");
-    		System.exit(1);
+    		
+    		File pomxml = new File("pom.xml");
+    		if(pomxml.exists()){
+    			// 2. try finding in target folder of maven project
+    			File warFile = new File("target" + File.separator + warFileName);
+    			logger.debug("looging for war file at " + warFile.getAbsolutePath());
+    			if (warFile.canRead()) {
+    				resource = warFile.toURI().toURL();
+    			} else {
+    				logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
+    			}
+    		}	
     	}
+    	
+    	if (resource == null) {
+    		// no way finding the war file :-(
+    		System.exit(1);    		
+    	}
+    	
     	
     	File warFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
     	logger.info("Extracting " + warFileName + " to " + warFile + " ...");
@@ -287,7 +378,7 @@ public final class Bootloader {
     	    	defaultWebAppFile = new File("./src/main/webapp");	
     	    	
     	     } else {
-    	    	//defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+    	    	defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
     	     }
     	 } else {    	 
     		 webappFile = extractWar(CDM_WEBAPP_WAR_NAME);
@@ -357,6 +448,7 @@ public final class Bootloader {
 
 			@Override
 			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+				logger.error("Jetty LifeCycleFailure", cause);
 			}
 
 			@Override
@@ -387,7 +479,24 @@ public final class Bootloader {
         logger.info("setting contexts ...");
         server.setHandler(contexts);
         logger.info("starting jetty ...");
-        server.start();
+//        try {
+        	
+        	server.start();
+        	
+//        } catch(org.springframework.beans.BeansException e){
+//        	Throwable rootCause = null;
+//        	while(e.getCause() != null){
+//        		rootCause = e.getCause();
+//        	}
+//        	if(rootCause != null && rootCause.getClass().getSimpleName().equals("InvalidCdmVersionException")){
+//        		
+//        		logger.error("rootCause ----------->" + rootCause.getMessage());
+////        		for(CdmInstanceProperties props : configAndStatus){
+////        			if(props.getDataSourceName())
+////        		}
+//        	}
+//        }
+        
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
         	logger.info("jetty has started as win32 service");
         } else {
@@ -410,14 +519,14 @@ public final class Bootloader {
 	private void verifyMemoryRequirement(String memoryName, long requiredSpacePerIntance, long availableSpace) {
 		
 
-		long requiredSpace = configAndStatus.size() * requiredSpacePerIntance;
+		long requiredSpace = configAndStatusSet.size() * requiredSpacePerIntance;
 		
 		if(requiredSpace > availableSpace){
 			
 			String message = memoryName + " (" 
 				+ (availableSpace / MB)  
 				+ "MB) insufficient for " 
-				+ configAndStatus.size()
+				+ configAndStatusSet.size()
 				+ " instances. Increase " + memoryName + " by " 
 				+ ((requiredSpace - availableSpace)/MB) 
 				+ "MB";
@@ -426,7 +535,7 @@ public final class Bootloader {
 			
 			// disabling some instances 
 			int i=0;
-			for(CdmInstanceProperties instanceProps : configAndStatus){
+			for(CdmInstanceProperties instanceProps : configAndStatusSet){
 				i++;
 				if(i * requiredSpacePerIntance > availableSpace){
 					instanceProps.setStatus(Status.disabled);
@@ -459,7 +568,7 @@ public final class Bootloader {
 
 	private void addCdmServerContexts(boolean austostart) throws IOException {
 		
-		for(CdmInstanceProperties conf : configAndStatus){
+		for(CdmInstanceProperties conf : configAndStatusSet){
 			
 			if(!conf.isEnabled()){
 				logger.info(conf.getDataSourceName() + " is disabled => skipping");
@@ -480,10 +589,11 @@ public final class Bootloader {
             	continue;
             }
             
+            cdmWebappContext.setAttribute(ATTRIBUTE_DATASOURCE_NAME, conf.getDataSourceName());
             cdmWebappContext.setAttribute(ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
 	        setWebApp(cdmWebappContext, webappFile);
 	        
-			cdmWebappContext.setAttribute(CDM_LOGFILE,
+			cdmWebappContext.setAttribute(ATTRIBUTE_CDM_LOGFILE,
 					LOG_PATH + File.separator + "cdm-"
 							+ conf.getDataSourceName() + ".log");
    
@@ -504,14 +614,17 @@ public final class Bootloader {
 	        	classLoader.addClassPath(classPath);
 	        	cdmWebappContext.setClassLoader(classLoader);
         	}
-	        
+
+	        cdmWebappContext.addLifeCycleListener(new WebAppContextListener(cdmWebappContext));
 	        contexts.addHandler(cdmWebappContext);  
 	        
 	        if(austostart){
 		        try {
 		        	conf.setStatus(CdmInstanceProperties.Status.starting);
 					cdmWebappContext.start();
-					conf.setStatus(CdmInstanceProperties.Status.started);
+					if(!conf.getStatus().equals(Status.error)){
+						conf.setStatus(CdmInstanceProperties.Status.started);
+					}
 				} catch (Exception e) {
 					logger.error("Could not start " + cdmWebappContext.getContextPath());
 					conf.setStatus(CdmInstanceProperties.Status.error);
@@ -521,6 +634,10 @@ public final class Bootloader {
         }
 	}
 
+	/**
+	 * @param context
+	 * @param webApplicationResource
+	 */
 	private void setWebApp(WebAppContext context, File webApplicationResource) {
 		if(webApplicationResource.isDirectory()){
 			context.setResourceBase(webApplicationResource.getAbsolutePath());
@@ -531,8 +648,42 @@ public final class Bootloader {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	private boolean isRunningFromSource() {
 		String webappPathNormalized = webappFile.getAbsolutePath().replace('\\', '/');
 		return webappPathNormalized.endsWith("src/main/webapp") || webappPathNormalized.endsWith("cdmlib-remote/target/cdmserver");
+	}
+	
+	/**
+	 * @param dataSourceName
+	 * @return
+	 */
+	private CdmInstanceProperties findConfigAndStatusFor(String dataSourceName){
+		for(CdmInstanceProperties props : configAndStatusSet){
+			if(props.getDataSourceName().equals(dataSourceName)){
+				return props;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param <T>
+	 * @param webAppContext
+	 * @param attributeName
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T getServletContextAttribute(WebAppContext webAppContext, String attributeName, Class<T> type) {
+		
+		Context servletContext = webAppContext.getServletContext();
+		Object value = servletContext.getAttribute(attributeName);
+		if( value != null && type.isAssignableFrom(value.getClass())){	
+			
+		}
+		return (T) value;
 	}
 }

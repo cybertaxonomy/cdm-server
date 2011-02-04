@@ -13,16 +13,18 @@
         How can I get help?
       </question>
       <answer>
-        <p>The troubelshooting section is still under construction. I order to get help, please contact us by email: editsupport@bgbm.org</p>
+        <p>The troubelshooting section is still under construction. If you don't find the answer here, please contact us by email: editsupport@bgbm.org</p>
       </answer>
     </faq>
 
-    <faq id="whats-bar">
+    <faq id="cdm-incompatible-version">
       <question>
-        What is Bar?
+        The CDMServer reports incompatible versions, e.g.:<code>Incompatible version [cichorieae] expected version: 3.0.0.0.201011090000, data base version 2.4.1.2.201004231015</code>
       </question>
       <answer>
-        <p>some markup goes here</p>
+        <p>The version of the database to which the server is trying to connect is not compatible to the software version of the server. 
+        Please connect to the database using the Taxonomic Editor and update the database to the current version.
+        <strong>Please make sure that you are using the latest stable releases of both, the CDM Server and the Taxonomic Editor</strong></p>
       </answer>
     </faq>
   </part>
