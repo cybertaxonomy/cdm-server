@@ -13,6 +13,7 @@ src/main/installer/linux/cdmserver -text
 src/main/installer/linux/copyright -text
 src/main/installer/linux/postinst -text
 src/main/installer/linux/postrm -text
+src/main/installer/templates/.cdmLibrary/cdm-server-realm.properties -text
 src/main/installer/templates/.cdmLibrary/datasources.xml -text
 src/main/installer/templates/copyright.txt -text
 src/main/installer/win32/program-folder/CDMServer.exe -text
