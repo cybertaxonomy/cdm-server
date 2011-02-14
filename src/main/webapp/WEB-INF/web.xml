@@ -6,13 +6,15 @@
     <description>EDIT CDM Community Server</description>
     <display-name>CDM Community Server</display-name>
 
-	<!-- ==================================================================
+	<!-- 
+	     ==================================================================
    		  load /WEB-INF/applicationContext.xml
    		  
    		  org.springframework.web.context.ContextLoaderListener defaults 
    		  to /WEB-INF/applicationContext.xml if contextConfigLocation 
    		  not set
-    	 ================================================================== -->
+    	 ================================================================== 
+     -->
     <!-- 
      -->
  
@@ -23,5 +25,25 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    
+    <!--  
+        === Security Settings ===
+     -->
+    <security-constraint>
+		<web-resource-collection>
+			<web-resource-name>CDM Server Management</web-resource-name>
+			<url-pattern>/index.jsp</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+    </security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>CDMServer.management</realm-name>
+	</login-config>
+  
+    
      
 </web-app>

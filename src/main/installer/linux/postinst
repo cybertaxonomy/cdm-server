@@ -17,6 +17,7 @@ TMP="/usr/bin/"
 SERVERSCRIPT="cdmserver"
 SERVERJAR="cdm-server.jar"
 SERVERCONF="datasources.xml"
+SERVERREALM="cdm-server-realm.properties"
 PROPERTIES="cdmserver.properties"
 
 CDM_USER=cdmuser
@@ -95,11 +96,8 @@ case "$1" in
 
     #installing the server and the configfile
     cp $TMP$SERVERCONF $CDM_LIBRARY
+    cp $TMP$SERVERREALM $CDM_LIBRARY
     cp $TMP$SERVERJAR $CDM_HOME
-    #cp $TMP$PROPERTIES $CDM_LIBRARY
-    #mkdir -p /root/.cdmLibrary
-    #cp $TMP$SERVERCONF /root/.cdmLibrary/
-    cp $TMP$SERVERCONF $CDM_LIBRARY
 
     #starting the script
     $bindir$SERVERSCRIPT start

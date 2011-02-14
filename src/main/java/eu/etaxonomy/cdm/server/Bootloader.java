@@ -28,7 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
@@ -44,9 +43,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
-import org.apache.tools.ant.types.CommandlineJava.SysProperties;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ContextHandler.Context;
@@ -129,9 +127,9 @@ public final class Bootloader {
 				} catch (Exception e) {
 					logger.error(e);
 				}
-			}
+			} 
 		}
-
+		 
 
 		@Override
 		public void lifeCycleFailure(LifeCycle event, Throwable cause) {
@@ -142,6 +140,8 @@ public final class Bootloader {
 	private static final Logger logger = Logger.getLogger(Bootloader.class);
 	
 	private static final String DATASOURCE_BEANDEF_FILE = "datasources.xml";
+	private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
+	
 	private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
 	private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
 	private static final String LOG_PATH = USERHOME_CDM_LIBRARY_PATH + "log" + File.separator;
@@ -227,7 +227,7 @@ public final class Bootloader {
 			dsCass.getMethod("setJdbcUrl", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getUrl()});
 			dsCass.getMethod("setUser", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getUsername()});
 			dsCass.getMethod("setPassword", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getPassword()});
-			
+		 
 			Connection connection = null;
 			String sqlerror = null;
 			try {
@@ -432,9 +432,18 @@ public final class Bootloader {
 		//
 		logger.info("preparing default WebAppContext");
     	WebAppContext defaultWebappContext = new WebAppContext();
+    	
     	setWebApp(defaultWebappContext, defaultWebAppFile);
         defaultWebappContext.setContextPath("/");
         defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
+        
+		// configure security context
+        // see for reference * http://docs.codehaus.org/display/JETTY/Realms
+        //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
+        HashLoginService loginService = new HashLoginService();
+        loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
+        defaultWebappContext.getSecurityHandler().setLoginService(loginService);
+        
         // Important:
         // the defaultWebappContext MUST USE the super classloader 
         // otherwise the status page (index.jsp) might not work
