@@ -20,7 +20,7 @@
 	   <!-- 
 	       the third number in the version string 
 	   -->
-	   <project.patchversion>1</project.patchversion>
+	   <project.patchversion>2</project.patchversion>
 	   <!-- 
 	       ${project.fullversionstring} is being used by some build plugins
 	    -->

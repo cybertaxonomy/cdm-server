@@ -32,7 +32,7 @@
     <security-constraint>
 		<web-resource-collection>
 			<web-resource-name>CDM Server Management</web-resource-name>
-			<url-pattern>/index.jsp</url-pattern>
+			<url-pattern>/manage/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>

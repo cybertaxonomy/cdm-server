@@ -46,67 +46,12 @@
 										Status: <div class="status_value">RUNNING</div>
 									</div>
 								</div>
-
-								
 								<div class="block-wrapper">
-									<div class="block" id="datasources">
-										<h2 class="title block-title pngfix">CDM Server Instances</h2>
-										<table>
-											<tr><th>Path</th><th> </th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
-                                            <%
-                                           // the servelt context must use the class loader of the Bootloader class otherwise 
-                                           // getting the status will not work in mulithreading environments !!!
-                                           Bootloader bootloader = Bootloader.getBootloader();
-                                           java.util.Set<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
-                                           if(configAndStatus != null){
-                                        	   int i = 0;
-                                        	   for(CdmInstanceProperties props : configAndStatus){
-                                        		   i++;
-                                        		   String basePath = "/" + props.getDataSourceName();
-                                                   URL fullURL = new URL(request.getScheme(),
-                                                           request.getServerName(),
-                                                           request.getServerPort(),
-                                                           basePath);
-                                                   
-                                                   String oddOrEven = i % 2 == 0 ? "odd" : "even";
-                                                   String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\"" : "";
-                                                   
-	                                        	   out.append("<tr class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
-	                                        	   out.append("<td class=\"base-url\"><a href=\"" + fullURL + "\">" + basePath + "</a></td>");
-	                                        	   out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
-                                                   out.append("<td class=\"db-url\">" + props.getUrl() + "</td>");
-                                                   out.append("<td class=\"status " + props.getStatus() + "\">" + props.getStatus() + "</td>");
-                                                   
-                                                   // OAI-PMH Status will be requested using javascript
-                                                   out.append("<td class=\"oai-pmh\">requesting status ...</td>");
-                                                   out.append("</tr>");
-                                                   if(props.getStatus().equals(CdmInstanceProperties.Status.error) || !props.isEnabled()){
-                                                	   out.append("<tr class=\"error-log " + oddOrEven + "\">");
-                                                	   out.append("<td></td><td  class=\"error\" colspan=\"3\">");
-                                                			   for( String problem : props.getProblems()){
-                                                				   out.append("<div>" + problem + "</div>");
-                                                			   }
-                                                	   out.append("</td>");
-                                                	   out.append("</tr>");
-                                                   }
-	                                           }
-                                           }
-                                           %>
-										</table>
-									</div>
-								</div>
-<%/*
-								<div class="block-wrapper">
-									<div class="block" id="test">
-										<h2 class="title block-title pngfix">Test your CDM Server (using the default data base)</h2>
-										<form name="input" action="/default/portal/taxon/find" method="get">
-										<input type="text" name="query"></br>
-										<input type="submit" value="submit">
-										</form>
-									</div>
-								</div><!-- test -->
-*/
-%>								
+								Actions:
+									<ul>
+									    <li><a href="manage/index.jsp">EDIT CDM-Server management (login required!)</a></li>
+									</ul>
+								</div>							
 								<!-- ============================= -->
             </div><!-- /content -->
           </div><!-- /content-wrapper -->
