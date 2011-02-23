@@ -14,7 +14,7 @@ Name "EDIT CDM-Server"
 !define /date BUILD_TIMESTAMP "%Y%m%d-%H%M%S"
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 3.0
-!define PATCH_VERSION 1-${BUILD_TIMESTAMP}
+!define PATCH_VERSION 2-${BUILD_TIMESTAMP}
 !define COMPANY "EDIT - European Distributed Institute of Taxonomy"
 !define EDIT_PLATFORM "EDIT Platform for Cybertaxonomy"
 !define URL http://wp5.e-taxonomy.eu/
