@@ -304,10 +304,9 @@
 								<!--
 									${project.patchversion} is explicitly set in this pom
 								-->
-								<property name="project.fullversionstring" 
-								    value="${project.fullversionstring}" />
-								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml"
-									dir="${project.basedir}" />
+								<property name="project.fullversionstring" value="${project.fullversionstring}" />
+								<property name="project.version" value="${project.version}" />
+								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
 							</tasks>
 						</configuration>
 						<goals>
