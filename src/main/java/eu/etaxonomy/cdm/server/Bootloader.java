@@ -95,24 +95,24 @@ public final class Bootloader {
 
 		@Override
 		public void lifeCycleStopping(LifeCycle event) {
-			logger.error("lifeCycleStopping");
+			logger.info("lifeCycleStopping");
 		}
 
 		@Override
 		public void lifeCycleStopped(LifeCycle event) {
-			logger.error("lifeCycleStopped");
+			logger.info("lifeCycleStopped");
 			
 		}
 
 		@Override
 		public void lifeCycleStarting(LifeCycle event) {
-			logger.error("lifeCycleStarting");
+			logger.info("lifeCycleStarting");
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void lifeCycleStarted(LifeCycle event) {
-			logger.error("lifeCycleStarted");
+			logger.info("lifeCycleStarted");
 			
 			List<String> messages = getServletContextAttribute(cdmWebappContext, ATTRIBUTE_ERROR_MESSAGES, List.class);
 			String dataSourceName = getServletContextAttribute(cdmWebappContext, ATTRIBUTE_DATASOURCE_NAME, String.class);
