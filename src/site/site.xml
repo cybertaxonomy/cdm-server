@@ -13,7 +13,7 @@
 		</menu>
 		<menu name="Developer">
 			<item name="Getting started" href="http://wp5.e-taxonomy.eu/cdm-setups/cdmserver-installation"/>
-			<!--item name="Troubleshooting" href="troubleshooting.html"/-->
+			<item name="Troubleshooting" href="troubleshooting.html"/>
 			<item name="Wiki" href="http://dev.e-taxonomy.eu/trac/wiki/CdmServerDev"/>
 		</menu>
 		<menu name="Project">

@@ -4,6 +4,7 @@
 <%@page import="java.util.Set" %>
 <%@page import="java.net.URL" %>
 <%@page import="eu.etaxonomy.cdm.server.CdmInstanceProperties"%>
+<%@page import="eu.etaxonomy.cdm.server.JvmManager" %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
@@ -42,8 +43,12 @@
 								<!-- ============================= -->
 								<div class="block-wrapper">
 								  <h2 class="title block-title pngfix">Server Status</h2>
-									<div class="block" id="status">
-										Status: <div class="status_value">RUNNING</div>
+									<div class="block" id="status">JVM memory configuration: 
+									   <% 
+									   double mb = 1024 * 1024;
+									   out.append("HeapMemory=").append(String.valueOf((JvmManager.getHeapMemoryUsage().getMax() / mb))).append("MB ;");
+									   out.append("PermGenSpace=").append(String.valueOf((JvmManager.getPermGenSpaceUsage().getMax() / mb))).append("MB"); 
+									   %> 
 									</div>
 								</div>
 
@@ -82,7 +87,7 @@
                                                    out.append("</tr>");
                                                    if(props.getStatus().equals(CdmInstanceProperties.Status.error) || !props.isEnabled()){
                                                 	   out.append("<tr class=\"error-log " + oddOrEven + "\">");
-                                                	   out.append("<td></td><td  class=\"error\" colspan=\"3\">");
+                                                	   out.append("<td></td><td  class=\"error\" colspan=\"4\">");
                                                 			   for( String problem : props.getProblems()){
                                                 				   out.append("<div>" + problem + "</div>");
                                                 			   }

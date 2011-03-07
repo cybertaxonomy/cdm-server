@@ -1,32 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<faqs xmlns="http://maven.apache.org/FML/1.0.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
-  title="Frequently Asked Questions"
-  toplink="false">
+<faqs xmlns="http://maven.apache.org/FML/1.0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+	title="Troubleshooting" toplink="false">
 
-  <part id="general">
-    <title>General</title>
+	<part id="general">
+		<title>General</title>
 
-    <faq id="run-cdmlib-webapp">
-      <question>
-        How can I get help?
+		<faq id="run-cdmlib-webapp">
+			<question>
+				How can I get help?
       </question>
-      <answer>
-        <p>The troubelshooting section is still under construction. If you don't find the answer here, please contact us by email: editsupport@bgbm.org</p>
-      </answer>
-    </faq>
+			<answer>
+				<p>The troubelshooting section is still under construction. If you
+					don't find the answer here, please contact us by email:
+					editsupport@bgbm.org</p>
+			</answer>
+		</faq>
 
-    <faq id="cdm-incompatible-version">
-      <question>
-        The CDMServer reports incompatible versions, e.g.:<code>Incompatible version [cichorieae] expected version: 3.0.0.0.201011090000, data base version 2.4.1.2.201004231015</code>
-      </question>
-      <answer>
-        <p>The version of the database to which the server is trying to connect is not compatible to the software version of the server. 
-        Please connect to the database using the Taxonomic Editor and update the database to the current version.
-        <strong>Please make sure that you are using the latest stable releases of both, the CDM Server and the Taxonomic Editor</strong></p>
-      </answer>
-    </faq>
-  </part>
-  
+		<faq id="cdm-incompatible-version">
+			<question>
+				The CDMServer reports incompatible versions, e.g.:
+				<code>Incompatible version [cichorieae] expected version:
+					3.0.0.0.201011090000, data base version 2.4.1.2.201004231015</code>
+			</question>
+			<answer>
+				<p>
+					The version of the database to which the server is trying to
+					connect is not compatible to the software version of the server.
+					Please connect to the database using the Taxonomic Editor and
+					update the database to the current version.
+					<strong>Please make sure that you are using the latest stable
+						releases of both, the CDM Server and the Taxonomic Editor</strong>
+				</p>
+			</answer>
+		</faq>
+		<faq id="cdm-unable-connect-or-retrieve-version">
+			<question>
+				The CDMServer reports
+				<code>Unable to connect or to retrieve version info from ...</code>
+			</question>
+			<answer>
+				<p>
+					The database to which the server is trying to connect is most
+					probably not a cdm data base. I also might be empty.
+					<ol>
+						<li>
+							First of all use your preferred database management program to
+							take a look at the data base.
+							If there is only one table called
+							<code>_c3p0ConectionTest</code>
+							this database was an empty one and you can savely proceed to
+							step 2 in order to intialize the database structure.
+							Otherwise this data base was not empty and might be used for different
+							purposes.
+							Please do not connect the Taxonomic Editor to this database unless you
+							know waht youare doing.
+						</li>
+						<li>Connect to the database using the Taxonomic Editor in order to
+							create the cdm database.</li>
+					</ol>
+				</p>
+			</answer>
+		</faq>
+
+	</part>
+
 </faqs>
