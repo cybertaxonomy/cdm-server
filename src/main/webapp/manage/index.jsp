@@ -5,6 +5,21 @@
 <%@page import="java.net.URL" %>
 <%@page import="eu.etaxonomy.cdm.server.CdmInstanceProperties"%>
 <%@page import="eu.etaxonomy.cdm.server.JvmManager" %>
+<%@page import="java.io.IOException"%>
+<%!
+public void printMemoryUsage(java.lang.management.MemoryUsage memoryUsage, String label, String barWidth, String cssColorUsed, String cssColorMax, JspWriter writer) throws IOException{
+	float mb = 1024 * 1024;
+	float gb = mb * 1024;
+    float max = memoryUsage.getMax() / mb;
+    float used = memoryUsage.getUsed() / mb;
+    float percent = used * 100 / max;
+	writer.append("<span class=\"memory-usage\">").append(label + "(" + used + " of "  + max+ " MB)&nbsp;")
+	.append("<div style=\"height: 100%; width:")
+	.append(barWidth).append(";background-color:").append(cssColorMax).append("\">")
+	.append("<div style=\"background-color:" + cssColorUsed + "; width:" + percent + "%\">&nbsp;</div></div></span>");
+}
+%>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
@@ -43,11 +58,10 @@
 								<!-- ============================= -->
 								<div class="block-wrapper">
 								  <h2 class="title block-title pngfix">Server Status</h2>
-									<div class="block" id="status">JVM memory configuration: 
+									<div class="block" id="status">
 									   <% 
-									   double mb = 1024 * 1024;
-									   out.append("HeapMemory=").append(String.valueOf((JvmManager.getHeapMemoryUsage().getMax() / mb))).append("MB ;");
-									   out.append("PermGenSpace=").append(String.valueOf((JvmManager.getPermGenSpaceUsage().getMax() / mb))).append("MB"); 
+									   printMemoryUsage(JvmManager.getHeapMemoryUsage(), "HeapUsage", "100%", "#F48B65", "#65B1F4", out);
+									   printMemoryUsage(JvmManager.getPermGenSpaceUsage(), "PermGenSpaceUsage", "100%","#F48B65", "#65B1F4", out);
 									   %> 
 									</div>
 								</div>

@@ -30,11 +30,13 @@ public class CommandOptions{
 	public static final Option WEBAPP = OptionBuilder
 			.withArgName("file")
 			.hasArg()
-			.withDescription( "use the specified webapplication this either can be a compressed war or extracted file. " +
-					"If this option is used extraction of the war from the cdmserver jar file is omitted." +
-					"Using the following paths developers can run the server completely from the target folder or completely from source:\n" +
-					"'{cdmlib-project-root}/cdmlib-remote/target/cdmserver'\n " +
-					"'{cdmlib-project-root}/cdmlib-remote/src/main/webapp'" )
+			.withDescription( "Defines the webapplication to run from, this either can be a compressed war or extracted file.\n" +
+					"Defaults to the cdm-remote-webapp.war which is found in cdm-server/traget\n" +
+					"If this option is used extraction of the war from the cdmserver jar file is omitted.\n \n" +
+					"Using the following paths developers can run the cdmlib-remote-webapp instaces completely from the target folder or from source:\n" +
+					" - '{cdmlib-project-root}/cdmlib-remote-webapp/target/cdmserver'\n " +
+					" - '{cdmlib-project-root}/cdmlib-remote-webapp/src/main/webapp'\n" +
+					"This will also affect the cdm-server project, if any of both paths is set cdm-server will be run using the cdm-server/src/main/webapp folder!" )
 			.create("webapp");
 
 	@SuppressWarnings("static-access")

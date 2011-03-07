@@ -177,7 +177,7 @@ public final class Bootloader {
 		return configAndStatusSet;
 	}
 
-	private File webappFile = null;
+	private File cdmRemoteWebAppFile = null;
     private File defaultWebAppFile = null;
     
     private Server server = null;
@@ -276,6 +276,7 @@ public final class Bootloader {
 		 // print the help message
 		 if(cmdLine.hasOption(HELP.getOpt())){
 			 HelpFormatter formatter = new HelpFormatter();
+			 formatter.setWidth(200);
 			 formatter.printHelp( "java .. ", CommandOptions.getOptions() );
 			 System.exit(0);
 		 }
@@ -367,21 +368,21 @@ public final class Bootloader {
     	
     	 // WARFILE
     	 if(cmdLine.hasOption(WEBAPP.getOpt())){
-    		 webappFile = new File(cmdLine.getOptionValue(WEBAPP.getOpt()));
-    		 if(webappFile.isDirectory()){
-    			 logger.info("using user defined web application folder: " + webappFile.getAbsolutePath());    			     			 
+    		 cdmRemoteWebAppFile = new File(cmdLine.getOptionValue(WEBAPP.getOpt()));
+    		 if(cdmRemoteWebAppFile.isDirectory()){
+    			 logger.info("using user defined web application folder: " + cdmRemoteWebAppFile.getAbsolutePath());    			     			 
     		 } else {
-    			 logger.info("using user defined warfile: " + webappFile.getAbsolutePath());
+    			 logger.info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
     		 }
-    		 if(isRunningFromSource()){
-    			 //FIXME check if all local paths are valid !!!!
+    		 if(isRunningFromCdmRemoteWebAppSource()){
+    			 //TODO check if all local paths are valid !!!!
     	    	defaultWebAppFile = new File("./src/main/webapp");	
     	    	
     	     } else {
     	    	defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
     	     }
     	 } else {    	 
-    		 webappFile = extractWar(CDM_WEBAPP_WAR_NAME);
+    		 cdmRemoteWebAppFile = extractWar(CDM_WEBAPP_WAR_NAME);
     		 defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
     	 }
     	 
@@ -600,13 +601,13 @@ public final class Bootloader {
             
             cdmWebappContext.setAttribute(ATTRIBUTE_DATASOURCE_NAME, conf.getDataSourceName());
             cdmWebappContext.setAttribute(ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
-	        setWebApp(cdmWebappContext, webappFile);
+	        setWebApp(cdmWebappContext, cdmRemoteWebAppFile);
 	        
 			cdmWebappContext.setAttribute(ATTRIBUTE_CDM_LOGFILE,
 					LOG_PATH + File.separator + "cdm-"
 							+ conf.getDataSourceName() + ".log");
    
-	        if(webappFile.isDirectory() && isRunningFromSource()){
+	        if(cdmRemoteWebAppFile.isDirectory() && isRunningFromCdmRemoteWebAppSource()){
         		
 				/*
 				 * when running the webapp from {projectpath} src/main/webapp we
@@ -660,9 +661,9 @@ public final class Bootloader {
 	/**
 	 * @return
 	 */
-	private boolean isRunningFromSource() {
-		String webappPathNormalized = webappFile.getAbsolutePath().replace('\\', '/');
-		return webappPathNormalized.endsWith("src/main/webapp") || webappPathNormalized.endsWith("cdmlib-remote/target/cdmserver");
+	private boolean isRunningFromCdmRemoteWebAppSource() {
+		String webappPathNormalized = cdmRemoteWebAppFile.getAbsolutePath().replace('\\', '/');
+		return webappPathNormalized.endsWith("src/main/webapp") || webappPathNormalized.endsWith("cdmlib-remote-webapp/target/cdmserver");
 	}
 	
 	/**
