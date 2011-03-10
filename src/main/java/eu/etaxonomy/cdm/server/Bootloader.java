@@ -166,7 +166,7 @@ public final class Bootloader {
     // memory requirements
     private static final long MB = 1024 * 1024;
     private static final long PERM_GEN_SPACE_PER_INSTANCE = 64 * MB;
-    private static final long HEAP_PER_INSTANCE = 300 * MB;
+    private static final long HEAP_PER_INSTANCE = 150 * MB;
     
     private static final int KB = 1024;
     
