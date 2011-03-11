@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp $WORKSPACE/target/cdm-server*.jar /opt/cdmserver/cdm-server.jar.by-jenkins
+cp $WORKSPACE/../cdm-server/lastSuccessfulBuild/artifact/cdm-server/target/cdm-server-3.0.jar/copy-cdmserver-and-restart.sh /var/www /opt/cdmserver/cdm-server.jar.by-jenkins
 /etc/init.d/cdmserver restart
