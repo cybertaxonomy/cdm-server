@@ -44,6 +44,7 @@ src/main/webapp/js/jquery.js -text
 src/main/webapp/js/jquery.min.js -text
 src/main/webapp/js/oai-pmh-status.js -text
 src/main/webapp/js/server-status.js -text
+src/main/webapp/manage/BootloaderService.jsp -text
 src/main/webapp/manage/index.jsp -text
 src/main/webapp/robots.txt -text
 src/site/apt/download.apt -text
