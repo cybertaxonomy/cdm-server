@@ -283,7 +283,7 @@
 						<overlay>
 							<groupId>eu.etaxonomy</groupId>
 							<artifactId>cdmlib-remote-webapp</artifactId>
-              <version>${project.version}</version>
+              <!-- version is set in dependency -->
 							<skip>true</skip><!-- Do Not overlay  -->
 						</overlay>
 					</overlays>
