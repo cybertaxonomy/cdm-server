@@ -156,7 +156,7 @@
 				<version>2.1</version>
 				<configuration>
 					<allowTimestampedSnapshots>false</allowTimestampedSnapshots>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<autoVersionSubmodules>false</autoVersionSubmodules>
 					<preparationGoals>clean install</preparationGoals>
 					<tag>cdm-server/${project.version}</tag>
 				</configuration>
