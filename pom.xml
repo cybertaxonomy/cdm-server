@@ -316,6 +316,31 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<id>upload-binaries</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<serverId>wp5.e-taxonomy.eu</serverId>
+							<url>
+							     scp://160.45.63.151
+							</url>
+							<toDir>/var/www/download/cdmserver/${project.version}/</toDir>
+							<fromDir>dist</fromDir>
+							<includes>
+								*${project.version}*
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<!-- EXTENSIONS -->
 		<extensions>
@@ -324,11 +349,11 @@
 				<artifactId>wagon-scm</artifactId>
 				<version>1.0-alpha-5</version>
 			</extension>
-			<!--
-				<extension> <groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>1.0-alpha-5</version> </extension>
-			-->
+			<extension>
+			  <groupId>org.apache.maven.wagon</groupId>
+			  <artifactId>wagon-ssh</artifactId>
+			  <version>1.0-beta-7</version>
+			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-manager-plexus</artifactId>
