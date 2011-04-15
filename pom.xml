@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-	http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 
 	<!--
@@ -12,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.etaxonomy</groupId>
 	<artifactId>cdm-server</artifactId>
-	<version>3.0.3-SNAPSHOT</version>
+	<version>3.0.3</version>
 	<packaging>jar</packaging>
 	<name>CDM Community Standalone Server</name>
 	
@@ -22,9 +20,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server/</connection>
-		<developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdm-server/</developerConnection>
-		<url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server/</url>
+		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/3.0.3-SNAPSHOT</connection>
+		<developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/tags/cdm-server/3.0.3-SNAPSHOT</developerConnection>
+		<url>http://dev.e-taxonomy.eu/trac/browser/tags/cdm-server/3.0.3-SNAPSHOT</url>
 	</scm>
 
 	<mailingLists>
@@ -74,7 +72,7 @@
 			<roles>
 				<role>Developer</role>
 			</roles>
-			<url></url>
+			<url />
 		</developer>
 	</developers>
 
@@ -200,7 +198,7 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
+				<configuration> 
 					<doCheck>false</doCheck>
 					<!--
 						Only create the build number if there are no local modifications
@@ -272,7 +270,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- package the default webapp -->
+			<!-- package the default webapp and add the cdmlib-remote-webapp.war -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -283,6 +281,7 @@
 						<overlay>
 							<groupId>eu.etaxonomy</groupId>
 							<artifactId>cdmlib-remote-webapp</artifactId>
+              <version>${project.version}</version>
 							<skip>true</skip><!-- Do Not overlay  -->
 						</overlay>
 					</overlays>
