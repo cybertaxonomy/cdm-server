@@ -42,7 +42,6 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory />
-			<outputFileNameMapping>cdmserver.war</outputFileNameMapping>
 			<includes>
 				<include>eu.etaxonomy:cdmlib-remote-webapp</include>
 			</includes>

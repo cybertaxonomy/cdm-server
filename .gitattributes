@@ -34,6 +34,7 @@ src/main/java/eu/etaxonomy/cdm/server/win32service/Win32Service.java -text
 src/main/jenkins-ci/copy-cdmserver-and-restart.sh -text
 src/main/resources/c3p0.properties -text
 src/main/resources/log4j.properties -text
+src/main/resources/version.properties -text
 src/main/webapp/WEB-INF/web.xml -text
 src/main/webapp/css/server.css -text
 src/main/webapp/css/style.css -text

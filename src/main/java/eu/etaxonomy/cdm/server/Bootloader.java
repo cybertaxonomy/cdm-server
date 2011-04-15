@@ -29,6 +29,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.naming.NamingException;
@@ -76,7 +77,14 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  * @version $Revision$
  */
 public final class Bootloader {
+	/**
+	 * 
+	 */
+	private static final String VERSION_PROPERTIES_FILE = "version.properties";
+
 	//private static final String DEFAULT_WARFILE = "target/";
+
+
 
 	/**
 	 * @author a.kohlbecker
@@ -149,10 +157,12 @@ public final class Bootloader {
 	private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
     
-    private static final String CDM_WEBAPP_WAR_NAME = "cdmserver";
+    private static final String CDMLIB_REMOTE_WEBAPP = "cdmlib-remote-webapp";
+    private static final String CDMLIB_REMOTE_WEBAPP_VERSION = "cdmlib-remote-webapp.version";
+
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP_WAR_NAME);
+    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDMLIB_REMOTE_WEBAPP);
     
     private static final String ATTRIBUTE_JDBC_JNDI_NAME = "cdm.jdbcJndiName";
     private static final String ATTRIBUTE_DATASOURCE_NAME = "cdm.datasource";
@@ -381,8 +391,14 @@ public final class Bootloader {
     	     } else {
     	    	defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
     	     }
-    	 } else {    	 
-    		 cdmRemoteWebAppFile = extractWar(CDM_WEBAPP_WAR_NAME);
+    	 } else {
+    		 // read version number
+    		 InputStream versionInStream = Bootloader.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE);
+    		 Properties versionProperties = new Properties();
+    		 versionProperties.load(versionInStream);
+    		 String version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION);
+    		 
+    		 cdmRemoteWebAppFile = extractWar(CDMLIB_REMOTE_WEBAPP + "-" + version);
     		 defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
     	 }
     	 

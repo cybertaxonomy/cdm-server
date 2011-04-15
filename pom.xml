@@ -134,6 +134,30 @@
 
 	<!-- **** PLUGINS **** -->
 	<build>
+	   <resources>
+	       <resource>
+	           <!-- 
+	               replace the project-version placeholder in the version.properties file. 
+	               This property can then be used to retrieve the version number in the Bootloader
+	            -->
+	           <targetPath>${project.build.directory}/classes</targetPath>
+	           <filtering>true</filtering> 
+	           <directory>${basedir}/src/main/resources</directory>
+	           <includes>
+	               <include>version.properties</include>
+	           </includes>
+	       </resource>
+	       <resource>
+               <!-- 
+                   all other files in classes
+                -->
+               <targetPath>${project.build.directory}/classes</targetPath>
+               <directory>${basedir}/src/main/resources</directory>
+               <excludes>
+                   <exclude>version.properties</exclude>
+               </excludes>
+           </resource>
+	   </resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -244,6 +268,7 @@
 			<!--
 				package the default webapp, and also add the
 				cdmlib-remote-webapp.war
+				test with: mvn war:war
 			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -272,6 +297,7 @@
 			<plugin>
 				<!--
 					Assemble the runnable server jar
+					test with: mvn assembly:single
 				-->
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -282,6 +308,8 @@
 					<archive>
 						<manifest>
 							<mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 					</archive>
 				</configuration>
