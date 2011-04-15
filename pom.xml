@@ -12,19 +12,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.etaxonomy</groupId>
 	<artifactId>cdm-server</artifactId>
-	<version>3.0</version>
+	<version>3.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>CDM Community Standalone Server</name>
 	
 	<properties>
-	   <!-- 
-	       the third number in the version string 
-	   -->
-	   <project.patchversion>2</project.patchversion>
-	   <!-- 
-	       ${project.fullversionstring} is being used by some build plugins
-	    -->
-	   <project.fullversionstring>${project.version}.${project.patchversion}.${maven.build.timestamp}</project.fullversionstring>
+	   <project.fullversionstring>${project.version}</project.fullversionstring>
        <jetty-version>7.2.2.v20101205</jetty-version>
 	</properties>
 
@@ -155,6 +148,17 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<allowTimestampedSnapshots>false</allowTimestampedSnapshots>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<preparationGoals>clean install</preparationGoals>
+					<tag>cdm-server/${project.version}</tag>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -301,9 +305,6 @@
 						<phase>install</phase>
 						<configuration>
 							<tasks>
-								<!--
-									${project.patchversion} is explicitly set in this pom
-								-->
 								<property name="project.fullversionstring" value="${project.fullversionstring}" />
 								<property name="project.version" value="${project.version}" />
 								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
