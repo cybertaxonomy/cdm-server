@@ -24,7 +24,7 @@ Name "EDIT CDM-Server"
 !include Sections.nsh
 
 # Files and Folders
-!define OUT_FOLDER "..\..\..\..\dist"
+!define OUT_FOLDER "..\..\..\..\target\installer"
 !define JAR_FILE_NAME "cdm-server-${VERSION}.jar"
 !define JAR_FILE "..\..\..\..\target\${JAR_FILE_NAME}"
 !define CDMLIBRARY_TEMPLATE "..\templates\.cdmLibrary"

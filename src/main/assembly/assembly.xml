@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
+	<!--
+		USAGE:
+		http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html
+	-->
 	<id>cdmserver-standalone</id>
 	<formats>
 		<format>jar</format>
@@ -26,6 +30,12 @@
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
+			<!--
+				unpack: If set to true, this property will unpack all module
+				packages into the specified output directory. When set to false
+				module packages will be included as archives (jars). Default value
+				is true.
+			-->
 			<unpack>true</unpack>
 			<outputDirectory />
 			<outputFileNameMapping />

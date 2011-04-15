@@ -53,8 +53,8 @@
 	</taskdef>
 
 	<target name="deb_package" description="build the deb file">
-		<mkdir dir="dist" />
-		<deb todir="dist" package="${package.name}" 
+		<mkdir dir="target/installer" />
+		<deb todir="target/installer" package="${package.name}" 
 			section="graphics" postinst="${postinst.path}/postinst" 
 			postrm="${postinst.path}/postrm">
 			<version upstream="${version.cdmserver}" debian="${version.debian}" />
@@ -69,9 +69,4 @@ CDM Server is a cross platform blablabla, visit www.bgbm.de for more info.
 
 		</deb>
 	</target>
-	<!--
-	 <target name="clean" description="remove all work folders">
-	 	  <delete dir="dist"/>
-	 </target>
-	 -->
 </project>
