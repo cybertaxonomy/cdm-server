@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.etaxonomy</groupId>
 	<artifactId>cdm-server</artifactId>
-	<version>3.0.3</version>
+	<version>3.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>CDM Community Standalone Server</name>
 
@@ -13,9 +15,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/3.0.3-SNAPSHOT</connection>
-		<developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/tags/cdm-server/3.0.3-SNAPSHOT</developerConnection>
-		<url>http://dev.e-taxonomy.eu/trac/browser/tags/cdm-server/3.0.3-SNAPSHOT</url>
+		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server/</connection>
+		<developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdm-server/</developerConnection>
+		<url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server/</url>
 	</scm>
 
 	<mailingLists>
@@ -65,13 +67,14 @@
 			<roles>
 				<role>Developer</role>
 			</roles>
-			<url />
+			<url></url>
 		</developer>
 	</developers>
 
 	<!--
 		contributors> <contributor> <name>Test-Contributor</name>
-		</contributor> </contributors -->
+		</contributor> </contributors
+	-->
 	<issueManagement>
 		<system>Trac</system>
 		<url>http://dev.e-taxonomy.eu/trac/</url>
@@ -333,7 +336,8 @@
 							<tasks>
 								<property name="project.fullversionstring" value="${project.version}" />
 								<property name="project.version" value="${project.version}" />
-								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
+								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml"
+									dir="${project.basedir}" />
 							</tasks>
 						</configuration>
 						<goals>
