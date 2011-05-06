@@ -195,7 +195,7 @@
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 					<autoVersionSubmodules>false</autoVersionSubmodules>
 					<preparationGoals>clean verify install</preparationGoals>
-					<tagBase>tags/cdm-server</tagBase>
+					<tagBase>http://dev.e-taxonomy.eu/svn/tags/cdm-server</tagBase>
 				</configuration>
 			</plugin>
 			<plugin>
