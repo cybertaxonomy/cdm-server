@@ -195,7 +195,7 @@
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 					<autoVersionSubmodules>false</autoVersionSubmodules>
 					<preparationGoals>clean verify install</preparationGoals>
-					<!-- <tag>cdm-server/${project.version}</tag> -->
+					<tagBase>tags/cdm-server</tagBase>
 				</configuration>
 			</plugin>
 			<plugin>
