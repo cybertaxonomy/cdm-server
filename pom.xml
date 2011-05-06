@@ -164,7 +164,18 @@
 	   </resources>
 		<plugins>
       <plugin>
-          <!-- only needed for testing the svn credentials -->
+          <!-- 
+            only needed for testing the svn credentials 
+            credentials are usually stored by svn automatically
+            unless not configured differently in 
+            {user.home}\.subversion\config
+            So in order to use a specific svn account with maven 
+            firts to a commit manually by svn ci -m "commit message"
+            and answer the question wether to store the credential
+            with yes.
+            There is no specific maven configuration required for 
+            svn to work with maven! 
+          -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
           <version>1.5</version>
