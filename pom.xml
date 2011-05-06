@@ -84,8 +84,8 @@
 		<url>http://dev.e-taxonomy.eu/trac/</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Hudson</system>
-		<url>http://160.45.63.201/hudson</url>
+		<system>Jenkins</system>
+		<url>http://160.45.63.201/jenkins</url>
 	</ciManagement>
 	<!-- **** REPOSITORIES **** -->
 	<repositories>
@@ -197,8 +197,8 @@
 				<configuration>
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 					<autoVersionSubmodules>false</autoVersionSubmodules>
-					<preparationGoals>clean install</preparationGoals>
-					<tag>cdm-server/${project.version}</tag>
+					<preparationGoals>clean verify install</preparationGoals>
+					<!-- <tag>cdm-server/${project.version}</tag> -->
 				</configuration>
 			</plugin>
 			<plugin>
