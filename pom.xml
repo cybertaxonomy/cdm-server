@@ -15,6 +15,10 @@
 	</properties>
 
 	<scm>
+		<!--
+		  see section Provider Configuration in http://maven.apache.org/scm/subversion.html
+		  for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml  
+		-->
 		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server/</connection>
 		<developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdm-server/</developerConnection>
 		<url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server/</url>
@@ -159,6 +163,15 @@
            </resource>
 	   </resources>
 		<plugins>
+      <plugin>
+          <!-- only needed for testing the svn credentials -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.5</version>
+          <configuration>
+               <connectionType>developerConnection</connectionType>
+          </configuration>
+        </plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
