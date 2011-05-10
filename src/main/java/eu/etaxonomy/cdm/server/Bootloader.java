@@ -393,10 +393,7 @@ public final class Bootloader {
     	     }
     	 } else {
     		 // read version number
-    		 InputStream versionInStream = Bootloader.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE);
-    		 Properties versionProperties = new Properties();
-    		 versionProperties.load(versionInStream);
-    		 String version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION);
+    		 String version = readCdmRemoteVersion();
     		 
     		 cdmRemoteWebAppFile = extractWar(CDMLIB_REMOTE_WEBAPP + "-" + version);
     		 defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
@@ -530,6 +527,14 @@ public final class Bootloader {
 	        logger.info(APPLICATION_NAME+" stopped.");
 	    	System.exit(0);
         }
+	}
+
+	public String readCdmRemoteVersion() throws IOException {
+		InputStream versionInStream = Bootloader.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE);
+		 Properties versionProperties = new Properties();
+		 versionProperties.load(versionInStream);
+		 String version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION);
+		return version;
 	}
 
 	/**

@@ -18,6 +18,11 @@ public void printMemoryUsage(java.lang.management.MemoryUsage memoryUsage, Strin
 	.append(barWidth).append(";background-color:").append(cssColorMax).append("\">")
 	.append("<div style=\"background-color:" + cssColorUsed + "; width:" + percent + "%\">&nbsp;</div></div></span>");
 }
+
+// the servelt context must use the class loader of the Bootloader class otherwise 
+// getting the status will not work in mulithreading environments !!!
+Bootloader bootloader = Bootloader.getBootloader();
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -44,6 +49,7 @@ public void printMemoryUsage(java.lang.management.MemoryUsage memoryUsage, Strin
       
       <div id="primary-menu-wrapper" class="clearfix">
         <div id="primary-menu">
+            <div id="version"><%= bootloader.readCdmRemoteVersion() %></div>
         </div><!-- /primary_menu -->
       </div><!-- /primary-menu-wrapper -->
 
@@ -73,9 +79,6 @@ public void printMemoryUsage(java.lang.management.MemoryUsage memoryUsage, Strin
 										<table>
 											<tr><th>Path</th><th> </th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
                                             <%
-                                           // the servelt context must use the class loader of the Bootloader class otherwise 
-                                           // getting the status will not work in mulithreading environments !!!
-                                           Bootloader bootloader = Bootloader.getBootloader();
                                            java.util.Set<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
                                            if(configAndStatus != null){
                                         	   int i = 0;
