@@ -15,7 +15,7 @@
 	<scm>
 		<!--
 		  see section Provider Configuration in http://maven.apache.org/scm/subversion.html
-		  for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml  
+		  for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml
 		-->
 		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</connection>
 		<developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</developerConnection>
@@ -137,19 +137,19 @@
 	<build>
 	   <resources>
 	       <resource>
-	           <!-- 
-	               replace the project-version placeholder in the version.properties file. 
+	           <!--
+	               replace the project-version placeholder in the version.properties file.
 	               This property can then be used to retrieve the version number in the Bootloader
 	            -->
 	           <targetPath>${project.build.directory}/classes</targetPath>
-	           <filtering>true</filtering> 
+	           <filtering>true</filtering>
 	           <directory>${basedir}/src/main/resources</directory>
 	           <includes>
 	               <include>version.properties</include>
 	           </includes>
 	       </resource>
 	       <resource>
-               <!-- 
+               <!--
                    all other files in classes
                 -->
                <targetPath>${project.build.directory}/classes</targetPath>
@@ -159,19 +159,19 @@
                </excludes>
            </resource>
 	   </resources>
-		<plugins>
+	<plugins>
       <plugin>
-          <!-- 
-            only needed for testing the svn credentials 
+          <!--
+            only needed for testing the svn credentials
             credentials are usually stored by svn automatically
-            unless not configured differently in 
+            unless not configured differently in
             {user.home}\.subversion\config
-            So in order to use a specific svn account with maven 
+            So in order to use a specific svn account with maven
             firts to a commit manually by svn ci -m "commit message"
             and answer the question wether to store the credential
             with yes.
-            There is no specific maven configuration required for 
-            svn to work with maven! 
+            There is no specific maven configuration required for
+            svn to work with maven!
           -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
@@ -195,6 +195,7 @@
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 					<autoVersionSubmodules>false</autoVersionSubmodules>
 					<preparationGoals>clean verify install</preparationGoals>
+					<preparationGoals>deploy</preparationGoals><!-- skipping site-deploy by explicitly configuring the goal here -->
 					<tagBase>http://dev.e-taxonomy.eu/svn/tags/cdm-server</tagBase>
 				</configuration>
 			</plugin>
