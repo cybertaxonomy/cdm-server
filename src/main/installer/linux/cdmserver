@@ -82,7 +82,6 @@ for jdir in $JDK_DIRS; do
 		JAVA_HOME="$jdir"
 	fi
 done
-export JAVA_HOME
 
 #BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.Bootloader"
 BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
@@ -118,15 +117,15 @@ do_start()
 			log_warning_msg "$PIDFILE exists, but cdmserver was not running. Ignoring $PIDFILE"
 		fi
 
-		chown -R $CDM_USER:adm "$LOGDIR"
-
 		echo $JSVC_CLASSPATH
 		echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
-		$DAEMON -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
+		sudo $DAEMON -java-home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
 		    -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
 		    -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
+		# this must be permitted by adding the command to /etc/sudoers
+		sudo chown $CDM_USER:$CDM_GROUP $PIDFILE
 
 		sleep 5
 		if start-stop-daemon --test --start --pidfile "$PIDFILE" \
