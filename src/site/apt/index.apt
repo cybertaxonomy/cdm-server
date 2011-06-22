@@ -1,14 +1,13 @@
 Overview
 
-  The CDM Community Standalone Server exposes data stored in a CDM data base to the web. It is basically a {{{http://wiki.eclipse.org/Jetty}Jetty}} based web application container bundeled with a simple management webapplication and with the remote component of the {{{http://wp5.e-taxonomy.eu/cdmlib/} CDM Library}}. The CDM Community Standalone Server is a Java application, so it can be installed in pronciple on any platform witch supports Java version 1.6. Using the CDM Standalone Server under Debian Linux and derivates or under Windows however is recommended since installers exist with integrate the server as services in the operatoin system.
+  The CDM Community Standalone Server exposes data stored in a CDM data base to the web. It is basically a {{{http://wiki.eclipse.org/Jetty}Jetty}} based web application container bundeled with a simple management webapplication and with the remote component of the {{{http://wp5.e-taxonomy.eu/cdmlib/} CDM Library}}. The CDM Community Standalone Server is a Java application, so it can be installed in principle on any platform witch supports Java version 1.6. Using the CDM Standalone Server under Debian Linux and derivates or under Windows however is recommended since installers exist with integrate the server as services in the operatoin system.
   One single or multiple CDM databases can be exposed by a single installation of the CDM Server. For each data base a separate instance of the CDM Remote web apllication is will be launched which will require an specific amount of memory.
-  
+
 Web Services
 
   The CDM Web Application expose the CDM data through a bunch of different webservices:
-  
+
     * <<CDM REST API>>: The {{{http://wp5.e-taxonomy.eu/cdmlib/rest-api.html} CDM REST API}} is a RESTful interface to resources stored in the CDM. The RESTful architecture allows accessing the various resources like Taxa, Names, References, Media, etc by stable URIs. The CDM REST Services architecture is functionally separated into four different parts, the API Service, a clean RESTful bit, which will expose data in a modular, normalized way. The Portal Service which is specially tailored for the needs of dataportals. The External Services are supporting non CDM applications and services like for example a map generation service, LSID Services. The Classification Service exposes special DTOs which combine data from the TaxonBase, TaxonNode and from the Classification entities.
     {{{http://wp5.e-taxonomy.eu/cdmlib/rest-api.html} more ...}}
-    
+
     * <<OAI-PMH>>: In order to allow central aggregators harvesting the CDM Community Stores the {{{http://www.openarchives.org/OAI/openarchivesprotocol.html} OAI-PMH protocol}} with selective date based harvesting has been implemented in to the CDM Community Stores. {{{http://www.biodiversitylibrary.org/} BHL}}, {{{http://www.gbif.net} GBIF}}, {{{http://www.eol.org/} EOL}} or any other data aggregator therefore are able to easily pool CDM data selectively and keep their copy up to date by accessing incremental changes only.
-   

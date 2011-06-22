@@ -5,21 +5,23 @@
 
 set -e
 
-#variables
+#
+# variables
+#
 CDM_HOME="/opt/cdmserver/"
-CDM_LIBRARY=$CDM_HOME".cdmLibrary"
-LOG="/var/log/cdmserver/"
-bindir="/etc/init.d/"
+CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
+CDM_LOG="/var/log/cdmserver/"
 
-SERVERSCRIPT="cdmserver"
-SERVERJAR="cdm-server.jar"
-SERVERCONF="datasources.xml"
+INIT_SCRIPT="cdmserver"
+ETC_CDMSERVER="/etc/cdmserver/"
 
-CDM_USER="cdmuser"
-CDM_GROUP="cdmgroup"
+CDM_USER=cdm
+CDM_GROUP=cdm
+
+CDM_USER_HOME=$CDM_HOME
 
 #
-#functions
+# functions
 #
 userExist(){
     grep $1 /etc/passwd > /dev/null
@@ -47,44 +49,52 @@ groupExist(){
 
 do_remove(){
 
+    echo "... do_remove()"
+
     #stopping the server
-    if [ -e $bindir$SERVERSCRIPT ]
+    if [ -x /etc/init.d/$INIT_SCRIPT ]
     then
-    $bindir$SERVERSCRIPT stop
+      echo "stopping server ..."
+      /etc/init.d/$INIT_SCRIPT stop
     fi
-    
-   
-    
-    #removing the user and group
+
+    echo "now removing server from rc.d ..."
+    update-rc.d -f $INIT_SCRIPT remove
+
+    rm -f $CDM_USER_HOME.cdmLibrary
+
+    return 0
+}
+
+do_purge(){
+
+    echo "... do_purge()"
+
+    # removing the user and group
     if ( userExist $CDM_USER  )
     then
-    userdel $CDM_USER
+      userdel $CDM_USER
     fi
 
     if ( groupExist $CDM_GROUP  )
     then
-    groupdel $CDM_GROUP
+      groupdel $CDM_GROUP
     fi
-    
-    # remove the binary
-    rm $CDM_HOME$SERVERJAR
-    
-    return $TRUE
-    
-}
 
-do_purge(){
-    do_remove
-    
-    #removing the daemon script
-    rm -f $bindir$SERVERSCRIPT
-    update-rc.d -f $SERVERSCRIPT remove
-    
-    #removing the directories
-    rm -rf $CDM_LIBRARY
-    rm -rf $CDM_HOME
+    #
+    # remove log files
+    #
+    rm -rf $CDM_LOG
 
-    return $TRUE
+    #
+    # remove all configuration files
+    #
+    if [ -d $ETC_CDMSERVER ]
+    then
+      rm -r $ETC_CDMSERVER
+    fi
+
+    return 0
 }
 
 case "$1" in

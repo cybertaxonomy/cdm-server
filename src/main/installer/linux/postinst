@@ -6,27 +6,22 @@
 set -e
 
 #
-#variables
+# variables
 #
 CDM_HOME="/opt/cdmserver/"
-CDM_LIBRARY=$CDM_HOME".cdmLibrary"
+CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
 CDM_LOG="/var/log/cdmserver/"
-bindir="/etc/init.d/"
-TMP="/usr/bin/"
 
-SERVERSCRIPT="cdmserver"
-SERVERJAR="cdm-server.jar"
-SERVERCONF="datasources.xml"
-SERVERREALM="cdm-server-realm.properties"
-PROPERTIES="cdmserver.properties"
+INIT_SCRIPT="cdmserver"
+ETC_CDMSERVER="/etc/cdmserver/"
 
-CDM_USER=cdmuser
-CDM_GROUP=cdmgroup
-CDM_USER_HOME=/opt/cdmserver/
-#CDM_USER_HOME=/root/cdmserver/
+CDM_USER=cdm
+CDM_GROUP=cdm
+
+CDM_USER_HOME=$CDM_HOME
 
 #
-#functions
+# functions
 #
 userExist(){
     grep $1 /etc/passwd > /dev/null
@@ -55,53 +50,62 @@ case "$1" in
     configure)
 
     #
-    # adding the user
-    # if the user already exist will be deleted
-    #
-    if ( userExist $CDM_USER )
-    then
-    echo USER ALREADY EXITS!!!!
-    userdel $CDM_USER
-    fi
-   
-    #
     # adding the group
     # if the group already exist will be deleted
     #
     if ( groupExist $CDM_GROUP  )
     then
-        echo GROUP ALREADY EXISTS!!!!
-        groupdel $CDM_GROUP
+      echo "user '$CDM_GROUP' alreday exists"
+    else
+      echo "creating group '$CDM_GROUP'"
+      groupadd $CDM_GROUP
     fi
-    groupadd $CDM_GROUP
 
-    useradd -G cdmgroup -d $CDM_USER_HOME $CDM_USER
-
-    #installing the script
-    cp $TMP$SERVERSCRIPT $bindir
-    chmod 755 $bindir$SERVERSCRIPT
-    chown $CDM_USER:$CDM_GROUP $bindir$SERVERSCRIPT
-    update-rc.d $SERVERSCRIPT defaults 98 02
-
-    #creating the directories
-    if [ ! -d $CDM_HOME ]; then
-        mkdir -p $CDM_HOME
+    #
+    # adding the user
+    #
+    if ( userExist $CDM_USER )
+    then
+      echo "user '$CDM_USER' alreday exists"
+    else
+      echo "creating user '$CDM_USER'"
+      useradd -g $CDM_GROUP -d $CDM_USER_HOME $CDM_USER
     fi
-    if [ ! -d $CDM_LIBRARY ]; then
-        mkdir -p $CDM_LIBRARY
-    fi
+
+
+    #
+    # adjusting permissions of init script user and group should be root
+    #
+    chmod 755 /etc/init.d/$INIT_SCRIPT
+    chown root:root /etc/init.d/$INIT_SCRIPT
+
+    chown -R $CDM_USER:$CDM_GROUP $CDM_HOME
+
+    #
+    # create log file folder and set owner:group
+    #
     if [ ! -d $CDM_LOG ]; then
         mkdir -p $CDM_LOG
+        chown -R $CDM_USER:$CDM_GROUP $CDM_LOG
     fi
 
-    #installing the server and the configfile
-    cp $TMP$SERVERCONF $CDM_LIBRARY
-    cp $TMP$SERVERREALM $CDM_LIBRARY
-    cp $TMP$SERVERJAR $CDM_HOME
+    #
+    # copy template .cdmLibrary if not yet existing into
+    # /etc/cdmserver
+    # AND create symlink
+    #
+    if [ ! -d $ETC_CDMSERVER.cdmLibrary ]
+    then
+      mkdir -p $ETC_CDMSERVER
+      cp -r $CDM_CONFIG_TEMPLATE $ETC_CDMSERVER
+    fi
+    ln -s $ETC_CDMSERVER.cdmLibrary $CDM_USER_HOME.cdmLibrary
 
-    #starting the script
-    $bindir$SERVERSCRIPT start
+    # let the cdm server start automatically on boot
+    update-rc.d $INIT_SCRIPT defaults 98 02
 
+    # start the server manually this time
+    /etc/init.d/$INIT_SCRIPT start
 
     ;;
 

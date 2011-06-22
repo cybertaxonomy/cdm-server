@@ -1,72 +1,65 @@
 <project name="Java application deb packager" default="deb_package">
 
-	<echo>basedir: ${basedir}</echo>
-	<!-- UNUSED
+  <!-- UNUSED
   <tstamp>
     <format property="project.buildtimestamp" pattern="yyyyMMddkkmmss"/>
   </tstamp>
   -->
-	
-	<!-- Package Name & Version -->
-	<property name="package.name" value="cdmserver" />
-	<!-- ${project.fullversionstring} must be passed as parameter --> 
-	<property name="version.cdmserver" value="${project.fullversionstring}" />
-	<property name="version.debian" value="5" />
-	<echo>upstream-version = version.cdmserver: ${version.cdmserver}</echo>
-	<echo>debian-version = version.debian: ${version.debian}</echo>
-	
-	<!-- Various Filenames -->
-	<property name="cdmserverscript.filename" value="cdmserver" />
-	<property name="datasources.filename" value="datasources.xml" />
-	<property name="cdmserver.filename" value="cdm-server-${project.version}.jar" />
-    <property name="cdmserver.destinationfilename" value="cdm-server.jar" />
 
-	<!-- Various Paths -->
-	<property name="installer.path" value="src/main/installer" />
-	<property name="cdmserver.target.path" value="target" />
-	<property name="dest.path" value="usr/bin" />
-	<property name="linux.installer.path" value="${installer.path}/linux" />
-	<!-- location -->
-	<property name="basedirToRemoteRoot" value="../../../.." />
-	<!--
-    <property name="initscript.path" location="${installer.path}/linux/initscript" />
-	<property name="cdmlibremote.path" value="../../../.." />
-	-->
-	<property name="cdmserverscript.path" value="${installer.path}/templates" />
-	<!-- location -->
-	<property name="cdmserver.path" value="${installer.path}/templates" />
-	<!-- location -->
-	<property name="datasources.path" value="${installer.path}/templates/.cdmLibrary" />
-	<!-- location -->
-	<property name="postinst.path" value="${linux.installer.path}"/>
-	<!-- location -->
-	<property name="postrm.path" value="${linux.installer.path}"/>
-	<!-- location -->
-	<property name="ant-deb-task.path" value="${linux.installer.path}/../lib"/>
-	<!-- location -->
+  <!-- Package Name & Version -->
+  <property name="package.name" value="cdmserver" />
+  <!-- ${project.fullversionstring} must be passed as parameter -->
+  <property name="version.cdmserver" value="${project.fullversionstring}" />
+  <property name="version.debian" value="5" />
 
-	<!-- create distribution target -->
-	<path id="ant-deb-task.classpath">
-		<fileset dir="${basedir}/${ant-deb-task.path}" includes="*.jar" />
-	</path>	
+
+  <!-- Various Filenames -->
+  <property name="cdmserverscript.filename" value="cdmserver" />
+  <property name="cdmserver.filename" value="cdm-server-${project.version}.jar" />
+  <property name="cdmserver.destinationfilename" value="cdm-server.jar" />
+
+  <!-- Various Paths -->
+  <property name="installer.path" value="src/main/installer" />
+  <property name="linux.installer.path" value="${installer.path}/linux" />
+  <echo>linux.installer.path= ${linux.installer.path}</echo>
+
+  <property name="maven.target.path" value="target" />
+  <property name="basedirToRemoteRoot" value="../../../.." />
+  <property name="ant-deb-task.path" value="${installer.path}/lib"/>
+
+  <!-- Report on some variables -->
+  <echo>basedir: ${basedir}</echo>
+  <echo>cdmserver.filename: ${cdmserver.filename}</echo>
+  <echo>upstream-version = version.cdmserver: ${version.cdmserver}</echo>
+  <echo>debian-version = version.debian: ${version.debian}</echo>
+
+  <!-- create distribution target -->
+  <path id="ant-deb-task.classpath">
+    <fileset dir="${basedir}/${ant-deb-task.path}" includes="*.jar" />
+  </path>
   <taskdef resource="ant_deb_task.properties" classpathref="ant-deb-task.classpath">
-	</taskdef>
+  </taskdef>
 
-	<target name="deb_package" description="build the deb file">
-		<mkdir dir="target/installer" />
-		<deb todir="target/installer" package="${package.name}" 
-			section="graphics" postinst="${postinst.path}/postinst" 
-			postrm="${postinst.path}/postrm">
-			<version upstream="${version.cdmserver}" debian="${version.debian}" />
-			<maintainer name="BGBM Team" email="editsupport@bgbm.de" />
-			<description synopsis="CDM Server: The CDM model for the EDIT Biodiversity Project">
-CDM Server is a cross platform blablabla, visit www.bgbm.de for more info.
-            </description>
-
-			<tarfileset file="${linux.installer.path}/${cdmserverscript.filename}" prefix="${dest.path}" />
-			<tarfileset file="${datasources.path}/${datasources.filename}" prefix="${dest.path}" />
-			<tarfileset file="${cdmserver.target.path}/${cdmserver.filename}" fullpath="${dest.path}/${cdmserver.destinationfilename}" />
-
-		</deb>
-	</target>
+  <target name="deb_package" description="build the deb file">
+    <mkdir dir="target/installer" />
+    <deb todir="target/installer"
+        package="${package.name}"
+        preDepends="jsvc"
+        section="web"
+        postinst="${linux.installer.path}/postinst"
+        postrm="${linux.installer.path}/postrm"
+      >
+      <version upstream="${version.cdmserver}" debian="${version.debian}" />
+      <maintainer name="EDIT (European Distributed Institute of Taxonomy)" email="editsupport@bgbm.de" />
+      <description synopsis="The CDM Standalone Server exposes data stored in a CDM data base to the web.">
+        The CDM Community Standalone Server exposes data stored in a CDM data base to the web.
+        It is a Jetty based web application container bundeled with a simple management
+        webapplication and of course with the remote component of the CDM Library.
+        For more information please refer to http://wp5.e-taxonomy.eu/
+      </description>
+      <tarfileset file="${linux.installer.path}/${cdmserverscript.filename}" prefix="/etc/init.d/" />
+      <tarfileset file="${installer.path}/templates/.cdmLibrary/*" prefix="/opt/cdmserver/templates/.cdmLibrary/" />
+      <tarfileset file="${maven.target.path}/${cdmserver.filename}" fullpath="/opt/cdmserver/${cdmserver.destinationfilename}" />
+    </deb>
+  </target>
 </project>
