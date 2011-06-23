@@ -86,7 +86,7 @@ case "$1" in
     #
     if [ ! -d $CDM_LOG ]; then
         mkdir -p $CDM_LOG
-        chown -R $CDM_USER:$CDM_GROUP $CDM_LOG
+        chown -R $CDM_USER:adm $CDM_LOG
     fi
 
     #

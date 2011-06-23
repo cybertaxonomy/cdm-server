@@ -43,6 +43,11 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Timeout in seconds for the shutdown of all webapps
 CDMSERVER_SHUTDOWN=30
 
+if [ `id -u` -ne 0 ]; then
+	echo "You need root privileges to run this script"
+	exit 1
+fi
+
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
 
@@ -120,12 +125,9 @@ do_start()
 		echo $JSVC_CLASSPATH
 		echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
-		sudo $DAEMON -java-home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
+		$DAEMON -java-home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
 		    -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
 		    -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
-
-		# this must be permitted by adding the command to /etc/sudoers
-		sudo chown $CDM_USER:$CDM_GROUP $PIDFILE
 
 		sleep 5
 		if start-stop-daemon --test --start --pidfile "$PIDFILE" \

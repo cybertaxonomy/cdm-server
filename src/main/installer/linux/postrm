@@ -52,8 +52,10 @@ do_remove(){
     echo "... do_remove()"
 
     #stopping the server
-    if [ -x /etc/init.d/$INIT_SCRIPT ]
+
+    if [ -e /etc/init.d/$INIT_SCRIPT ]
     then
+			ls -l /etc/init.d/$INIT_SCRIPT
       echo "stopping server ..."
       /etc/init.d/$INIT_SCRIPT stop
     fi

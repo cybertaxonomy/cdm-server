@@ -41,22 +41,24 @@
             </question>
             <answer>
                 <p>
-                    Yes this is possible. In order to enable a userprivileged user to start/stop
-                    the CDMServer you have to edit the sudoers (execute: <code>visudo</code>),
-                    add the following lines and modify <code>User_Alias  CDMUSERS</code> accordingly
+                    Yes this is possible. In order to enable a underprivileged user to start/stop
+                    the CDMServer you have to edit the sudoers file (execute: <code>visudo</code>),
+                    add the following lines and modify <code>User_Alias  CDMUSERS</code> accordingly.
+                    You need at least to replace <code>{USER_NAME}</code> with the according user name.
                 </p>
-                <code><pre>
+                <code>
 # User alias specification
-User_Alias      CDMUSERS = cdm
+User_Alias      CDMUSERS = {USER_NAME}
 # Cmnd alias specification
-Cmnd_Alias      CDMSERVER = /usr/bin/jsvc *, /bin/chown cdm\:cdm /var/run/cdmserver*
-
+Cmnd_Alias      CDMSERVER = /etc/init.d/cdmserver *
 # User privilege specification
-root    ALL=(ALL:ALL) ALL
-
 CDMUSERS        ALL=NOPASSWD: CDMSERVER
-                </pre>
                 </code>
+                <p>
+                Now the user can stop/start the server by prepending sudo to the command, e.g.:
+                <code>sudo /etc/init.d/cdmserver start</code>
+                </p>
+
             </answer>
         </faq>
 
