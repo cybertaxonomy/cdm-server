@@ -3,6 +3,7 @@
 #
 # see: dh_installdeb(1)
 
+# for documentation on 'set' see  Manual page bash(1) line 3060
 set -e
 
 #
@@ -56,7 +57,7 @@ do_remove(){
     if [ -e /etc/init.d/$INIT_SCRIPT ]
     then
       echo "stopping server ..."
-      /etc/init.d/$INIT_SCRIPT stop
+      /etc/init.d/$INIT_SCRIPT stop || true
 
 			echo "now removing server from rc.d ..."
 			update-rc.d -f $INIT_SCRIPT remove
