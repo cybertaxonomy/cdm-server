@@ -391,7 +391,6 @@
               <fromDir>target</fromDir>
               <includes>*${project.version}*.deb,*${project.version}*.jar</includes>
               <url>scpexe://160.45.63.151/var/www/download/cdmserver/${project.version}</url>
-              <toDir>/var/www/download/cdmserver/${project.version}</toDir>
               <serverId>wp5.e-taxonomy.eu</serverId>
           </configuration>
       </plugin>
