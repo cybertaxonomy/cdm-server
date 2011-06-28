@@ -41,8 +41,8 @@
   </taskdef>
 
   <target name="deb_package" description="build the deb file">
-    <mkdir dir="target/installer" />
-    <deb todir="target/installer"
+    <mkdir dir="target" />
+    <deb todir="target"
         package="${package.name}"
         preDepends="jsvc"
         section="web"

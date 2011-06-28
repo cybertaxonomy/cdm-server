@@ -2,7 +2,7 @@
 # 28.10.2010 13:58:54
 
 # TODO : preserve $INSTDIR/.cdmLibrary from being deleted if the user desides to keep it, or just warn the user.
-# 
+#
 #  Wiki: http://nsis.sourceforge.net/Main_Page
 #  see http://nsis.sourceforge.net/Docs/Chapter5.html for Compile Time Command reference
 #
@@ -24,7 +24,7 @@ Name "EDIT CDM-Server"
 !include Sections.nsh
 
 # Files and Folders
-!define OUT_FOLDER "..\..\..\..\target\installer"
+!define OUT_FOLDER "..\..\..\..\target"
 !define JAR_FILE_NAME "cdm-server-${VERSION}.jar"
 !define JAR_FILE "..\..\..\..\target\${JAR_FILE_NAME}"
 !define CDMLIBRARY_TEMPLATE "..\templates\.cdmLibrary"
@@ -66,7 +66,7 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File /r /x .svn /x *.log /x *.jar program-folder\* 
+    File /r /x .svn /x *.log /x *.jar program-folder\*
     SetOutPath "$INSTDIR\lib"
     File ${JAR_FILE}
     # last but not least the .cdmLibrary folder unlesses it already exists
@@ -91,8 +91,8 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
-    
-    ExecWait '"$INSTDIR\CDMServer.exe" --install "$INSTDIR\etc\CDMServer.conf$\"' 
+
+    ExecWait '"$INSTDIR\CDMServer.exe" --install "$INSTDIR\etc\CDMServer.conf$\"'
     ExecWait '"$INSTDIR\CDMServer.exe" --start "$INSTDIR\etc\CDMServer.conf$\"'
 SectionEnd
 
@@ -156,7 +156,7 @@ done:
 FunctionEnd
 
 Function .onInstSuccess
-   
+
 FunctionEnd
 
 Function .onInit
