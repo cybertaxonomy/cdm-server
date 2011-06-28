@@ -79,8 +79,6 @@ case "$1" in
     chmod 755 /etc/init.d/$INIT_SCRIPT
     chown root:root /etc/init.d/$INIT_SCRIPT
 
-    chown -R $CDM_USER:$CDM_GROUP $CDM_HOME
-
     #
     # create log file folder and set owner:group
     #
@@ -107,6 +105,11 @@ case "$1" in
 		cd $CDM_USER_HOME.cdmLibrary
     ln -s $ETC_CDMSERVER.cdmLibrary/datasources.xml datasources.xml
 		ln -s $ETC_CDMSERVER.cdmLibrary/cdm-server-realm.properties cdm-server-realm.properties
+
+		#
+		# set group and owner for home directory
+		#
+		chown -R $CDM_USER:$CDM_GROUP $CDM_HOME
 
     # let the cdm server start automatically on boot
     update-rc.d $INIT_SCRIPT defaults 98 02
