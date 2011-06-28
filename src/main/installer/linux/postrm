@@ -57,10 +57,10 @@ do_remove(){
     then
       echo "stopping server ..."
       /etc/init.d/$INIT_SCRIPT stop
-    fi
 
-    echo "now removing server from rc.d ..."
-    update-rc.d -f $INIT_SCRIPT remove
+			echo "now removing server from rc.d ..."
+			update-rc.d -f $INIT_SCRIPT remove
+    fi
 
     rm -f $CDM_USER_HOME.cdmLibrary
 
