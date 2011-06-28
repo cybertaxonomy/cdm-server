@@ -99,7 +99,14 @@ case "$1" in
       mkdir -p $ETC_CDMSERVER
       cp -r $CDM_CONFIG_TEMPLATE $ETC_CDMSERVER
     fi
-    ln -s $ETC_CDMSERVER.cdmLibrary $CDM_USER_HOME.cdmLibrary
+		#
+		# also create a .cdmLibrary folder in user home, it will hold temporary files
+		# and symlinks to the configfiles
+		#
+	  mkdir $CDM_USER_HOME.cdmLibrary
+		cd $CDM_USER_HOME.cdmLibrary
+    ln -s $ETC_CDMSERVER.cdmLibrary/datasources.xml datasources.xml
+		ln -s $ETC_CDMSERVER.cdmLibrary/cdm-server-realm.properties cdm-server-realm.properties
 
     # let the cdm server start automatically on boot
     update-rc.d $INIT_SCRIPT defaults 98 02
