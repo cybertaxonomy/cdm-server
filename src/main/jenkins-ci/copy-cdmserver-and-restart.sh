@@ -7,8 +7,8 @@
 
 #
 
-MVN_PROJECT_TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
-# MVN_PROJECT_TARGET_DIR="$WORKSPACE/../cdm-server/lastSuccessfulBuild/artifact/cdm-server/target"
+#MVN_PROJECT_TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
+MVN_PROJECT_TARGET_DIR="$WORKSPACE/../cdm-server/lastSuccessfulBuild/artifact/cdm-server/target"
 
 
 cd $MVN_PROJECT_TARGET_DIR
