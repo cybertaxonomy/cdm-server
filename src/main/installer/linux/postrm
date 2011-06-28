@@ -4,7 +4,7 @@
 # see: dh_installdeb(1)
 
 # for documentation on 'set' see  Manual page bash(1) line 3060
-set -e
+# TODO uncomment: set -e
 
 #
 # variables
