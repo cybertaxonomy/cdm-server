@@ -125,7 +125,7 @@ do_start()
 		echo $JSVC_CLASSPATH
 		echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
-		$DAEMON -java-home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
+		$DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
 		    -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
 		    -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
