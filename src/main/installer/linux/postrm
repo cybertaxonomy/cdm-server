@@ -63,7 +63,7 @@ do_remove(){
 			update-rc.d -f $INIT_SCRIPT remove
     fi
 
-    rm -f $CDM_USER_HOME.cdmLibrary
+    rm -rf $CDM_USER_HOME.cdmLibrary
 
     return 0
 }
