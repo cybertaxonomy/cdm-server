@@ -10,7 +10,7 @@ MVN_PROJECT_TARGET_DIR="$WORKSPACE/cdm-server/target"
 
 CDMSERVER_HOME="/opt/cdmserver"
 
-cd \"$MVN_PROJECT_TARGET_DIR\"
+cd "${MVN_PROJECT_TARGET_DIR}"
 
 CDMSERVER_JAR=$(ls -1 | grep cdm-server.*jar | grep -v sources)
 
