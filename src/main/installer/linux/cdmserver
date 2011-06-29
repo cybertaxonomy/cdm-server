@@ -112,7 +112,7 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
-	log_daemon_msg "Starting $DESC." "$NAME : java $JAVA_OPTIONS -jar $CDM_HOME/cdm-server.jar $CDMSERVER_ARGS"
+	log_daemon_msg "Starting $DESC ( java $JAVA_OPTIONS -jar $CDM_HOME/cdm-server.jar $CDMSERVER_ARGS )"
 
 	if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
 				--user "$CDM_USER" --startas "$JAVA" > /dev/null
@@ -132,10 +132,10 @@ do_start()
 		sleep 5
 		if start-stop-daemon --test --start --pidfile "$PIDFILE" \
 			--user $CDM_USER --startas "$JAVA" >/dev/null; then
-			log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log" "$NAME"
+			log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log"
 			return 2
 		else
-			log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/." "$NAME"
+			log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/."
 			return 0
 		fi
 
@@ -156,7 +156,7 @@ do_stop()
 	#   1 if daemon was already stopped
 	#   2 if daemon could not be stopped
 	#   other if a failure occurred
-	log_daemon_msg "Stopping $DESC." "$NAME"
+	log_daemon_msg "Stopping $DESC"
 
 	if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
 				--user "$CDM_USER" --startas "$JAVA" > /dev/null
@@ -166,6 +166,7 @@ do_stop()
 		else
 			log_warning_msg "(not running)."
 		fi
+		return 1
 	else
 		start-stop-daemon --quiet --stop \
 			--pidfile $PIDFILE --user "$CDM_USER" --startas "$JAVA"  > /dev/null
@@ -187,9 +188,9 @@ do_stop()
 			fi
 		done
 		rm -f $PIDFILE
-		log_daemon_msg "$DESC stopped." "$NAME"
+		log_daemon_msg "$DESC stopped."
 	fi
-	return "$RETVAL"
+	return 0
 }
 
 #
@@ -263,7 +264,7 @@ case "$1" in
 	# If the "reload" option is implemented then remove the
 	# 'force-reload' alias
 	#
-	log_daemon_msg "Restarting $DESC" "$NAME"
+	log_daemon_msg "Restarting $DESC"
 	do_stop
 	case "$?" in
 		0|1)

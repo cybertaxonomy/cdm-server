@@ -1,19 +1,17 @@
-#!/bin/sh
+#!/bin/sh -e
 # postinst script for cdmserver
 #
 # see: dh_installdeb(1)
 
-set -e
-
 #
 # variables
 #
-CDM_HOME="/opt/cdmserver/"
+CDM_HOME="/opt/cdmserver"
 CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
-CDM_LOG="/var/log/cdmserver/"
+CDM_LOG="/var/log/cdmserver"
 
 INIT_SCRIPT="cdmserver"
-ETC_CDMSERVER="/etc/cdmserver/"
+ETC_CDMSERVER="/etc/cdmserver"
 
 CDM_USER=cdm
 CDM_GROUP=cdm
@@ -77,7 +75,6 @@ case "$1" in
     # adjusting permissions of init script user and group should be root
     #
     chmod 755 /etc/init.d/$INIT_SCRIPT
-    chown root:root /etc/init.d/$INIT_SCRIPT
 
     #
     # create log file folder and set owner:group
@@ -92,19 +89,22 @@ case "$1" in
     # /etc/cdmserver
     # AND create symlink
     #
-    if [ ! -d $ETC_CDMSERVER.cdmLibrary ]
+    if [ ! -d $ETC_CDMSERVER ]
     then
       mkdir -p $ETC_CDMSERVER
-      cp -r $CDM_CONFIG_TEMPLATE $ETC_CDMSERVER
+      cp -r $CDM_CONFIG_TEMPLATE/ $ETC_CDMSERVER/
     fi
 		#
 		# also create a .cdmLibrary folder in user home, it will hold temporary files
 		# and symlinks to the configfiles
 		#
-	  mkdir $CDM_USER_HOME.cdmLibrary
-		cd $CDM_USER_HOME.cdmLibrary
-    ln -s $ETC_CDMSERVER.cdmLibrary/datasources.xml datasources.xml
-		ln -s $ETC_CDMSERVER.cdmLibrary/cdm-server-realm.properties cdm-server-realm.properties
+		if [ ! -e $CDM_USER_HOME/.cdmLibrary ]
+		then
+			mkdir $CDM_USER_HOME/.cdmLibrary
+		fi
+		cd $CDM_USER_HOME/.cdmLibrary
+    ln -s $ETC_CDMSERVER/datasources.xml datasources.xml
+		ln -s $ETC_CDMSERVER/cdm-server-realm.properties cdm-server-realm.properties
 
 		#
 		# set group and owner for home directory
@@ -114,7 +114,7 @@ case "$1" in
     # let the cdm server start automatically on boot
     update-rc.d $INIT_SCRIPT defaults 98 02
 
-    # start the server manually this time and ignore errors
+    # start the server manually this time ignoring errors
     /etc/init.d/$INIT_SCRIPT start || true
 
     ;;

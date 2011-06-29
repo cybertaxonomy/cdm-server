@@ -1,20 +1,17 @@
-#!/bin/sh
+#!/bin/sh -e
 # postrm script for cdmserver
 #
 # see: dh_installdeb(1)
 
-# for documentation on 'set' see  Manual page bash(1) line 3060
-set -e
-
 #
 # variables
 #
-CDM_HOME="/opt/cdmserver/"
-CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
-CDM_LOG="/var/log/cdmserver/"
+CDM_HOME="/opt/cdmserver"
+# CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
+CDM_LOG="/var/log/cdmserver"
 
 INIT_SCRIPT="cdmserver"
-ETC_CDMSERVER="/etc/cdmserver/"
+ETC_CDMSERVER="/etc/cdmserver"
 
 CDM_USER=cdm
 CDM_GROUP=cdm
@@ -56,14 +53,17 @@ do_remove(){
 
     if [ -e /etc/init.d/$INIT_SCRIPT ]
     then
+			# the init script is not execurable when doing a reinstall, make sure it is
+			chmod 755 /etc/init.d/$INIT_SCRIPT
       echo "stopping server ..."
+			# stop server ignoring errors
       /etc/init.d/$INIT_SCRIPT stop || true
 
 			echo "now removing server from rc.d ..."
 			update-rc.d -f $INIT_SCRIPT remove
     fi
 
-    rm -rf $CDM_USER_HOME.cdmLibrary
+    rm -rf $CDM_USER_HOME/.cdmLibrary
 
     return 0
 }
