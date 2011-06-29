@@ -572,8 +572,8 @@ public final class Bootloader {
                 + (availableSpace / MB)
                 + "MB) insufficient for "
                 + configAndStatusSet.size()
-                + " instances. Increase " + memoryName + " by "
-                + (requiredSpacePerIntance / MB)
+                + " instances. Increase " + memoryName + " to "
+                + (requiredSpace / MB)
                 + "MB";
                 ;
             logger.error(message + " => disabling some instances!!!");
