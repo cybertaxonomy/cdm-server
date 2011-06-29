@@ -25,8 +25,10 @@
 # install init script:		update-rc.d cdmserver defaults
 # uninstall init script:	update-rc.d -f cdmserver remove
 
-# PATH should only include /usr/* if it runs after the mountnfs.sh script
-PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+######################################################################
+# Start of variables that can be overwritten in /etc/default/cdmserver
+
 NAME=cdmserver
 DESC="CDM Server"
 CDM_HOME=/opt/cdmserver
@@ -44,6 +46,9 @@ CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR"
 
 JSVC_CLASSPATH="/usr/share/java/commons-daemon.jar:${JAVA_HOME}lib/tools.jar:$CDM_HOME/cdm-server.jar"
 JSVC_JVM="server"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 # Define other required variables
 PIDFILE=/var/run/$NAME.pid
@@ -69,7 +74,8 @@ JDK_DIRS="
 	  /usr/lib/kaffe/ \
 	 "
 
-# End of variables that can be overwritten in /etc/default/jetty
+# End of variables that can be overwritten in /etc/default/cdmserver
+######################################################################
 
 if [ `id -u` -ne 0 ]; then
 	echo "You need root privileges to run this script"
