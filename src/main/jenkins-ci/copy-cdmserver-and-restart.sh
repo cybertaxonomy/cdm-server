@@ -5,13 +5,12 @@
 # following command alias:
 #  Cmnd_Alias      CDMSERVER = /bin/cp -f cdm-server*.jar /opt/cdmserver/, /etc/init.d/cdmserver *, /bin/rm -f /opt/cdmserver/cdm-server*.jar, /usr/bin/ln -s cdm-server*.jar cdm-server.jar
 
-#
-
 #MVN_PROJECT_TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
 MVN_PROJECT_TARGET_DIR="$WORKSPACE/cdm-server/target"
 
+CDMSERVER_HOME="/opt/cdmserver"
 
-cd "${MVN_PROJECT_TARGET_DIR}"
+cd \"$MVN_PROJECT_TARGET_DIR\"
 
 CDMSERVER_JAR=$(ls -1 | grep cdm-server.*jar | grep -v sources)
 
