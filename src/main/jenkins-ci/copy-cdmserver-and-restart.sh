@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # prior using this script make sure the requires sudo
 # commands are allowed in /etc/sudoers by allowing the
@@ -8,7 +8,7 @@
 #
 
 #MVN_PROJECT_TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
-MVN_PROJECT_TARGET_DIR="$WORKSPACE/../cdm-server/lastSuccessfulBuild/artifact/cdm-server/target"
+MVN_PROJECT_TARGET_DIR="$WORKSPACE/cdm-server/target"
 
 
 cd $MVN_PROJECT_TARGET_DIR
