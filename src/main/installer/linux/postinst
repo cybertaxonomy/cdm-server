@@ -114,8 +114,8 @@ case "$1" in
     # let the cdm server start automatically on boot
     update-rc.d $INIT_SCRIPT defaults 98 02
 
-    # start the server manually this time
-    /etc/init.d/$INIT_SCRIPT start
+    # start the server manually this time and ignore errors
+    /etc/init.d/$INIT_SCRIPT start || true
 
     ;;
 
