@@ -73,26 +73,26 @@ CDMUSERS        ALL=NOPASSWD: CDMSERVER
         <p>
           The database to which the server is trying to connect is most
           probably not a cdm data base. I also might be empty.
-          <ol>
-            <li>
-              First of all use your preferred database management program to
-              take a look at the data base.
-              If there is only one table called
-              <code>_c3p0ConectionTest</code>
-              this database was an empty one and you can savely proceed to
-              step
-              2 in order to intialize the database structure.
-              Otherwise this
-              data base was not empty and might be used for different
-              purposes.
-              Please do not connect the Taxonomic Editor to this database
-              unless you
-              know waht youare doing.
-            </li>
-            <li>Connect to the database using the Taxonomic Editor in order to
-              create the cdm database.</li>
-          </ol>
         </p>
+        <ol>
+          <li>
+            First of all use your preferred database management program to
+            take a look at the data base.
+            If there is only one table called
+            <code>_c3p0ConectionTest</code>
+            this database was an empty one and you can savely proceed to
+            step
+            2 in order to intialize the database structure.
+            Otherwise this
+            data base was not empty and might be used for different
+            purposes.
+            Please do not connect the Taxonomic Editor to this database
+            unless you
+            know waht youare doing.
+          </li>
+          <li>Connect to the database using the Taxonomic Editor in order to
+            create the cdm database.</li>
+        </ol>
       </answer>
     </faq>
 
@@ -102,9 +102,11 @@ CDMUSERS        ALL=NOPASSWD: CDMSERVER
 
     <faq id="mvn-eclipse-eclipse_resource-filtering">
       <question>
-        When I execute mvn eclipse:eclipse everything seems fine but then I eventually get this error:
+        <p>
+        When I execute mvn eclipse:eclipse everything seems fine but then I get this error:
+        </p>
         <code>
-                    [INFO] ------------------------------------------------------------------------
+          [INFO] ------------------------------------------------------------------------
           [ERROR] BUILD ERROR
           [INFO] ------------------------------------------------------------------------
           [INFO] Request to merge when 'filtering' is not identical. Original=resource src/main/resources:
@@ -112,12 +114,12 @@ CDMUSERS        ALL=NOPASSWD: CDMSERVER
           include=[version.properties], exclude=[**/*.java], test=false, filtering=true, merging
           with=resource src/main/resources: output=./cdm-server/target/classes,
           include=[], exclude=[version.properties|**/*.java], test=false, filtering=false
-                </code>
+        </code>
       </question>
       <answer>
         <p>
             This is related to a bug in the maven-eclipse-plugin for more information please refer to
-            http://forums.atlassian.com/thread.jspa?threadID=34952&tstart=30
+            http://forums.atlassian.com/thread.jspa?threadID=34952&amp;tstart=30
             The best remedy for this problem currently is to use an older version of the plugin. Running
            <code>
            mvn org.apache.maven.plugins:maven-eclipse-plugin:2.6:eclipse
@@ -127,5 +129,4 @@ CDMUSERS        ALL=NOPASSWD: CDMSERVER
       </answer>
     </faq>
   </part>
-
 </faqs>
