@@ -22,12 +22,12 @@ CDM_USER_HOME=$CDM_HOME
 # functions
 #
 userExist(){
-    grep $1 /etc/passwd > /dev/null
+    grep "$1:" /etc/passwd > /dev/null
     [ $? -eq 0 ] && return $TRUE || return $FALSE
 }
 
 groupExist(){
-    grep $1 /etc/group > /dev/null
+    grep "$1:" /etc/group > /dev/null
     [ $? -eq 0 ] && return $TRUE || return $FALSE
 }
 
@@ -53,7 +53,7 @@ case "$1" in
     #
     if ( groupExist $CDM_GROUP  )
     then
-      echo "user '$CDM_GROUP' alreday exists"
+      echo "group '$CDM_GROUP' alreday exists"
     else
       echo "creating group '$CDM_GROUP'"
       groupadd $CDM_GROUP
@@ -81,8 +81,8 @@ case "$1" in
     #
     if [ ! -d $CDM_LOG ]; then
         mkdir -p $CDM_LOG
-        chown -R $CDM_USER:adm $CDM_LOG
     fi
+    chown -R $CDM_USER:adm $CDM_LOG
 
     #
     # copy template .cdmLibrary if not yet existing into

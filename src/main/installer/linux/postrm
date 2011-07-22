@@ -22,12 +22,12 @@ CDM_USER_HOME=$CDM_HOME
 # functions
 #
 userExist(){
-    grep $1 /etc/passwd > /dev/null
+    grep "$1:" /etc/passwd > /dev/null
     [ $? -eq 0 ] && return $TRUE || return $FALSE
 }
 
 groupExist(){
-    grep $1 /etc/group > /dev/null
+    grep "$1:" /etc/group > /dev/null
     [ $? -eq 0 ] && return $TRUE || return $FALSE
 }
 
