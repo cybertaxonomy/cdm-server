@@ -12,7 +12,7 @@
       <item name="Download" href="http://wp5.e-taxonomy.eu/download/cdmserver/stable/"/>
     </menu>
     <menu name="Developer">
-      <item name="Getting started" href="http://wp5.e-taxonomy.eu/cdm-setups/cdmserver-installation"/>
+      <item name="Getting started" href="http://wp5.e-taxonomy.eu/cdm-setups/?q=cdm-setups/group/cdmserver_installation/"/>
       <item name="FAQ &amp; Troubleshooting" href="troubleshooting.html"/>
       <item name="Wiki" href="http://dev.e-taxonomy.eu/trac/wiki/CdmServerDev"/>
     </menu>
