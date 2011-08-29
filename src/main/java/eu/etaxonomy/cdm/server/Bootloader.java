@@ -357,6 +357,7 @@ public final class Bootloader {
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {
 
+
         if(cmdLine.hasOption(LOG_DIR.getOpt())){
             logPath = cmdLine.getOptionValue(LOG_DIR.getOpt());
         } else {
@@ -616,7 +617,7 @@ public final class Bootloader {
         for(CdmInstanceProperties conf : configAndStatusSet){
 
             if(!conf.isEnabled()){
-                logger.info(conf.getDataSourceName() + " is disabled => skipping");
+                logger.info(conf.getDataSourceName() + " is disabled due to JVM memory limitations => skipping");
                 continue;
             }
             conf.setStatus(CdmInstanceProperties.Status.initializing);
