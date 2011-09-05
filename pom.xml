@@ -95,7 +95,7 @@
     <!-- the cdm internal repository -->
     <repository>
       <id>EditRepository</id>
-      <url>http://wp5.e-taxonomy.eu/cdmlib/mavenrepo/</url>
+      <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
     </repository>
     <!-- apache incubating repository -->
     <repository>
@@ -160,6 +160,26 @@
            </resource>
      </resources>
   <plugins>
+    <!-- ====== IDE ====== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.eclipse.jdt.core.prefs</name>
+              <location>ide/eclipse/default.settings/org.eclipse.jdt.core.prefs</location>
+            </file>
+            <file>
+              <name>.settings/org.eclipse.jdt.ui.prefs</name>
+              <location>ide/eclipse/default.settings/org.eclipse.jdt.ui.prefs</location>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+
       <plugin>
           <!--
             only needed for testing the svn credentials
@@ -180,13 +200,14 @@
                <connectionType>developerConnection</connectionType>
           </configuration>
         </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
+        <!-- ====== CREATE ====== -->
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -268,14 +289,7 @@
           <stylesheet>maven</stylesheet>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
-        </configuration>
-      </plugin>
+
       <!-- ====== PACKAGE ====== -->
       <!--
         package the default webapp, and also add the
@@ -484,7 +498,7 @@
       <id>wp5.e-taxonomy.eu</id>
       <name>Edit Maven Repository</name>
       <url>
-        scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/cdmlib/mavenrepo
+        scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/mavenrepo
       </url>
     </repository>
   </distributionManagement>
