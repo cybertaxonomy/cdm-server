@@ -167,16 +167,6 @@
         <configuration>
           <downloadSources>true</downloadSources>
           <downloadJavadocs>true</downloadJavadocs>
-          <additionalConfig>
-            <file>
-              <name>.settings/org.eclipse.jdt.core.prefs</name>
-              <location>ide/eclipse/default.settings/org.eclipse.jdt.core.prefs</location>
-            </file>
-            <file>
-              <name>.settings/org.eclipse.jdt.ui.prefs</name>
-              <location>ide/eclipse/default.settings/org.eclipse.jdt.ui.prefs</location>
-            </file>
-          </additionalConfig>
         </configuration>
       </plugin>
 
