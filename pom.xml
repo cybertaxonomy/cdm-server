@@ -102,35 +102,6 @@
       <id>ApacheIncubating</id>
       <url>http://people.apache.org/repo/m2-incubating-repository/</url>
     </repository>
-    <!-- Neccessary for hibernate-envers -->
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>never</updatePolicy>
-        <checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-      <id>jboss-repository</id>
-      <name>JBoss Repository</name>
-      <url>http://repository.jboss.com/maven2</url>
-    </repository>
-    <!-- current spring source repositories -->
-    <repository>
-      <id>SpringSource Enterprise Bundle Repository - External Bundle Milestones</id>
-      <url>http://repository.springsource.com/maven/bundles/milestone</url>
-    </repository>
-    <repository>
-      <id>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</id>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-    <repository>
-      <id>SpringSource Enterprise Bundle Repository - External Bundle Releases</id>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository>
   </repositories>
 
   <!-- **** PLUGINS **** -->
@@ -439,8 +410,6 @@
         <configuration>
           <links>
             <link>http://java.sun.com/j2se/1.6.0/docs/api/</link>
-            <link>http://static.springframework.org/spring/docs/2.5.x/api/</link>
-            <link>http://www.hibernate.org/hib_docs/v3/api/</link>
             <!-- more libraries? -->
           </links>
         </configuration>
