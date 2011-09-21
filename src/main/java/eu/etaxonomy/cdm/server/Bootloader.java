@@ -175,11 +175,13 @@ public final class Bootloader {
 
 
     // memory requirements
-    private static final long MB = 1024 * 1024;
-    private static final long PERM_GEN_SPACE_PER_INSTANCE = 64 * MB;
-    private static final long HEAP_PER_INSTANCE = 150 * MB;
-
     private static final int KB = 1024;
+    private static final long MB = 1024 * KB;
+    public static final long PERM_GEN_SPACE_PER_INSTANCE = 55 * MB;
+    public static final long HEAP_PER_INSTANCE = 130 * MB;
+    public static final long PERM_GEN_SPACE_CDMSERVER = 19 * MB;
+    public static final long HEAP_CDMSERVER = 15 * MB;
+
 
 
     private Set<CdmInstanceProperties> configAndStatusSet = null;
@@ -557,24 +559,24 @@ public final class Bootloader {
      */
     private void verifyMemoryRequirements() {
 
-        verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_PER_INSTANCE, JvmManager.getPermGenSpaceUsage().getMax());
-        verifyMemoryRequirement("HeapSpace", HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage().getMax());
+        verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_CDMSERVER, PERM_GEN_SPACE_PER_INSTANCE, JvmManager.getPermGenSpaceUsage().getMax());
+        verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage().getMax());
 
     }
 
-    private void verifyMemoryRequirement(String memoryName, long requiredSpacePerIntance, long availableSpace) {
+    private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance, long availableSpace) {
 
 
-        long requiredSpace = configAndStatusSet.size() * requiredSpacePerIntance;
+        long recommendedMinimumSpace = calculateRecommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance);
 
-        if(requiredSpace > availableSpace){
+        if(recommendedMinimumSpace > availableSpace){
 
             String message = memoryName + " ("
                 + (availableSpace / MB)
                 + "MB) insufficient for "
                 + configAndStatusSet.size()
                 + " instances. Increase " + memoryName + " to "
-                + (requiredSpace / MB)
+                + (recommendedMinimumSpace / MB)
                 + "MB";
                 ;
             logger.error(message + " => disabling some instances!!!");
@@ -583,12 +585,21 @@ public final class Bootloader {
             int i=0;
             for(CdmInstanceProperties instanceProps : configAndStatusSet){
                 i++;
-                if(i * requiredSpacePerIntance > availableSpace){
+                if(i * requiredSpacePerInstance > availableSpace){
                     instanceProps.setStatus(Status.disabled);
-                    instanceProps.getProblems().add("Disbled due to: " + message);
+                    instanceProps.getProblems().add("Disabled due to: " + message);
                 }
             }
         }
+    }
+
+    /**
+     * @param requiredServerSpace
+     * @param requiredSpacePerIntance
+     * @return
+     */
+    public long calculateRecommendedMinimumSpace(long requiredServerSpace, long requiredSpacePerIntance) {
+        return (configAndStatusSet.size() * requiredSpacePerIntance) + requiredServerSpace;
     }
 
     /**
