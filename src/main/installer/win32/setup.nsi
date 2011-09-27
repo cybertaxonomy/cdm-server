@@ -48,7 +48,7 @@ XPStyle on
 Icon "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 ShowInstDetails show
 AutoCloseWindow false
-LicenseData ${project.basedir}\LICENSE.TXT
+LicenseData "${project.basedir}\LICENSE.TXT"
 VIProductVersion 3.0.0.0
 VIAddVersionKey ProductName "$(^Name)"
 VIAddVersionKey ProductVersion "${VERSION}"
