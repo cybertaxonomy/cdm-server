@@ -13,8 +13,7 @@ Name "EDIT CDM-Server"
 # General Symbol Definitions
 !define /date BUILD_TIMESTAMP "%Y%m%d-%H%M%S"
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 3.0
-!define PATCH_VERSION 2-${BUILD_TIMESTAMP}
+!define VERSION ${project.version}
 !define COMPANY "EDIT - European Distributed Institute of Taxonomy"
 !define EDIT_PLATFORM "EDIT Platform for Cybertaxonomy"
 !define URL http://wp5.e-taxonomy.eu/
@@ -24,10 +23,10 @@ Name "EDIT CDM-Server"
 !include Sections.nsh
 
 # Files and Folders
-!define OUT_FOLDER "..\..\..\..\target"
+!define OUT_FOLDER "${project.build.directory}"
 !define JAR_FILE_NAME "cdm-server-${VERSION}.jar"
-!define JAR_FILE "..\..\..\..\target\${JAR_FILE_NAME}"
-!define CDMLIBRARY_TEMPLATE "..\templates\.cdmLibrary"
+!define JAR_FILE "${project.build.directory}\${JAR_FILE_NAME}"
+!define CDMLIBRARY_TEMPLATE "${project.build.directory}\installer\templates\.cdmLibrary"
 
 # Reserved Files
 ReserveFile "${NSISDIR}\Plugins\StartMenu.dll"
@@ -42,14 +41,14 @@ Page custom StartMenuGroupSelect "" ": Start Menu Folder"
 Page instfiles
 
 # Installer attributes
-OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}.${PATCH_VERSION}.exe"
+OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}-${BUILD_TIMESTAMP}.exe"
 InstallDir "$PROGRAMFILES\EDIT CDM-Server"
 CRCCheck on
 XPStyle on
 Icon "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 ShowInstDetails show
 AutoCloseWindow false
-LicenseData ..\..\..\..\LICENSE.TXT
+LicenseData ${project.basedir}\LICENSE.TXT
 VIProductVersion 3.0.0.0
 VIAddVersionKey ProductName "$(^Name)"
 VIAddVersionKey ProductVersion "${VERSION}"

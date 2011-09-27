@@ -107,6 +107,9 @@
   <!-- **** PLUGINS **** -->
   <build>
      <resources>
+         <!--
+            ${basedir}/src/main/resources
+          -->
          <resource>
              <!--
                  replace the project-version placeholder in the version.properties file.
@@ -128,7 +131,27 @@
                <excludes>
                    <exclude>version.properties</exclude>
                </excludes>
-           </resource>
+          </resource>
+          <!--
+            ${basedir}/src/main/installer/win32
+          -->
+         <resource>
+             <targetPath>${project.build.directory}/installer</targetPath>
+             <filtering>true</filtering>
+             <directory>${basedir}/src/main/installer</directory>
+             <includes>
+                 <include>win32/program-folder/etc/CDMServer.conf</include>
+                 <include>win32/setup.nsi</include>
+             </includes>
+         </resource>
+         <resource>
+               <targetPath>${project.build.directory}/installer</targetPath>
+               <directory>${basedir}/src/main/installer</directory>
+               <excludes>
+                   <exclude>win32/program-folder/etc/CDMServer.conf</exclude>
+                   <exclude>win32/setup.nsi</exclude>
+               </excludes>
+          </resource>
      </resources>
   <plugins>
     <!-- ====== IDE ====== -->
@@ -333,6 +356,30 @@
           </execution>
         </executions>
       </plugin>
+      <!--
+        Build windows installer
+       -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>makensis</executable>
+          <!-- optional -->
+          <workingDirectory>/tmp</workingDirectory>
+          <arguments>
+            <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
+          </arguments>
+        </configuration>
+      </plugin>
       <!-- ====== DEPLOY ====== -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -364,7 +411,7 @@
           </executions>
           <configuration>
               <fromDir>target</fromDir>
-              <includes>*${project.version}*.deb,*${project.version}*.jar</includes>
+              <includes>*${project.version}*.deb,*${project.version}*.jar,*${project.version}*.exe</includes>
               <url>scpexe://160.45.63.151/var/www/download/cdmserver/${project.version}</url>
               <serverId>wp5.e-taxonomy.eu</serverId>
           </configuration>
