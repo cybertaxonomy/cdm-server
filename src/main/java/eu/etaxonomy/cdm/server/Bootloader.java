@@ -567,7 +567,7 @@ public final class Bootloader {
     private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance, long availableSpace) {
 
 
-        long recommendedMinimumSpace = calculateRecommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance);
+        long recommendedMinimumSpace = recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, null);
 
         if(recommendedMinimumSpace > availableSpace){
 
@@ -585,7 +585,7 @@ public final class Bootloader {
             int i=0;
             for(CdmInstanceProperties instanceProps : configAndStatusSet){
                 i++;
-                if(i * requiredSpacePerInstance > availableSpace){
+                if(recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, i)  > availableSpace){
                     instanceProps.setStatus(Status.disabled);
                     instanceProps.getProblems().add("Disabled due to: " + message);
                 }
@@ -596,10 +596,14 @@ public final class Bootloader {
     /**
      * @param requiredServerSpace
      * @param requiredSpacePerIntance
+     * @param numOfInstances may be null, the total number of instances found in the current configuration is used in this case.
      * @return
      */
-    public long calculateRecommendedMinimumSpace(long requiredServerSpace, long requiredSpacePerIntance) {
-        return (configAndStatusSet.size() * requiredSpacePerIntance) + requiredServerSpace;
+    public long recommendedMinimumSpace(long requiredServerSpace, long requiredSpacePerIntance, Integer numOfInstances) {
+        if(numOfInstances == null){
+            numOfInstances = configAndStatusSet.size();
+        }
+        return (numOfInstances * requiredSpacePerIntance) + requiredServerSpace;
     }
 
     /**

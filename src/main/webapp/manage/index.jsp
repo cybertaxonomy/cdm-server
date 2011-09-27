@@ -71,8 +71,8 @@ Bootloader bootloader = Bootloader.getBootloader();
                   <h2 class="title block-title pngfix">Server Status</h2>
                   <div class="block" id="status">
                      <%
-                       printMemoryUsage(JvmManager.getHeapMemoryUsage(), bootloader.calculateRecommendedMinimumSpace(Bootloader.HEAP_CDMSERVER, Bootloader.HEAP_PER_INSTANCE), "HeapUsage", "100%", "#F48B65", "#65B1F4", out);
-                                          printMemoryUsage(JvmManager.getPermGenSpaceUsage(), bootloader.calculateRecommendedMinimumSpace(Bootloader.PERM_GEN_SPACE_CDMSERVER, Bootloader.PERM_GEN_SPACE_PER_INSTANCE), "PermGenSpaceUsage", "100%","#F48B65", "#65B1F4", out);
+                       printMemoryUsage(JvmManager.getHeapMemoryUsage(), bootloader.recommendedMinimumSpace(Bootloader.HEAP_CDMSERVER, Bootloader.HEAP_PER_INSTANCE, null), "HeapUsage", "100%", "#F48B65", "#65B1F4", out);
+                       printMemoryUsage(JvmManager.getPermGenSpaceUsage(), bootloader.recommendedMinimumSpace(Bootloader.PERM_GEN_SPACE_CDMSERVER, Bootloader.PERM_GEN_SPACE_PER_INSTANCE, null), "PermGenSpaceUsage", "100%","#F48B65", "#65B1F4", out);
                      %>
                   </div>
                 </div>
