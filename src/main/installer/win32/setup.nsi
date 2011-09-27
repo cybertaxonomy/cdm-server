@@ -67,7 +67,7 @@ Section -Main SEC0000
     SetOverwrite on
     File /r /x .svn /x *.log /x *.jar program-folder\*
     SetOutPath "$INSTDIR\lib"
-    File ${JAR_FILE}
+    File "${JAR_FILE}"
     # last but not least the .cdmLibrary folder unlesses it already exists
     SetOverwrite off
     SetOutPath $INSTDIR
