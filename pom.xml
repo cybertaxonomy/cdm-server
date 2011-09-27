@@ -376,6 +376,7 @@
           <!-- optional -->
           <workingDirectory>/tmp</workingDirectory>
           <arguments>
+            <!-- <argument>-V3</argument>  -->
             <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
           </arguments>
         </configuration>

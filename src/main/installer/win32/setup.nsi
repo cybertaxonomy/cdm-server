@@ -41,7 +41,7 @@ Page custom StartMenuGroupSelect "" ": Start Menu Folder"
 Page instfiles
 
 # Installer attributes
-OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}-${BUILD_TIMESTAMP}.exe"
+OutFile "${OUT_FOLDER}\EDIT CDM-Server-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\EDIT CDM-Server"
 CRCCheck on
 XPStyle on
