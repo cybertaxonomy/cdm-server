@@ -11,7 +11,10 @@ package eu.etaxonomy.cdm.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,10 +37,11 @@ public class DataSourcePropertyParser {
 	
 	public static final Logger logger = Logger.getLogger(DataSourcePropertyParser.class);
 	
-	public static Set<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
+	public static List<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
 
 		logger.info("loading bean definition file: " + datasourcesFile.getAbsolutePath());
-		Set<CdmInstanceProperties> configSet = new HashSet<CdmInstanceProperties>();
+		List<CdmInstanceProperties> configList = new ArrayList<CdmInstanceProperties>();
+		Set<String> idSet = new HashSet<String>();
     	try {
     		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = builder.parse(datasourcesFile);
@@ -61,8 +65,13 @@ public class DataSourcePropertyParser {
 					conf.setUrl(getXMLNodeProperty(beanNode, "jdbcUrl"));
 				}
 				
-				logger.debug("adding instanceName: "+ conf.getDataSourceName());
-				configSet.add(conf);
+				if(idSet.add(conf.getDataSourceName())) {
+					logger.debug("adding instanceName '"+ conf.getDataSourceName() + "'");
+					configList.add(conf);
+				} else {
+					logger.error("instance with name '"+ conf.getDataSourceName() + "' alreaddy exists");
+				}
+				
 			}
 			
 		} catch (SAXException e) {
@@ -75,7 +84,7 @@ public class DataSourcePropertyParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return configSet;
+		return configList;
 
     }
 	

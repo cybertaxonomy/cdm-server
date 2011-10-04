@@ -184,10 +184,10 @@ public final class Bootloader {
 
 
 
-    private Set<CdmInstanceProperties> configAndStatusSet = null;
+    private List<CdmInstanceProperties> configAndStatusList = null;
 
-    public Set<CdmInstanceProperties> getConfigAndStatus() {
-        return configAndStatusSet;
+    public List<CdmInstanceProperties> getConfigAndStatus() {
+        return configAndStatusList;
     }
 
     private File cdmRemoteWebAppFile = null;
@@ -215,13 +215,13 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
-    private Set<CdmInstanceProperties> loadDataSources(){
-        if(configAndStatusSet == null){
+    private List<CdmInstanceProperties> loadDataSources(){
+        if(configAndStatusList == null){
             File datasourcesFile = new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE);
-            configAndStatusSet = DataSourcePropertyParser.parseDataSourceConfigs(datasourcesFile);
-            logger.info("cdm server instance names loaded: "+ configAndStatusSet.toString());
+            configAndStatusList = DataSourcePropertyParser.parseDataSourceConfigs(datasourcesFile);
+            logger.info("cdm server instance names loaded: "+ configAndStatusList.toString());
         }
-        return configAndStatusSet;
+        return configAndStatusList;
     }
 
     public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
@@ -574,7 +574,7 @@ public final class Bootloader {
             String message = memoryName + " ("
                 + (availableSpace / MB)
                 + "MB) insufficient for "
-                + configAndStatusSet.size()
+                + configAndStatusList.size()
                 + " instances. Increase " + memoryName + " to "
                 + (recommendedMinimumSpace / MB)
                 + "MB";
@@ -583,7 +583,7 @@ public final class Bootloader {
 
             // disabling some instances
             int i=0;
-            for(CdmInstanceProperties instanceProps : configAndStatusSet){
+            for(CdmInstanceProperties instanceProps : configAndStatusList){
                 i++;
                 if(recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, i)  > availableSpace){
                     instanceProps.setStatus(Status.disabled);
@@ -601,7 +601,7 @@ public final class Bootloader {
      */
     public long recommendedMinimumSpace(long requiredServerSpace, long requiredSpacePerIntance, Integer numOfInstances) {
         if(numOfInstances == null){
-            numOfInstances = configAndStatusSet.size();
+            numOfInstances = configAndStatusList.size();
         }
         return (numOfInstances * requiredSpacePerIntance) + requiredServerSpace;
     }
@@ -629,7 +629,7 @@ public final class Bootloader {
 
     private void addCdmServerContexts(boolean austostart) throws IOException {
 
-        for(CdmInstanceProperties conf : configAndStatusSet){
+        for(CdmInstanceProperties conf : configAndStatusList){
 
             if(!conf.isEnabled()){
                 logger.info(conf.getDataSourceName() + " is disabled due to JVM memory limitations => skipping");
@@ -722,7 +722,7 @@ public final class Bootloader {
      * @return
      */
     private CdmInstanceProperties findConfigAndStatusFor(String dataSourceName){
-        for(CdmInstanceProperties props : configAndStatusSet){
+        for(CdmInstanceProperties props : configAndStatusList){
             if(props.getDataSourceName().equals(dataSourceName)){
                 return props;
             }

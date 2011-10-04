@@ -84,7 +84,7 @@ Bootloader bootloader = Bootloader.getBootloader();
                     <table>
                       <tr><th>Path</th><th> </th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
                                             <%
-                                           java.util.Set<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
+                                           java.util.List<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
                                            if(configAndStatus != null){
                                              int i = 0;
                                              for(CdmInstanceProperties props : configAndStatus){
