@@ -85,17 +85,17 @@ case "$1" in
     chown -R $CDM_USER:adm $CDM_LOG
 
     #
-    # copy template .cdmLibrary if not yet existing into
+    # if /etc/cdmserver is not yet existing
+    # copy the content of template/.cdmLibrary into
     # /etc/cdmserver
-    # AND create symlink
     #
     if [ ! -d $ETC_CDMSERVER ]
     then
       mkdir -p $ETC_CDMSERVER
-      cp -r $CDM_CONFIG_TEMPLATE/ $ETC_CDMSERVER/
+      cp -r $CDM_CONFIG_TEMPLATE/* $ETC_CDMSERVER/
     fi
 		#
-		# also create a .cdmLibrary folder in user home, it will hold temporary files
+		# create a .cdmLibrary folder in user home, it will hold temporary files
 		# and symlinks to the configfiles
 		#
 		if [ ! -e $CDM_USER_HOME/.cdmLibrary ]

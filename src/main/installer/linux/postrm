@@ -45,23 +45,9 @@ groupExist(){
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-do_remove(){
+do_remove_files(){
 
-    echo "... do_remove()"
-
-    #stopping the server
-
-    if [ -e /etc/init.d/$INIT_SCRIPT ]
-    then
-			# the init script is not execurable when doing a reinstall, make sure it is
-			chmod 755 /etc/init.d/$INIT_SCRIPT
-      echo "stopping server ..."
-			# stop server ignoring errors
-      /etc/init.d/$INIT_SCRIPT stop || true
-
-			echo "now removing server from rc.d ..."
-			update-rc.d -f $INIT_SCRIPT remove
-    fi
+    echo "postrm: do_remove_files()"
 
     rm -rf $CDM_USER_HOME/.cdmLibrary
 
@@ -70,7 +56,7 @@ do_remove(){
 
 do_purge(){
 
-    echo "... do_purge()"
+    echo "postrm: do_purge()"
 
     # removing the user and group
     if ( userExist $CDM_USER  )
@@ -101,7 +87,7 @@ do_purge(){
 
 case "$1" in
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-        do_remove
+        do_remove_files
     ;;
     purge)
         do_purge

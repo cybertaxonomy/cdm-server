@@ -48,6 +48,7 @@
         section="web"
         postinst="${linux.installer.path}/postinst"
         postrm="${linux.installer.path}/postrm"
+        prerm="${linux.installer.path}/prerm"
       >
       <version upstream="${version.cdmserver}" debian="${version.debian}" />
       <maintainer name="EDIT (European Distributed Institute of Taxonomy)" email="editsupport@bgbm.de" />
