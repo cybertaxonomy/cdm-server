@@ -50,7 +50,6 @@ src/main/webapp/js/server-status.js -text
 src/main/webapp/manage/BootloaderService.jsp -text
 src/main/webapp/manage/index.jsp -text
 src/main/webapp/robots.txt -text
-src/site/apt/download.apt -text
 src/site/apt/getting-started.apt -text
 src/site/apt/index.apt -text
 src/site/fml/faq.fml -text
