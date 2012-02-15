@@ -508,6 +508,7 @@
         scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/mavenrepo
       </url>
     </repository>
+    <uniqueVersion>false</uniqueVersion>
   </distributionManagement>
 
   <dependencies>
