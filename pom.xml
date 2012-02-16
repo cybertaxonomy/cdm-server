@@ -502,13 +502,13 @@
       </url>
     </site>
     <repository>
+      <uniqueVersion>false</uniqueVersion>
       <id>wp5.e-taxonomy.eu</id>
       <name>Edit Maven Repository</name>
       <url>
         scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/mavenrepo
       </url>
     </repository>
-    <uniqueVersion>false</uniqueVersion>
   </distributionManagement>
 
   <dependencies>
