@@ -35,10 +35,10 @@ Bootloader bootloader = Bootloader.getBootloader();
 <head>
   <title>CDM Server</title>
   <meta http-equiv="refresh" content="3; URL=index.jsp" />
-  <link type="text/css" rel="stylesheet" media="all" href="/css/style.css" />
-  <link type="text/css" rel="stylesheet" media="all" href="/css/server.css" />
-  <script type="text/javascript" src="/js/jquery.js"></script>
-  <script type="text/javascript" src="/js/oai-pmh-status.js"></script>
+  <link type="text/css" rel="stylesheet" media="all" href="../css/style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="../css/server.css" />
+  <script type="text/javascript" src="../js/jquery.js"></script>
+  <script type="text/javascript" src="../js/oai-pmh-status.js"></script>
 </head>
 <body class="layout-main">
     <div id="page" class="clearfix">
@@ -89,7 +89,8 @@ Bootloader bootloader = Bootloader.getBootloader();
                                              int i = 0;
                                              for(CdmInstanceProperties props : configAndStatus){
                                                i++;
-                                               String basePath = "/" + props.getDataSourceName();
+
+                                               String basePath = request.getContextPath() + "/" + props.getDataSourceName();
                                                    URL fullURL = new URL(request.getScheme(),
                                                            request.getServerName(),
                                                            request.getServerPort(),
