@@ -90,7 +90,7 @@ Bootloader bootloader = Bootloader.getBootloader();
                                              for(CdmInstanceProperties props : configAndStatus){
                                                i++;
 
-                                               String basePath = request.getContextPath() + "/" + props.getDataSourceName();
+                                               String basePath = "../" + props.getDataSourceName();
                                                    URL fullURL = new URL(request.getScheme(),
                                                            request.getServerName(),
                                                            request.getServerPort(),

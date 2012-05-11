@@ -8,7 +8,7 @@
 
 <head>
   <title>CDM Server</title>
-  <meta http-equiv="refresh" content="3; URL=<%= request.getContextPath()  %>/" />
+  <meta http-equiv="refresh" content="3; URL=./" />
   <link type="text/css" rel="stylesheet" media="all" href="css/style.css" />
   <link type="text/css" rel="stylesheet" media="all" href="css/server.css" />
   <script type="text/javascript" src="js/jquery.js"></script>
