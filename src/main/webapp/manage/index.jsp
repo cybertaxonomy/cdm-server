@@ -90,11 +90,13 @@ Bootloader bootloader = Bootloader.getBootloader();
                                              for(CdmInstanceProperties props : configAndStatus){
                                                i++;
 
-                                               String basePath = "../" + props.getDataSourceName();
-                                                   URL fullURL = new URL(request.getScheme(),
+                                               String basePath = props.getDataSourceName();
+                                                  /*  URL fullURL = new URL(request.getScheme(),
                                                            request.getServerName(),
                                                            request.getServerPort(),
-                                                           basePath);
+                                                           basePath); */
+
+                                                   String fullURL = "../" + basePath;
 
                                                    String oddOrEven = i % 2 == 0 ? "odd" : "even";
                                                    String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\"" : "";
