@@ -48,5 +48,4 @@
    }
    out.append(arrayNode.toString());
   }
-
 %>
