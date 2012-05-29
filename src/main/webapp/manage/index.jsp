@@ -8,22 +8,6 @@
 <%@page import="java.io.IOException"%>
 <%!
 
-public void printMemoryUsage(java.lang.management.MemoryUsage memoryUsage, Long recommended, String label, String barWidth, String cssColorUsed, String cssColorMax, JspWriter writer) throws IOException{
-
-  float mb = 1024 * 1024;
-  float gb = mb * 1024;
-  float max = memoryUsage.getMax() / mb;
-  float used = memoryUsage.getUsed() / mb;
-  float percent = used * 100 / max;
-  float recommendedMB = recommended / mb;
-
-  writer.append("<span class=\"memory-usage\">").append(label + "(" + used + " of "  + max+ " MB, recommended: "  + recommendedMB + " MB)&nbsp;")
-  .append("<div style=\"height: 100%; width:")
-  .append(barWidth).append(";background-color:").append(cssColorMax).append("\">")
-  .append("<div style=\"background-color:" + cssColorUsed + "; width:" + percent + "%\">&nbsp;</div></div></span>");
-
-}
-
 // the servelt context must use the class loader of the Bootloader class otherwise
 // getting the status will not work in mulithreading environments !!!
 Bootloader bootloader = Bootloader.getBootloader();
@@ -34,11 +18,12 @@ Bootloader bootloader = Bootloader.getBootloader();
 
 <head>
   <title>CDM Server</title>
-  <meta http-equiv="refresh" content="3; URL=index.jsp" />
   <link type="text/css" rel="stylesheet" media="all" href="../css/style.css" />
   <link type="text/css" rel="stylesheet" media="all" href="../css/server.css" />
   <script type="text/javascript" src="../js/jquery.js"></script>
   <script type="text/javascript" src="../js/oai-pmh-status.js"></script>
+  <script type="text/javascript" src="../js/memory-status.js"></script>
+  <script type="text/javascript" src="../js/instance-status.js"></script>
 </head>
 <body class="layout-main">
     <div id="page" class="clearfix">
@@ -69,18 +54,14 @@ Bootloader bootloader = Bootloader.getBootloader();
                 <!-- ============================= -->
                 <div class="block-wrapper">
                   <h2 class="title block-title pngfix">Server Status</h2>
-                  <div class="block" id="status">
-                     <%
-                       printMemoryUsage(JvmManager.getHeapMemoryUsage(), bootloader.recommendedMinimumSpace(Bootloader.HEAP_CDMSERVER, Bootloader.HEAP_PER_INSTANCE, null), "HeapUsage", "100%", "#F48B65", "#65B1F4", out);
-                       printMemoryUsage(JvmManager.getPermGenSpaceUsage(), bootloader.recommendedMinimumSpace(Bootloader.PERM_GEN_SPACE_CDMSERVER, Bootloader.PERM_GEN_SPACE_PER_INSTANCE, null), "PermGenSpaceUsage", "100%","#F48B65", "#65B1F4", out);
-                     %>
-                  </div>
+                  <div class="block" id="status"><!-- The memory status will be rendered by memory-status.js --></div>
                 </div>
 
 
                 <div class="block-wrapper">
                   <div class="block" id="datasources">
                     <h2 class="title block-title pngfix">CDM Server Instances</h2>
+                    <div class="container">
                     <table>
                       <tr><th>Path</th><th> </th><th>Database Url</th><th>Status</th><th>OAI-PMH Provider</th></tr>
                                             <%
@@ -101,7 +82,7 @@ Bootloader bootloader = Bootloader.getBootloader();
                                                    String oddOrEven = i % 2 == 0 ? "odd" : "even";
                                                    String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\"" : "";
 
-                                               out.append("<tr class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
+                                               out.append("<tr id=\""+basePath+"\" class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
                                                out.append("<td class=\"base-url\"><a href=\"" + fullURL + "\">" + basePath + "</a></td>");
                                                out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
                                                    out.append("<td class=\"db-url\">" + props.getUrl() + "</td>");
@@ -111,7 +92,7 @@ Bootloader bootloader = Bootloader.getBootloader();
                                                    out.append("<td class=\"oai-pmh\">requesting status ...</td>");
                                                    out.append("</tr>");
                                                    if(props.getStatus().equals(CdmInstanceProperties.Status.error) || !props.isEnabled()){
-                                                     out.append("<tr class=\"error-log " + oddOrEven + "\">");
+                                                     out.append("<tr id=\""+basePath+"-error-log\" class=\"error-log " + oddOrEven + "\">");
                                                      out.append("<td></td><td  class=\"error\" colspan=\"4\">");
                                                          for( String problem : props.getProblems()){
                                                            out.append("<div>" + problem + "</div>");
@@ -123,6 +104,7 @@ Bootloader bootloader = Bootloader.getBootloader();
                                            }
                                            %>
                     </table>
+                    </div>
                   </div>
                 </div>
 <%/*
