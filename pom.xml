@@ -413,7 +413,7 @@
           <configuration>
               <fromDir>target</fromDir>
               <includes>*${project.version}*.deb,*${project.version}*.jar,*${project.version}*.exe</includes>
-              <url>scpexe://160.45.63.151/var/www/download/cdmserver/${project.version}</url>
+              <url>scpexe://wp5.e-taxonomy.eu/var/www/download/cdmserver/${project.version}</url>
               <serverId>wp5.e-taxonomy.eu</serverId>
           </configuration>
       </plugin>
@@ -498,7 +498,7 @@
     <site>
       <id>wp5.e-taxonomy.eu</id>
       <url>
-        scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/cdm-server/
+        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/cdm-server/
       </url>
     </site>
     <repository>
@@ -506,7 +506,7 @@
       <id>wp5.e-taxonomy.eu</id>
       <name>Edit Maven Repository</name>
       <url>
-        scpexe://160.45.63.151/var/www/wp5.e-taxonomy.eu/mavenrepo
+        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/mavenrepo
       </url>
     </repository>
   </distributionManagement>
