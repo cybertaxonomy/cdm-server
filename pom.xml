@@ -430,13 +430,12 @@
           </execution>
         </executions>
         <configuration>
-          <!--  EXECUTE: ssh root@wp5.e-taxonomy.eu 'cd /var/www/download/cdmserver; rm stable; ln -s ${project.version} stable' -->
+          <!--  EXECUTE: ssh root@wp5.e-taxonomy.eu bash -c "cd /var/www/download/cdmserver;rm stable; ln -s ${project.version} stable"-->
           <executable>/usr/bin/ssh</executable>
           <arguments>
             <argument>root@wp5.e-taxonomy.eu</argument>
             <argument>bash -c "cd /var/www/download/cdmserver;rm stable; ln -s ${project.version} stable"</argument>
-            <!-- <argument>"cd /var/www/download/cdmserver; rm stable; ln -s ${project.version} stable"</argument>
-           --></arguments>
+            </arguments>
         </configuration>
       </plugin>
     </plugins>
