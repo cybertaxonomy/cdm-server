@@ -417,6 +417,28 @@
               <serverId>wp5.e-taxonomy.eu</serverId>
           </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!--  EXECUTE: ssh root@wp5.e-taxonomy.eu 'cd /var/www/download/cdmserver; rm stable; ln -s ${project.version} stable' -->
+          <executable>/usr/bin/ssh</executable>
+          <arguments>
+            <argument>root@wp5.e-taxonomy.eu</argument>
+            <argument>bash -c "cd /var/www/download/cdmserver;rm stable; ln -s ${project.version} stable"</argument>
+            <!-- <argument>"cd /var/www/download/cdmserver; rm stable; ln -s ${project.version} stable"</argument>
+           --></arguments>
+        </configuration>
+      </plugin>
     </plugins>
     <!-- EXTENSIONS -->
     <extensions>
