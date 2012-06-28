@@ -423,7 +423,6 @@
         <version>1.2.1</version>
         <executions>
           <execution>
-            <phase>deploy</phase>
             <goals>
               <goal>exec</goal>
             </goals>
