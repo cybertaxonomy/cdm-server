@@ -24,7 +24,7 @@ $(document).ready(function(){
     var used = memoryUsage.used / mb;
     var percent = used * 100 / max;
     var recommendedMB = recommended / mb;
-    var html;
+    var html = '';
 
     html += '<span class="memory-usage">';
     html += label + '(' + used + ' of '  + max+ ' MB, recommended: '  + recommendedMB + ' MB)&nbsp;';
