@@ -30,6 +30,7 @@ src/main/java/eu/etaxonomy/cdm/server/CdmInstanceProperties.java -text
 src/main/java/eu/etaxonomy/cdm/server/CommandOptions.java -text
 src/main/java/eu/etaxonomy/cdm/server/DataSourcePropertyParser.java -text
 src/main/java/eu/etaxonomy/cdm/server/JvmManager.java -text
+src/main/java/eu/etaxonomy/cdm/server/OsChecker.java -text
 src/main/java/eu/etaxonomy/cdm/server/jsvc/ServiceWrapper.java -text
 src/main/java/eu/etaxonomy/cdm/server/win32service/CDMServerWrapperListener.java -text
 src/main/java/eu/etaxonomy/cdm/server/win32service/Win32Service.java -text

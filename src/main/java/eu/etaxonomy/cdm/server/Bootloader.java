@@ -14,15 +14,17 @@ import static eu.etaxonomy.cdm.server.CommandOptions.DATASOURCES_FILE;
 import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
+import static eu.etaxonomy.cdm.server.CommandOptions.LOG_DIR;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP;
 import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
-import static eu.etaxonomy.cdm.server.CommandOptions.LOG_DIR;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +33,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -48,8 +49,8 @@ import org.apache.log4j.RollingFileAppender;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ContextHandler.Context;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.util.log.Log;
@@ -436,6 +437,8 @@ public final class Bootloader {
 
         verifyMemoryRequirements();
 
+        verifySystemResources();
+
 
         server = new Server(httpPort);
 
@@ -562,6 +565,28 @@ public final class Bootloader {
         verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_CDMSERVER, PERM_GEN_SPACE_PER_INSTANCE, JvmManager.getPermGenSpaceUsage().getMax());
         verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage().getMax());
 
+    }
+
+    private void verifySystemResources() {
+
+        OsChecker osChecker = new OsChecker();
+        if(osChecker.isLinux()){
+            try {
+                Process p = Runtime.getRuntime().exec(new String[] { "bash", "-c", "ulimit -n" });
+                BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+                     while ((line = in.readLine()) != null) {
+                         response.append(line);
+                     }
+               logger.info("OS Limit (Linux): maximum number of open files: " + response);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            logger.info("verifySystemResources only implemented for linux");
+        }
     }
 
     private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance, long availableSpace) {
