@@ -60,26 +60,26 @@ CDMSERVER_SHUTDOWN=30
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in /etc/default/jetty). Should contain a list of space separated directories.
 JDK_DIRS="
-	  /usr/lib/jvm/default-java \
-	  /usr/lib/jvm/java-6-sun \
-	  /usr/lib/jvm/java-6-openjdk \
-	  /usr/lib/jvm/java-1.5.0-sun \
-	  /usr/lib/jvm/java-gcj \
-	  /usr/lib/j2sdk1.6-sun \
-	  /usr/lib/j2sdk1.5-sun \
-	  /usr/lib/j2sdk1.5-ibm \
-	  /usr/lib/j2sdk1.4-sun \
-	  /usr/lib/j2sdk1.4 \
-	  /usr/lib/j2se/1.4 \
-	  /usr/lib/kaffe/ \
-	 "
+    /usr/lib/jvm/default-java \
+    /usr/lib/jvm/java-6-sun \
+    /usr/lib/jvm/java-6-openjdk \
+    /usr/lib/jvm/java-1.5.0-sun \
+    /usr/lib/jvm/java-gcj \
+    /usr/lib/j2sdk1.6-sun \
+    /usr/lib/j2sdk1.5-sun \
+    /usr/lib/j2sdk1.5-ibm \
+    /usr/lib/j2sdk1.4-sun \
+    /usr/lib/j2sdk1.4 \
+    /usr/lib/j2se/1.4 \
+    /usr/lib/kaffe/ \
+   "
 
 # End of variables that can be overwritten in /etc/default/cdmserver
 ######################################################################
 
 if [ `id -u` -ne 0 ]; then
-	echo "You need root privileges to run this script"
-	exit 1
+  echo "You need root privileges to run this script"
+  exit 1
 fi
 
 # Exit if the package is not installed
@@ -101,9 +101,9 @@ fi
 
 # Look for the right JVM to use
 for jdir in $JDK_DIRS; do
-	if [ -d "$jdir" -a -z "${JAVA_HOME}" ]; then
-		JAVA_HOME="$jdir"
-	fi
+  if [ -d "$jdir" -a -z "${JAVA_HOME}" ]; then
+    JAVA_HOME="$jdir"
+  fi
 done
 
 #BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.Bootloader"
@@ -112,10 +112,10 @@ BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	log_failure_msg "Could not start $DESC because no Java Development Kit"
-	log_failure_msg "(JDK) was found. Please download and install JDK 1.4 or higher and set"
-	log_failure_msg "JAVA_HOME in /etc/default/jetty to the JDK's installation directory."
-	exit 0
+  log_failure_msg "Could not start $DESC because no Java Development Kit"
+  log_failure_msg "(JDK) was found. Please download and install JDK 1.4 or higher and set"
+  log_failure_msg "JAVA_HOME in /etc/default/jetty to the JDK's installation directory."
+  exit 0
 fi
 
 
@@ -125,42 +125,45 @@ fi
 do_start()
 {
   #[ -e "$LOG" ] && cnt=`wc -l "$LOG" | awk '{ print $1 }'` || cnt=1
-	# Return
-	#   0 if daemon has been started
-	#   1 if daemon was already running
-	#   2 if daemon could not be started
-	log_daemon_msg "Starting $DESC ( java $JAVA_OPTIONS -jar $CDM_HOME/cdm-server.jar $CDMSERVER_ARGS )"
+  # Return
+  #   0 if daemon has been started
+  #   1 if daemon was already running
+  #   2 if daemon could not be started
+  log_daemon_msg "Starting $DESC ( java $JAVA_OPTIONS -jar $CDM_HOME/cdm-server.jar $CDMSERVER_ARGS )"
 
-	if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
-				--user "$CDM_USER" --startas "$JAVA" > /dev/null
-	then
+  if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
+        --user "$CDM_USER" --startas "$JAVA" > /dev/null
+  then
 
-		if [ -f $PIDFILE ] ; then
-			log_warning_msg "$PIDFILE exists, but cdmserver was not running. Ignoring $PIDFILE"
-		fi
+    if [ -f $PIDFILE ] ; then
+      log_warning_msg "$PIDFILE exists, but cdmserver was not running. Ignoring $PIDFILE"
+    fi
 
-		echo $JSVC_CLASSPATH
-		echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
+    echo $JSVC_CLASSPATH
+    echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
-		$DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
-		    -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
-		    -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
+    # increasing the maximum number of open files
+    ulimit -n 5000
 
-		sleep 5
-		if start-stop-daemon --test --start --pidfile "$PIDFILE" \
-			--user $CDM_USER --startas "$JAVA" >/dev/null; then
-			log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log"
-			return 2
-		else
-			log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/."
-			return 0
-		fi
+    $DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
+        -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
+        -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
+
+    sleep 5
+    if start-stop-daemon --test --start --pidfile "$PIDFILE" \
+      --user $CDM_USER --startas "$JAVA" >/dev/null; then
+      log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log"
+      return 2
+    else
+      log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/."
+      return 0
+    fi
 
 
-	else
-		log_warning_msg "(already running)."
-		exit 1
-	fi
+  else
+    log_warning_msg "(already running)."
+    exit 1
+  fi
 }
 
 #
@@ -168,147 +171,147 @@ do_start()
 #
 do_stop()
 {
-	# Return
-	#   0 if daemon has been stopped
-	#   1 if daemon was already stopped
-	#   2 if daemon could not be stopped
-	#   other if a failure occurred
-	log_daemon_msg "Stopping $DESC"
+  # Return
+  #   0 if daemon has been stopped
+  #   1 if daemon was already stopped
+  #   2 if daemon could not be stopped
+  #   other if a failure occurred
+  log_daemon_msg "Stopping $DESC"
 
-	if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
-				--user "$CDM_USER" --startas "$JAVA" > /dev/null
-	then
-		if [ -x "$PIDFILE" ]; then
-			log_warning_msg "(not running but $PIDFILE exists)."
-		else
-			log_warning_msg "(not running)."
-		fi
-		return 1
-	else
-		start-stop-daemon --quiet --stop \
-			--pidfile $PIDFILE --user "$CDM_USER" --startas "$JAVA"  > /dev/null
+  if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
+        --user "$CDM_USER" --startas "$JAVA" > /dev/null
+  then
+    if [ -x "$PIDFILE" ]; then
+      log_warning_msg "(not running but $PIDFILE exists)."
+    else
+      log_warning_msg "(not running)."
+    fi
+    return 1
+  else
+    start-stop-daemon --quiet --stop \
+      --pidfile $PIDFILE --user "$CDM_USER" --startas "$JAVA"  > /dev/null
 
-		while ! start-stop-daemon --quiet --test --start \
-			  --pidfile "$PIDFILE" --user "$CDM_USER" --startas "$JAVA" > /dev/null; do
-			sleep 1
-			log_progress_msg "."
-			CDMSERVER_SHUTDOWN=`expr $CDMSERVER_SHUTDOWN - 1` || true
-			if [ $CDMSERVER_SHUTDOWN -ge 0 ]; then
-				start-stop-daemon --oknodo --quiet --stop \
-					--pidfile "$PIDFILE" --user "$CDM_USER" \
-					--startas "$JAVA"
-			else
-				log_progress_msg " (killing) "
-				start-stop-daemon --stop --signal 9 --oknodo \
-					--quiet --pidfile "$PIDFILE" \
-					--user "$CDM_USER"
-			fi
-		done
-		rm -f $PIDFILE
-		log_daemon_msg "$DESC stopped."
-	fi
-	return 0
+    while ! start-stop-daemon --quiet --test --start \
+        --pidfile "$PIDFILE" --user "$CDM_USER" --startas "$JAVA" > /dev/null; do
+      sleep 1
+      log_progress_msg "."
+      CDMSERVER_SHUTDOWN=`expr $CDMSERVER_SHUTDOWN - 1` || true
+      if [ $CDMSERVER_SHUTDOWN -ge 0 ]; then
+        start-stop-daemon --oknodo --quiet --stop \
+          --pidfile "$PIDFILE" --user "$CDM_USER" \
+          --startas "$JAVA"
+      else
+        log_progress_msg " (killing) "
+        start-stop-daemon --stop --signal 9 --oknodo \
+          --quiet --pidfile "$PIDFILE" \
+          --user "$CDM_USER"
+      fi
+    done
+    rm -f $PIDFILE
+    log_daemon_msg "$DESC stopped."
+  fi
+  return 0
 }
 
 #
 # Function that sends a SIGHUP to the daemon/service
 #
 do_reload() {
-	#
-	# If the daemon can reload its configuration without
-	# restarting (for example, when it is sent a SIGHUP),
-	# then implement that here.
-	#
-	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
-	return 0
+  #
+  # If the daemon can reload its configuration without
+  # restarting (for example, when it is sent a SIGHUP),
+  # then implement that here.
+  #
+  start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
+  return 0
 }
 
 report_status() {
-	if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
-		--user "$CDM_USER" --startas "$JAVA" > /dev/null; then
+  if start-stop-daemon --quiet --test --start --pidfile "$PIDFILE" \
+    --user "$CDM_USER" --startas "$JAVA" > /dev/null; then
 
-		if [ -f "$PIDFILE" ]; then
-		    log_success_msg "$DESC is not running, but pid file exists."
-			exit 1
-		else
-		    log_success_msg "$DESC is not running."
-			exit 3
-		fi
-	else
-		log_success_msg "$DESC is running with pid `cat $PIDFILE`, and is reachable on http://localhost:$CDMSERVER_PORT/"
-	fi
+    if [ -f "$PIDFILE" ]; then
+        log_success_msg "$DESC is not running, but pid file exists."
+      exit 1
+    else
+        log_success_msg "$DESC is not running."
+      exit 3
+    fi
+  else
+    log_success_msg "$DESC is running with pid `cat $PIDFILE`, and is reachable on http://localhost:$CDMSERVER_PORT/"
+  fi
 }
 
 case "$1" in
 
-	start)
-	do_start
-	case "$?" in
-		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-	esac
-	;;
+  start)
+  do_start
+  case "$?" in
+    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+  esac
+  ;;
 
-	debug)
-		JAVA_OPTIONS=" -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 $JAVA_OPTIONS"
-		do_start
-		case "$?" in
-				0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-				2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-		esac
-	;;
+  debug)
+    JAVA_OPTIONS=" -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 $JAVA_OPTIONS"
+    do_start
+    case "$?" in
+        0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+        2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+    esac
+  ;;
 
-	stop)
-	do_stop
-	case "$?" in
-		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-	esac
-	;;
+  stop)
+  do_stop
+  case "$?" in
+    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+  esac
+  ;;
 
-	#reload|force-reload)
-	#
-	# If do_reload() is not implemented then leave this commented out
-	# and leave 'force-reload' as an alias for 'restart'.
-	#
-	#log_daemon_msg "Reloading $DESC" "$NAME"
-	#do_reload
-	#log_end_msg $?
-	#;;
+  #reload|force-reload)
+  #
+  # If do_reload() is not implemented then leave this commented out
+  # and leave 'force-reload' as an alias for 'restart'.
+  #
+  #log_daemon_msg "Reloading $DESC" "$NAME"
+  #do_reload
+  #log_end_msg $?
+  #;;
 
-	restart|force-reload)
-	#
-	# If the "reload" option is implemented then remove the
-	# 'force-reload' alias
-	#
-	log_daemon_msg "Restarting $DESC"
-	do_stop
-	case "$?" in
-		0|1)
-		do_start
-		case "$?" in
-			0) log_end_msg 0 ;;
-			1) log_end_msg 1 ;; # Old process is still running
-			*) log_end_msg 1 ;; # Failed to start
-		esac
-		;;
-		*)
-		# Failed to stop
-		log_end_msg 1
-		;;
-	esac
-	;;
+  restart|force-reload)
+  #
+  # If the "reload" option is implemented then remove the
+  # 'force-reload' alias
+  #
+  log_daemon_msg "Restarting $DESC"
+  do_stop
+  case "$?" in
+    0|1)
+    do_start
+    case "$?" in
+      0) log_end_msg 0 ;;
+      1) log_end_msg 1 ;; # Old process is still running
+      *) log_end_msg 1 ;; # Failed to start
+    esac
+    ;;
+    *)
+    # Failed to stop
+    log_end_msg 1
+    ;;
+  esac
+  ;;
 
-	status)
-		report_status
-		log_end_msg 0
-	;;
+  status)
+    report_status
+    log_end_msg 0
+  ;;
 
-	*)
-	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status|debug}" >&2
-	exit 3
-	;;
+  *)
+  #echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+  echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status|debug}" >&2
+  exit 3
+  ;;
 esac
 
 :
