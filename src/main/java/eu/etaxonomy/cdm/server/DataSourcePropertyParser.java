@@ -35,7 +35,6 @@ import org.xml.sax.SAXException;
  */
 public class DataSourcePropertyParser {
 
-    private static final String DATA_SOURCE_PROPERTIES = "dataSourceProperties";
     public static final Logger logger = Logger.getLogger(DataSourcePropertyParser.class);
 
     public static List<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
@@ -54,14 +53,17 @@ public class DataSourcePropertyParser {
                 NamedNodeMap namedNodeMap = beanNode.getAttributes();
                 String beanId = namedNodeMap.getNamedItem("id").getNodeValue();
 
-                // skip the dataSourceProperties bean
-                if(beanId.equals(DATA_SOURCE_PROPERTIES)){
-                    continue;
-                }
 
                 conf.setDataSourceName(beanId);
                 // ATTRIBUTE_DATASOURCE_DRIVERCLASS
-                conf.setDriverClass(getXMLNodeProperty(beanNode, "driverClass"));
+                String driverClass = getXMLNodeProperty(beanNode, "driverClass");
+
+                if(driverClass == null || driverClass.isEmpty()){
+                    // not a data source bean
+                    continue;
+                }
+
+                conf.setDriverClass(driverClass);
                 conf.setUsername(getXMLNodeProperty(beanNode, "username"));
                 if(conf.getUsername() == null){
                     conf.setUsername(getXMLNodeProperty(beanNode, "user"));
