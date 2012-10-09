@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -34,72 +34,80 @@ import org.xml.sax.SAXException;
  *
  */
 public class DataSourcePropertyParser {
-	
-	public static final Logger logger = Logger.getLogger(DataSourcePropertyParser.class);
-	
-	public static List<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
 
-		logger.info("loading bean definition file: " + datasourcesFile.getAbsolutePath());
-		List<CdmInstanceProperties> configList = new ArrayList<CdmInstanceProperties>();
-		Set<String> idSet = new HashSet<String>();
-    	try {
-    		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(datasourcesFile);
-			NodeList beanNodes  = doc.getElementsByTagName("bean");
-			for(int i=0; i < beanNodes.getLength(); i++){
-				CdmInstanceProperties conf = new CdmInstanceProperties();
-				Node beanNode = beanNodes.item(i);
-				// ATTRIBUTE_DATASOURCE_NAME
-				NamedNodeMap namedNodeMap = beanNode.getAttributes();
-				conf.setDataSourceName(namedNodeMap.getNamedItem("id").getNodeValue());
-				// ATTRIBUTE_DATASOURCE_DRIVERCLASS
-				conf.setDriverClass(getXMLNodeProperty(beanNode, "driverClass"));
-				conf.setUsername(getXMLNodeProperty(beanNode, "username"));
-				if(conf.getUsername() == null){
-					conf.setUsername(getXMLNodeProperty(beanNode, "user"));
-				}
-				conf.setPassword(getXMLNodeProperty(beanNode, "password"));
-				
-				conf.setUrl(getXMLNodeProperty(beanNode, "url"));
-				if(conf.getUrl() == null){
-					conf.setUrl(getXMLNodeProperty(beanNode, "jdbcUrl"));
-				}
-				
-				if(idSet.add(conf.getDataSourceName())) {
-					logger.debug("adding instanceName '"+ conf.getDataSourceName() + "'");
-					configList.add(conf);
-				} else {
-					logger.error("instance with name '"+ conf.getDataSourceName() + "' alreaddy exists");
-				}
-				
-			}
-			
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return configList;
+    private static final String DATA_SOURCE_PROPERTIES = "dataSourceProperties";
+    public static final Logger logger = Logger.getLogger(DataSourcePropertyParser.class);
+
+    public static List<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
+
+        logger.info("loading bean definition file: " + datasourcesFile.getAbsolutePath());
+        List<CdmInstanceProperties> configList = new ArrayList<CdmInstanceProperties>();
+        Set<String> idSet = new HashSet<String>();
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(datasourcesFile);
+            NodeList beanNodes  = doc.getElementsByTagName("bean");
+            for(int i=0; i < beanNodes.getLength(); i++){
+                CdmInstanceProperties conf = new CdmInstanceProperties();
+                Node beanNode = beanNodes.item(i);
+                // ATTRIBUTE_DATASOURCE_NAME
+                NamedNodeMap namedNodeMap = beanNode.getAttributes();
+                String beanId = namedNodeMap.getNamedItem("id").getNodeValue();
+
+                // skip the dataSourceProperties bean
+                if(beanId.equals(DATA_SOURCE_PROPERTIES)){
+                    continue;
+                }
+
+                conf.setDataSourceName(beanId);
+                // ATTRIBUTE_DATASOURCE_DRIVERCLASS
+                conf.setDriverClass(getXMLNodeProperty(beanNode, "driverClass"));
+                conf.setUsername(getXMLNodeProperty(beanNode, "username"));
+                if(conf.getUsername() == null){
+                    conf.setUsername(getXMLNodeProperty(beanNode, "user"));
+                }
+                conf.setPassword(getXMLNodeProperty(beanNode, "password"));
+
+                conf.setUrl(getXMLNodeProperty(beanNode, "url"));
+                if(conf.getUrl() == null){
+                    conf.setUrl(getXMLNodeProperty(beanNode, "jdbcUrl"));
+                }
+
+                if(idSet.add(conf.getDataSourceName())) {
+                    logger.debug("adding instanceName '"+ conf.getDataSourceName() + "'");
+                    configList.add(conf);
+                } else {
+                    logger.error("instance with name '"+ conf.getDataSourceName() + "' alreaddy exists");
+                }
+
+            }
+
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return configList;
 
     }
-	
+
     private static String getXMLNodeProperty(Node beanNode, String name){
-    	NodeList children = beanNode.getChildNodes();
-    	for(int i=0; i < children.getLength(); i++){
-    		Node p = children.item(i);
-    		if(p.getNodeName().equals("property")
-    				&& p.getAttributes().getNamedItem("name").getNodeValue().equals(name)){
-    			return p.getAttributes().getNamedItem("value").getNodeValue();
-    		}
-    	}
-		return null;
-	}
-    
-    
+        NodeList children = beanNode.getChildNodes();
+        for(int i=0; i < children.getLength(); i++){
+            Node p = children.item(i);
+            if(p.getNodeName().equals("property")
+                    && p.getAttributes().getNamedItem("name").getNodeValue().equals(name)){
+                return p.getAttributes().getNamedItem("value").getNodeValue();
+            }
+        }
+        return null;
+    }
+
+
 
 }
