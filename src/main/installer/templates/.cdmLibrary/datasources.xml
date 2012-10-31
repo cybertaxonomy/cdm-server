@@ -7,25 +7,46 @@
     http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://www.springframework.org/schema/tx   http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     ">
-    
+
     <!-- ======================================================
-       NOTICE: 
-       
+       NOTICE:
+
        For each bean defined herein the cdm server will create
        and start an internal cdm server instance.
-        
-       These id of the datasource beans are being used as name 
+
+       These id of the datasource beans are being used as name
        and root path for the dem server instances
-       
-       ======================================================-->
-       
+
+     ======================================================-->
+    <!--
+      DataSourceProperties allow configuring specific properies of the datasources
+
+       * cdmlib-remote.xslBasePath:
+            alternative base path for REST services to retrieve XSL style sheets from.
+            the base path must be on the same domain since cross domain xsl loading is
+            not permitted
+      -->
+      <bean id="dataSourceProperties" class="eu.etaxonomy.cdm.remote.config.DataSourceProperties">
+        <property name="propsMap">
+          <map>
+            <!--
+            <entry key="dataSourceBeanID">
+                <props>
+                    <prop key="cdmlib-remote.xslBasePath">/xsl</prop>
+                </props>
+            </entry>
+             -->
+            </map>
+        </property>
+      </bean>
+
      <!-- ======================================================
        !!! THIS IS A TEMPLATE !!!
-       
+
        In order to use it you must edit the 'url', 'username', 'password'
        and also 'driverClass' if you are not using mySQL.
        ======================================================-->
- 
+
     <!-- the default data sources can be mapped to a specific URL root folder   -->
     <bean id="myCDMServerInstance1"  lazy-init="true" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
@@ -34,7 +55,7 @@
         <property name="jdbcUrl" value="jdbc:mysql://192.168.1.100/myCDMdatabase_1"/>
     </bean>
     <!-- additional data sources mapped to other URL rot folders -->
-    <!--  
+    <!--
         <bean id="myCDMServerInstance2"  lazy-init="true" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
         <property name="user" value="user"/>

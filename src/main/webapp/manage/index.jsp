@@ -82,9 +82,9 @@ Bootloader bootloader = Bootloader.getBootloader();
                                                    String oddOrEven = i % 2 == 0 ? "odd" : "even";
                                                    String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\"" : "";
 
-                                               out.append("<tr id=\""+basePath+"\" class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
-                                               out.append("<td class=\"base-url\"><a href=\"" + fullURL + "\">" + basePath + "</a></td>");
-                                               out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
+                                                   out.append("<tr id=\""+basePath+"\" class=\"entry " + oddOrEven + "\" " +noBottomBorder+ ">");
+                                                   out.append("<td class=\"base-url\"><a href=\"" + fullURL + "\">" + basePath + "</a></td>");
+                                                   out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
                                                    out.append("<td class=\"db-url\">" + props.getUrl() + "</td>");
                                                    out.append("<td class=\"status " + props.getStatus() + "\">" + props.getStatus() + "</td>");
 
