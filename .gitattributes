@@ -5,6 +5,7 @@ ide/eclipse/Bootloader.launch -text
 ide/eclipse/run[!!-~]cdm-server.jar[!!-~]in[!!-~]debugmode.launch -text
 ide/eclipse/run[!!-~]cdm-server.jar.launch -text
 /pom.xml -text
+src/jenkins-ci/update-stable-folder.sh -text
 src/main/assembly/assembly.xml -text
 src/main/installer/lib/ant-deb-task-0.0.1.jar -text
 src/main/installer/linux/Makefile -text
