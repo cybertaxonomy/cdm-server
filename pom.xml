@@ -93,17 +93,20 @@
 		<!-- the localhost Maven Repository -->
 		<repository>
           <id>EditLocalRepository</id>
-          <!-- TODO
-             use ${localrepo} for ${user.home}/.m2/repository
+          <!--
+            disable the local repo to let maven always retrieve the
+            latest cdmlib-remote-webapp.war
+
+            TODO: use ${localrepo} for ${user.home}/.m2/repository
             in MAVEN 3
           -->
           <url>file://${user.home}/.m2/repository/eu/etaxonomy/</url>
           <releases>
-            <enabled>true</enabled>
+            <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
           </releases>
           <snapshots>
-            <enabled>true</enabled>
+            <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
           </snapshots>
         </repository>
