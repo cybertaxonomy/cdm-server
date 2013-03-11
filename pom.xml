@@ -90,7 +90,20 @@
 			<url>http://download.java.net/maven/1/</url>
 			<layout>legacy</layout>
 		</repository>
-		<!-- the cdm internal repository -->
+		<!-- the localhost Maven Repository -->
+		<repository>
+          <id>EditLocalRepository</id>
+          <url>file://${localrepo}/eu/etaxonomy/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+		<!-- the EDIT Maven Repository -->
 		<repository>
 			<id>EditRepository</id>
 			<url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
