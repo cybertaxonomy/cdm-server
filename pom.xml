@@ -93,7 +93,11 @@
 		<!-- the localhost Maven Repository -->
 		<repository>
           <id>EditLocalRepository</id>
-          <url>file://${localrepo}/eu/etaxonomy/</url>
+          <!-- TODO
+             use ${localrepo} for ${user.home}/.m2/repository
+            in MAVEN 3
+          -->
+          <url>file://${user.home}/.m2/repository/eu/etaxonomy/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
