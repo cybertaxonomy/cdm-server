@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.etaxonomy</groupId>
 	<artifactId>cdm-server</artifactId>
-	<version>3.1.4-SNAPSHOT</version>
+	<version>3.1.4</version>
 	<packaging>jar</packaging>
 	<name>CDM Community Standalone Server</name>
 
@@ -16,9 +15,9 @@
 	<scm>
 		<!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html
 			for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml -->
-		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</connection>
-		<developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</developerConnection>
-		<url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server</url>
+		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.1.4</connection>
+		<developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.1.4</developerConnection>
+		<url>http://dev.e-taxonomy.eu/trac/browser/tags/cdm-server/cdm-server-3.1.4</url>
 	</scm>
 
 	<mailingLists>
@@ -378,8 +377,7 @@
 							<tasks>
 								<property name="project.fullversionstring" value="${project.version}" />
 								<property name="project.version" value="${project.version}" />
-								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml"
-									dir="${project.basedir}" />
+								<ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
 							</tasks>
 						</configuration>
 						<goals>
