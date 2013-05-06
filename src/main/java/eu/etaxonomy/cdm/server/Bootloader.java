@@ -197,7 +197,7 @@ public final class Bootloader {
     private String logPath = null;
 
     private Server server = null;
-    private ContextHandlerCollection contexts = new ContextHandlerCollection();
+    private final ContextHandlerCollection contexts = new ContextHandlerCollection();
 
     private CommandLine cmdLine;
 
@@ -550,10 +550,13 @@ public final class Bootloader {
     }
 
     public String readCdmRemoteVersion() throws IOException {
+    	String version = "cdmlib version unreadable";
         InputStream versionInStream = Bootloader.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE);
-         Properties versionProperties = new Properties();
-         versionProperties.load(versionInStream);
-         String version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION);
+        if (versionInStream != null){
+        	Properties versionProperties = new Properties();
+        	versionProperties.load(versionInStream);
+        	version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION, version);
+        }
         return version;
     }
 
