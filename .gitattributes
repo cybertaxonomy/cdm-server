@@ -1,7 +1,7 @@
 * text=auto !eol
 /LICENSE.TXT -text
-ide/eclipse/Bootloader[!!-~]-[!!-~]Help.launch -text
-ide/eclipse/Bootloader.launch -text
+ide/eclipse/cdm-server[!!-~]-[!!-~]help.launch -text
+ide/eclipse/cdm-server[!!-~]-[!!-~]start.launch -text
 ide/eclipse/run[!!-~]cdm-server.jar[!!-~]in[!!-~]debugmode.launch -text
 ide/eclipse/run[!!-~]cdm-server.jar.launch -text
 /pom.xml -text
