@@ -3,7 +3,7 @@
 <%@page import="eu.etaxonomy.cdm.server.Bootloader"%>
 <%@page import="java.util.Set" %>
 <%@page import="java.net.URL" %>
-<%@page import="eu.etaxonomy.cdm.server.CdmInstanceProperties"%>
+<%@page import="eu.etaxonomy.cdm.server.instance.Configuration"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>

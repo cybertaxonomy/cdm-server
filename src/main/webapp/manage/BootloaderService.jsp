@@ -1,14 +1,14 @@
 <%@page import="org.codehaus.jackson.node.ArrayNode"
 %><%@ page contentType="application/json;charset=UTF-8" language="java"
 %><%@page import="eu.etaxonomy.cdm.server.Bootloader"
+%><%@page import="eu.etaxonomy.cdm.server.instance.CdmInstance"
 %><%@page import="java.util.Set"
 %><%@page import="java.net.URL"
 %><%@page import="org.codehaus.jackson.map.ObjectMapper"
 %><%@page import="org.codehaus.jackson.JsonNode"
 %><%@page import="org.codehaus.jackson.node.ObjectNode"
-%><%@page import="eu.etaxonomy.cdm.server.CdmInstanceProperties"
-%><%
-//////////////////////////////////////////////////////////////////////////////////
+%><%@page import="eu.etaxonomy.cdm.server.instance.Configuration"
+%><%//////////////////////////////////////////////////////////////////////////////////
 //
 // The BootloaderService service exposes the Bootloader.getConfigAndStatus()
 // property as webservice. Before beeing serialized to JSON the ConfigAndStatus
@@ -22,17 +22,18 @@
     response.setHeader("Content-Type", "application/json;charset=UTF-8");
 
   // the servelt context must use the class loader of the Bootloader class otherwise
-  // getting the status will not work in mulithreading environments !!!
+  // getting the status will not work in multihreading environments !!!
   Bootloader bootloader = Bootloader.getBootloader();
-  java.util.List<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
-  if(configAndStatus != null){
+  java.util.List<CdmInstance> instances = bootloader.getCdmInstances();
+  if(instances != null){
    int i = 0;
 
    ArrayNode arrayNode = jsonMapper.createArrayNode();
 
-   for(CdmInstanceProperties props : configAndStatus){
+   for(CdmInstance instance: instances){
     i++;
-    String basePath = request.getContextPath() + "/" + props.getDataSourceName();
+    Configuration props = instance.getConfiguration();
+    String basePath = request.getContextPath() + "/" + props.getInstanceName();
       URL fullURL = new URL(request.getScheme(),
                   request.getServerName(),
                   request.getServerPort(),
@@ -47,5 +48,4 @@
       arrayNode.add(jsonNode);
    }
    out.append(arrayNode.toString());
-  }
-%>
+  }%>

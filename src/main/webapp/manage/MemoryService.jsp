@@ -1,3 +1,4 @@
+<%@page import="eu.etaxonomy.cdm.server.AssumedMemoryRequirements"%>
 <%@page import="org.codehaus.jackson.node.JsonNodeFactory"
 %><%@page import="org.codehaus.jackson.node.ArrayNode"
 %><%@ page contentType="application/json;charset=UTF-8" language="java"
@@ -16,8 +17,8 @@
     //the servelt context must use the class loader of the Bootloader class otherwise
     //getting the status will not work in mulithreading environments !!!
     Bootloader bootloader = Bootloader.getBootloader();
-    long recommendedMinimumHeap = bootloader.recommendedMinimumSpace(Bootloader.HEAP_CDMSERVER, Bootloader.HEAP_PER_INSTANCE, null);
-    long recommendedMinimumPermGenSpace = bootloader.recommendedMinimumSpace(Bootloader.PERM_GEN_SPACE_CDMSERVER, Bootloader.PERM_GEN_SPACE_PER_INSTANCE, null);
+    long recommendedMinimumHeap = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.HEAP_CDMSERVER, AssumedMemoryRequirements.HEAP_PER_INSTANCE, null);
+    long recommendedMinimumPermGenSpace = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER, AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE, null);
 
     ObjectMapper jsonMapper = new ObjectMapper();
 

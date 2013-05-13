@@ -3,7 +3,9 @@
 <%@page import="eu.etaxonomy.cdm.server.Bootloader"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.net.URL"%>
-<%@page import="eu.etaxonomy.cdm.server.CdmInstanceProperties"%>
+<%@page import="eu.etaxonomy.cdm.server.instance.Configuration"%>
+<%@page import="eu.etaxonomy.cdm.server.instance.CdmInstance"%>
+<%@page import="eu.etaxonomy.cdm.server.instance.Status"%>
 <%@page import="eu.etaxonomy.cdm.server.JvmManager"%>
 <%@page import="java.io.IOException"%>
 <%!// the servelt context must use the class loader of the Bootloader class otherwise
@@ -75,13 +77,14 @@
 											<th>OAI-PMH Provider</th>
 										</tr>
 										<%
-										    java.util.List<CdmInstanceProperties> configAndStatus = bootloader.getConfigAndStatus();
-										    if (configAndStatus != null) {
+										    java.util.List<CdmInstance> instances = bootloader.getCdmInstances();
+										    if (instances != null) {
 										        int i = 0;
-										        for (CdmInstanceProperties props : configAndStatus) {
+										        for (CdmInstance instance : instances) {
 										            i++;
+										            Configuration props = instance.getConfiguration();
 
-										            String basePath = props.getDataSourceName();
+										            String basePath = props.getInstanceName();
 										            /*  URL fullURL = new URL(request.getScheme(),
 										                     request.getServerName(),
 										                     request.getServerPort(),
@@ -90,22 +93,22 @@
 										            String fullURL = "../" + basePath;
 
 										            String oddOrEven = i % 2 == 0 ? "odd" : "even";
-										            String noBottomBorder = props.getStatus().equals(CdmInstanceProperties.Status.error) ? " style=\"border-bottom:none;\""
+										            String noBottomBorder = instance.getStatus().equals(Status.error) ? " style=\"border-bottom:none;\""
 										                    : "";
 
 										            out.append("<tr id=\"" + basePath + "\" class=\"entry " + oddOrEven + "\" " + noBottomBorder + ">");
 										            out.append("<td class=\"base-url\"><a href=\"" + fullURL + "/\">" + basePath + "</a></td>");
 										            out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
-										            out.append("<td class=\"db-url\">" + props.getUrl() + "</td>");
-										            out.append("<td class=\"status " + props.getStatus() + "\">" + props.getStatus() + "</td>");
+										            out.append("<td class=\"db-url\">" + props.getDataSourceUrl() + "</td>");
+										            out.append("<td class=\"status " + instance.getStatus() + "\">" + instance.getStatus() + "</td>");
 
 										            // OAI-PMH Status will be requested using javascript
 										            out.append("<td class=\"oai-pmh\">requesting status ...</td>");
 										            out.append("</tr>");
-										            if (props.getStatus().equals(CdmInstanceProperties.Status.error) || !props.isEnabled()) {
+										            if (instance.getStatus().equals(Status.error) || !instance.isEnabled()) {
 										                out.append("<tr id=\"" + basePath + "-error-log\" class=\"error-log " + oddOrEven + "\">");
 										                out.append("<td></td><td  class=\"error\" colspan=\"4\">");
-										                for (String problem : props.getProblems()) {
+										                for (String problem : instance.getProblems()) {
 										                    out.append("<div>" + problem + "</div>");
 										                }
 										                out.append("</td>");

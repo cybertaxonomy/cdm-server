@@ -7,7 +7,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.server;
+package eu.etaxonomy.cdm.server.instance;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 /**
  * @author a.kohlbecker
  * @date 30.03.2010
@@ -37,24 +38,24 @@ public class DataSourcePropertyParser {
 
     public static final Logger logger = Logger.getLogger(DataSourcePropertyParser.class);
 
-    public static List<CdmInstanceProperties> parseDataSourceConfigs(File datasourcesFile){
+    public static List<Configuration> parseDataSourceConfigs(File datasourcesFile){
 
         logger.info("loading bean definition file: " + datasourcesFile.getAbsolutePath());
-        List<CdmInstanceProperties> configList = new ArrayList<CdmInstanceProperties>();
+        List<Configuration> configList = new ArrayList<Configuration>();
         Set<String> idSet = new HashSet<String>();
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(datasourcesFile);
             NodeList beanNodes  = doc.getElementsByTagName("bean");
             for(int i=0; i < beanNodes.getLength(); i++){
-                CdmInstanceProperties conf = new CdmInstanceProperties();
+                Configuration conf = new Configuration();
                 Node beanNode = beanNodes.item(i);
                 // ATTRIBUTE_DATASOURCE_NAME
                 NamedNodeMap namedNodeMap = beanNode.getAttributes();
                 String beanId = namedNodeMap.getNamedItem("id").getNodeValue();
 
 
-                conf.setDataSourceName(beanId);
+                conf.setInstanceName(beanId);
                 // ATTRIBUTE_DATASOURCE_DRIVERCLASS
                 String driverClass = getXMLNodeProperty(beanNode, "driverClass");
 
@@ -70,16 +71,16 @@ public class DataSourcePropertyParser {
                 }
                 conf.setPassword(getXMLNodeProperty(beanNode, "password"));
 
-                conf.setUrl(getXMLNodeProperty(beanNode, "url"));
-                if(conf.getUrl() == null){
-                    conf.setUrl(getXMLNodeProperty(beanNode, "jdbcUrl"));
+                conf.setDataSourceUrl(getXMLNodeProperty(beanNode, "url"));
+                if(conf.getDataSourceUrl() == null){
+                    conf.setDataSourceUrl(getXMLNodeProperty(beanNode, "jdbcUrl"));
                 }
 
-                if(idSet.add(conf.getDataSourceName())) {
-                    logger.debug("adding instanceName '"+ conf.getDataSourceName() + "'");
+                if(idSet.add(conf.getInstanceName())) {
+                    logger.debug("adding instanceName '"+ conf.getInstanceName() + "'");
                     configList.add(conf);
                 } else {
-                    logger.error("instance with name '"+ conf.getDataSourceName() + "' alreaddy exists");
+                    logger.error("instance with name '"+ conf.getInstanceName() + "' alreaddy exists");
                 }
 
             }
