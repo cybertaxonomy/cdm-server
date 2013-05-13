@@ -91,7 +91,7 @@ a:visited {
   margin: 0;
   padding: 0;
   text-decoration: none;
-} 
+}
 
 a:hover,
 a:active {
@@ -184,7 +184,7 @@ div.terms ul li {
 }
 
 /* adjust openid link */
-html.js #user-login-form li.openid-processed, 
+html.js #user-login-form li.openid-processed,
 html.js #user-login li.openid-processed {
   background: transparent;
   font-weight: bold;
@@ -275,7 +275,7 @@ div.content th img {
   -moz-border-radius-bottomleft: 12px;
   -moz-border-radius-bottomright: 12px;
   -webkit-border-bottom-left-radius: 10px;
-  -webkit-border-bottom-right-radius: 10px; 
+  -webkit-border-bottom-right-radius: 10px;
 }
 
 #header #search-box input.form-text {
@@ -290,7 +290,7 @@ div.content th img {
   background: #EFEBE7;
   border: 1px solid #ccc;
   color: #194765;
-  cursor: pointer; 
+  cursor: pointer;
   font-family: Tahoma,Verdana,Arial,Helvetica,sans-serif;
   font-size: 1.1em;
   font-weight: normal;
@@ -391,20 +391,20 @@ div.content th img {
   float: left;    /* LTR */
   width: 100%;
 }
-  
+
 #preface-wrapper.prefaces-2 div.column {
   display: inline;
   float: left;    /* LTR */
   margin: 0 14px;
   width: 47%;
 }
-  
+
 #preface-wrapper.prefaces-3 div.column {
   display: inline;
   float: left;    /* LTR */
   margin: 0 14px;
   width: 30%;
-} 
+}
 
 #preface-wrapper a:link,
 #preface-wrapper a:visited {
@@ -521,7 +521,7 @@ div.content > a:link img {
   float: left;    /* LTR */
   padding: 0 8px;
   width: 32.76%;
-} 
+}
 
 
 /*****************/
@@ -680,10 +680,10 @@ body.full-node.layout-first-main-last #sidebar-last {
 
 .clearfix:after {                                 /* add .clearfix class to clear floats after an element */
   clear: both;                                    /* (IE version is in ie6-fixes.css) */
-  content: "."; 
+  content: ".";
   display: block;
   font-size: 0;
-  height: 0; 
+  height: 0;
   visibility: hidden;
 }
 
@@ -699,7 +699,7 @@ h1.title {                                        /* page titles */
   font-size: 1.833em;
   font-weight: 600;
   line-height: 1.2727em;
-}  
+}
 
 h2.title {                                        /* block titles, node titles */
   font-family: Myriad Pro, Myriad Web Pro Regular, Lucida Grande, Geneva, Trebuchet MS, sans-serif;
@@ -707,18 +707,18 @@ h2.title {                                        /* block titles, node titles *
   font-weight: 600;
   margin: 0;
   text-transform: uppercase;
-}  
+}
 
 h2.title a:link,
 h2.title a:visited {
-}  
+}
 
 
 h2.title a:hover,
 h2.title a:active {
   color: #619CBE;
   text-decoration: none;
-}  
+}
 
 div.node h2.title {
   border-bottom: 1px solid #d6ddb9;
@@ -754,7 +754,7 @@ div.node .links a {
   font-size: 0.9em;
   font-weight: bold;
   margin: 0;
-}  
+}
 
 #content-content .node ul.links li.comment_forbidden a {
   padding-right: 4px;    /* LTR */
@@ -899,7 +899,7 @@ body.layout-first-main-last #sidebar-last .block-wrapper {
   color: #fff;
   padding: 8px 8px 6px 46px;
   text-align: right;
-  text-shadow: #545454 1px 1px; 
+  text-shadow: #545454 1px 1px;
   -moz-border-radius-topleft: 3px;
   -moz-border-radius-topright: 3px;
   -webkit-border-top-left-radius: 4px;
@@ -915,7 +915,7 @@ body.layout-first-main-last #sidebar-last .block-wrapper {
   -moz-border-radius-bottomleft: 6px;
   -moz-border-radius-bottomright: 6px;
   -webkit-border-bottom-left-radius: 4px;
-  -webkit-border-bottom-right-radius: 4px; 
+  -webkit-border-bottom-right-radius: 4px;
 }
 
 /* non-rounded blocks styles = prefaces & layout-main-last blocks */
@@ -966,7 +966,7 @@ body.layout-main-last #sidebar-last h2.block-title {
 /***************/
 
 div.block ul li a,
-div.block ul.menu li a {								
+div.block ul.menu li a {
   font-size: 1em;
   font-weight: bold;
 }
@@ -1006,26 +1006,26 @@ p.rounded-bottomspace {
   margin-bottom: -10px;                               /* removes unwanted space */
 }
 
-div.rounded-block-top-left, 
-div.rounded-block-top-right, 
-div.rounded-block-bottom-left, 
-div.rounded-block-bottom-right { 
+div.rounded-block-top-left,
+div.rounded-block-top-right,
+div.rounded-block-bottom-left,
+div.rounded-block-bottom-right {
   background: transparent url('images/rounded-block.png') no-repeat;                         /* combined rounded corner image */
   font-size: 2px;                                 /* IE div correction */
   height: 11px;                                   /* height of an image corner */
 }
 
-body.layout-main-last #sidebar-last div.rounded-block-top-left, 
-body.layout-main-last #sidebar-last div.rounded-block-top-right, 
-body.layout-main-last #sidebar-last div.rounded-block-bottom-left, 
-body.layout-main-last #sidebar-last div.rounded-block-bottom-right { 
+body.layout-main-last #sidebar-last div.rounded-block-top-left,
+body.layout-main-last #sidebar-last div.rounded-block-top-right,
+body.layout-main-last #sidebar-last div.rounded-block-bottom-left,
+body.layout-main-last #sidebar-last div.rounded-block-bottom-right {
   background: none;
   font-size: inherit;
   height: auto;
 }
 
-div.rounded-block-top-left, 
-div.rounded-block-bottom-left { 
+div.rounded-block-top-left,
+div.rounded-block-bottom-left {
   margin-right: 11px;                             /* width of an image corner */
 }
 
@@ -1034,21 +1034,21 @@ div.rounded-block-top-right {                        /* anchor image in top righ
 }
 
 div.rounded-block-top-right,
-div.rounded-block-bottom-right { 
+div.rounded-block-bottom-right {
   margin-left: 11px;                              /* width of an image corner */
   margin-top: -11px;                              /* height of an image corner */
 }
 
 body.layout-main-last #sidebar-last div.rounded-block-top-right,
-body.layout-main-last #sidebar-last div.rounded-block-bottom-right { 
+body.layout-main-last #sidebar-last div.rounded-block-bottom-right {
   margin: 0;
 }
 
-div.rounded-block-bottom-left  { 
+div.rounded-block-bottom-left  {
   background-position: 0 -11px;                   /* negative height of an image corner */
 }
 
-div.rounded-block-bottom-right { 
+div.rounded-block-bottom-right {
   background-position: 100% -11px;                /* negative height of an image corner */
 }
 
@@ -1086,24 +1086,24 @@ div.rounded-inside {
   position: relative;
   text-transform: uppercase;
 }
-  
+
 #primary-menu ul.links li {                       /* text styling for the top (primary) menu */
-}  
+}
 
 #primary-menu ul.links li.first {                 /* .first and .last classes applied to first and last menu & list items */
 }
-  
+
 #primary-menu ul.links li.last {                  /* .first and .last classes applied to first and last menu & list items */
 }
-  
+
 #primary-menu ul.links li a:link,
 #primary-menu ul.links li a:visited {
 }
 
 #primary-menu ul.links li a:hover,
 #primary-menu ul.links li a:active {
-}  
-  
+}
+
 
 /************************************/
 /* PRIMARY MENU WITH DROPDOWNS      */
@@ -1153,13 +1153,13 @@ div.rounded-inside {
   width: 144px;
   z-index: 2;
 }
-  
+
 #primary-menu ul.menu li:hover ul,
 #primary-menu ul.menu li.hover ul {
   display: block;
   left: auto;
 }
-  
+
 #primary-menu ul.menu li ul li {
   background: #94CE18;
   border-bottom: 1px solid #83A638;
@@ -1247,7 +1247,7 @@ div.rounded-inside {
   padding: 4px;
   width: 128px;
 }
-  
+
 /******************/
 /* SECONDARY MENU */
 /******************/
@@ -1419,7 +1419,7 @@ input.form-submit:hover,
 input.teaser-button:hover  {
   background-position: right center;
   cursor: pointer;
-}  
+}
 
 fieldset {
   border: 1px solid #D6DDB9;
@@ -1479,7 +1479,7 @@ html.js input.form-autocomplete {
   font-size: 1em;
   font-weight: bold;
   padding: 4px;
-  text-decoration: none; 
+  text-decoration: none;
 }
 
 #main-wrapper .pager li.pager-current {
@@ -1533,8 +1533,32 @@ th {
   border-bottom: 3px solid #CCC;
 }
 
-tr {
+#instances tr {
   padding: 0.1em 0.6em;
+  border-left: none 0px;
+  border-right: none 0px;
+}
+
+#instances tr.entry {
+    border-bottom: none 0px;
+}
+
+#instances tr.messages {
+    border-top: none 0px;
+}
+
+tr.even {
+  background-color: #E3ECC0;
+  border: 1px solid #CCC;
+}
+
+tr.odd {
+  background-color: #FDFFEF;
+  border: 1px solid #CCC;
+}
+
+tr.selected {
+  color: #000
 }
 
 td {
@@ -1549,19 +1573,6 @@ th.active img {
   display: inline;
 }
 
-tr.even {
-  background-color: #E3ECC0;
-  border-bottom: 1px solid #CCC;
-}
-
-tr.odd {
-  background-color: #FDFFEF;
-  border-bottom: 1px solid #CCC;
-}
-
-tr.selected {
-  color: #000
-}
 
 tbody {
 }
@@ -1837,18 +1848,18 @@ blockquote a:link {
   margin: 0.5em;
 }
 
-#forum td.created, 
-#forum td.posts, 
-#forum td.topics, 
+#forum td.created,
+#forum td.posts,
+#forum td.topics,
 #forum td.last-reply,
-#forum td.replies, 
+#forum td.replies,
 #forum td.pager {
   white-space: nowrap;
 }
 
-#forum td.posts, 
-#forum td.topics, 
-#forum td.replies, 
+#forum td.posts,
+#forum td.topics,
+#forum td.replies,
 #forum td.pager {
   text-align: center;
 }
@@ -1992,7 +2003,7 @@ blockquote a:link {
     background: white;
     font-size: 10pt;
   }
-   
+
   #header,
   #header-top,
   #header-wrapper,
@@ -2026,7 +2037,7 @@ blockquote a:link {
     padding: 0;
     width: auto;
   }
-  
+
   #content-wrapper {
     margin: 0 3%;
   }
@@ -2037,11 +2048,11 @@ blockquote a:link {
 
 
 #status {
-	border: 1px solid;
-	background-color: #ffffff;
+  border: 1px solid;
+  background-color: #ffffff;
 }
 
 .status_value {
-	color: green;
-	float: right;
+  color: green;
+  float: right;
 }

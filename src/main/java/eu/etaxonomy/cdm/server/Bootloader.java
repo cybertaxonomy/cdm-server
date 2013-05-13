@@ -28,15 +28,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -49,7 +43,9 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
@@ -58,6 +54,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
+import eu.etaxonomy.cdm.server.instance.SharedAttributes;
 import eu.etaxonomy.cdm.server.instance.Status;
 import eu.etaxonomy.cdm.server.win32service.Win32Service;
 
@@ -108,15 +105,6 @@ public final class Bootloader {
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
     private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDMLIB_REMOTE_WEBAPP);
 
-    private static final String ATTRIBUTE_JDBC_JNDI_NAME = "cdm.jdbcJndiName";
-    public static final String ATTRIBUTE_DATASOURCE_NAME = "cdm.datasource";
-    private static final String ATTRIBUTE_CDM_LOGFILE = "cdm.logfile";
-    /**
-     * same as in eu.etaxonomy.cdm.remote.config.DataSourceConfigurer
-     */
-    public static final String ATTRIBUTE_ERROR_MESSAGES = "cdm.errorMessages";
-
-
     private final InstanceManager instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
 
     public List<CdmInstance> getCdmInstances() {
@@ -124,7 +112,7 @@ public final class Bootloader {
     }
 
     public InstanceManager getInstanceManager(){
-    	return instanceManager;
+        return instanceManager;
     }
 
     private File cdmRemoteWebAppFile = null;
@@ -166,56 +154,7 @@ public final class Bootloader {
         return answer;
     }
 
-    private boolean bindJndiDataSource(CdmInstance instance) {
-        try {
-        	Configuration conf = instance.getConfiguration();
-            Class<DataSource> dsCass = (Class<DataSource>) Thread.currentThread().getContextClassLoader().loadClass("com.mchange.v2.c3p0.ComboPooledDataSource");
-            DataSource datasource = dsCass.newInstance();
-            dsCass.getMethod("setDriverClass", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getDriverClass()});
-            dsCass.getMethod("setJdbcUrl", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getDataSourceUrl()});
-            dsCass.getMethod("setUser", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getUsername()});
-            dsCass.getMethod("setPassword", new Class[] {String.class}).invoke(datasource, new Object[] {conf.getPassword()});
 
-            Connection connection = null;
-            String sqlerror = null;
-            try {
-                connection = datasource.getConnection();
-                connection.close();
-            } catch (SQLException e) {
-                sqlerror = e.getMessage() + "["+ e.getSQLState() + "]";
-                instance.getProblems().add(sqlerror);
-                if(connection !=  null){
-                    try {connection.close();} catch (SQLException e1) { /* IGNORE */ }
-                }
-                logger.error(conf.toString() + " has problem : "+ sqlerror );
-            }
-
-            if(!instance.hasProblems()){
-                logger.info("binding jndi datasource at " + conf.getJdbcJndiName() + " with "+conf.getUsername() +"@"+ conf.getDataSourceUrl());
-                org.eclipse.jetty.plus.jndi.Resource jdbcResource = new org.eclipse.jetty.plus.jndi.Resource(conf.getJdbcJndiName(), datasource);
-                return true;
-            }
-
-        } catch (IllegalArgumentException e) {
-            logger.error(e);
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            logger.error(e);
-        } catch (ClassNotFoundException e) {
-            logger.error(e);
-        } catch (InstantiationException e) {
-            logger.error(e);
-        } catch (IllegalAccessException e) {
-            logger.error(e);
-        } catch (InvocationTargetException e) {
-            logger.error(e);
-        } catch (NoSuchMethodException e) {
-            logger.error(e);
-        } catch (NamingException e) {
-            logger.error(e);
-        }
-        return false;
-    }
 
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
@@ -438,12 +377,12 @@ public final class Bootloader {
     }
 
     public String readCdmRemoteVersion() throws IOException {
-    	String version = "cdmlib version unreadable";
+        String version = "cdmlib version unreadable";
         InputStream versionInStream = Bootloader.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE);
         if (versionInStream != null){
-        	Properties versionProperties = new Properties();
-        	versionProperties.load(versionInStream);
-        	version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION, version);
+            Properties versionProperties = new Properties();
+            versionProperties.load(versionInStream);
+            version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION, version);
         }
         return version;
     }
@@ -495,65 +434,126 @@ public final class Bootloader {
     }
 
 
-	/**
-	 * @param conf
-	 * @param austostart
-	 * @return
-	 * @throws IOException
-	 */
-	public WebAppContext addCdmInstanceContext(CdmInstance instance) throws IOException {
-		Configuration conf = instance.getConfiguration();
-		if(!instance.isEnabled()){
-		    logger.info(conf.getInstanceName() + " is disabled due to JVM memory limitations => skipping");
-		    return null;
-		}
-		instance.setStatus(Status.initializing);
-		logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
-		WebAppContext cdmWebappContext = new WebAppContext();
+    /**
+     * Adds a new WebAppContext to the contexts of the running jetty instance.
+     * <ol>
+     * <li>Initialize WebAppContext:
+     * <ol>
+     * <li>set context path</li>
+     * <li>set tmp directory</li>
+     * <li>bind JndiDataSource</li>
+     * <li>set web app context attributes</li>
+     * <li>create and setup individual classloader for the instance</li>
+     * </ol>
+     * </li>
+     * <li>
+     * finally add the new webappcontext to the contexts of the jetty instance</li>
+     * </ol>
+     *
+     * @param instance
+     * @return the instance given as parameter of null in case the instance has
+     *         {@link Status.#disabled} or if it is already added.
+     * @throws IOException
+     */
+    public WebAppContext addCdmInstanceContext(CdmInstance instance) throws IOException {
 
-		cdmWebappContext.setContextPath("/"+conf.getInstanceName());
-		cdmWebappContext.setTempDirectory(CDM_WEBAPP_TEMP_FOLDER);
+        Configuration conf = instance.getConfiguration();
+        if(!instance.isEnabled()){
+            logger.info(conf.getInstanceName() + " is disabled, possibly due to JVM memory limitations");
+            return null;
+        }
+        if(getContextFor(conf) != null){
+            logger.info(conf.getInstanceName() + " is alreaddy added to the contexts - skipping");
+            return null;
+        }
 
-		if(!bindJndiDataSource(instance)){
-		    // a problem with the datasource occurred skip this webapp
-		    cdmWebappContext = null;
-		    logger.error("a problem with the datasource occurred -> skipping /" + conf.getInstanceName());
-		    instance.setStatus(Status.error);
-		    return cdmWebappContext;
-		}
+        instance.setStatus(Status.initializing);
+        logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
+        WebAppContext cdmWebappContext = new WebAppContext();
 
-		cdmWebappContext.setAttribute(ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
-		cdmWebappContext.setAttribute(ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
-		setWebApp(cdmWebappContext, cdmRemoteWebAppFile);
+        cdmWebappContext.setContextPath(constructContextPath(conf));
+        cdmWebappContext.setTempDirectory(CDM_WEBAPP_TEMP_FOLDER);
 
-		cdmWebappContext.setAttribute(ATTRIBUTE_CDM_LOGFILE,
-		        logPath + File.separator + "cdm-"
-		                + conf.getInstanceName() + ".log");
+        if(!instance.bindJndiDataSource()){
+            // a problem with the datasource occurred skip this webapp
+            cdmWebappContext = null;
+            logger.error("a problem with the datasource occurred -> skipping /" + conf.getInstanceName());
+            instance.setStatus(Status.error);
+            return cdmWebappContext;
+        }
 
-		if(cdmRemoteWebAppFile.isDirectory() && isRunningFromCdmRemoteWebAppSource()){
+        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
+        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
-		    /*
-		     * when running the webapp from {projectpath} src/main/webapp we
-		     * must assure that each web application is using it's own
-		     * classloader thus we tell the WebAppClassLoader where the
-		     * dependencies of the webapplication can be found. Otherwise
-		     * the system classloader would load these resources.
-		     */
-		    logger.info("Running webapp from source folder, thus adding java.class.path to WebAppClassLoader");
+        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
+                logPath + File.separator + "cdm-"
+                        + conf.getInstanceName() + ".log");
 
-		    WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
+        if( getCdmRemoteWebAppFile().isDirectory() && isRunningFromCdmRemoteWebAppSource()){
 
-		    String classPath = System.getProperty("java.class.path");
-		    classLoader.addClassPath(classPath);
-		    cdmWebappContext.setClassLoader(classLoader);
-		}
+            /*
+             * when running the webapp from {projectpath} src/main/webapp we
+             * must assure that each web application is using it's own
+             * classloader thus we tell the WebAppClassLoader where the
+             * dependencies of the webapplication can be found. Otherwise
+             * the system classloader would load these resources.
+             */
+            String classPath = System.getProperty("java.class.path");
+            logger.info("Running webapp from source folder, thus adding system property 'java.class.path=" + classPath +"'  to WebAppClassLoader");
+            WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
+            classLoader.addClassPath(classPath);
+            cdmWebappContext.setClassLoader(classLoader);
+        }
 
-		contexts.addHandler(cdmWebappContext);
-		instance.setWebAppContext(cdmWebappContext);
-		cdmWebappContext.addLifeCycleListener(instance);
+        contexts.addHandler(cdmWebappContext);
+        instance.setWebAppContext(cdmWebappContext);
+        cdmWebappContext.addLifeCycleListener(instance);
+        instance.setStatus(Status.stopped);
 
-		return cdmWebappContext;
-	}
+        return cdmWebappContext;
+    }
+
+    /**
+     * @param conf
+     * @return
+     */
+    private String constructContextPath(Configuration conf) {
+        return "/" + conf.getInstanceName();
+    }
+
+    /**
+     * Removes the given instance from the contexts. If the instance is running
+     * at the time of calling this method it will be stopped first.
+     * The JndiDataSource and the webapplicationContext will be released and removed.
+     *
+     * @param instance the instance to be removed
+     *
+     * @throws Exception in case stopping the instance fails
+     */
+    public void removeCdmInstanceContext(CdmInstance instance) throws Exception {
+
+        if(instance.getWebAppContext() != null){
+            if(instance.getWebAppContext().isRunning()){
+                try {
+                    instance.getWebAppContext().stop();
+                } catch (Exception e) {
+                    instance.getProblems().add("Error while stopping instance: " + e.getMessage());
+                    throw e;
+                }
+            }
+            contexts.removeHandler(instance.getWebAppContext());
+            instance.releaseWebAppContext();
+        } else  {
+            // maybe something went wrong before, try to find the potentially lost
+            // contexts directly in the server
+            ContextHandler handler = getContextFor(instance.getConfiguration());
+            if(handler != null){
+                contexts.removeHandler(handler);
+            }
+        }
+        instance.unbindJndiDataSource();
+    }
 
     /**
      * Sets the webapp specified by the <code>webApplicationResource</code> to
@@ -585,5 +585,34 @@ public final class Bootloader {
 
     public Server getServer() {
         return server;
+    }
+
+    public ContextHandler getContextFor(Configuration conf) {
+        return getContextFor(constructContextPath(conf));
+    }
+
+    public ContextHandler getContextFor(String contextPath) {
+        for( Handler handler : contexts.getHandlers()){
+            if(handler instanceof ContextHandler){
+                if(((ContextHandler)handler).getContextPath().equals(contextPath)){
+                    return (ContextHandler)handler;
+                }
+            }
+        }
+        return null;
+    }
+
+    public ContextHandlerCollection getContexts() {
+        return contexts;
+    }
+
+    /**
+     * @return a File object pointing to the location of the cdmlib-remote-webapp
+     */
+    public File getCdmRemoteWebAppFile(){
+        if(cdmRemoteWebAppFile == null){
+            throw new RuntimeException("Invalid order of action. Server not yet started. The startServer() method must be called first. ");
+        }
+        return cdmRemoteWebAppFile;
     }
 }

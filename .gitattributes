@@ -35,6 +35,7 @@ src/main/java/eu/etaxonomy/cdm/server/instance/CdmInstance.java -text
 src/main/java/eu/etaxonomy/cdm/server/instance/Configuration.java -text
 src/main/java/eu/etaxonomy/cdm/server/instance/DataSourcePropertyParser.java -text
 src/main/java/eu/etaxonomy/cdm/server/instance/InstanceManager.java -text
+src/main/java/eu/etaxonomy/cdm/server/instance/SharedAttributes.java -text
 src/main/java/eu/etaxonomy/cdm/server/instance/Status.java -text
 src/main/java/eu/etaxonomy/cdm/server/jsvc/ServiceWrapper.java -text
 src/main/java/eu/etaxonomy/cdm/server/win32service/CDMServerWrapperListener.java -text
@@ -54,6 +55,7 @@ src/main/webapp/js/jquery.js -text
 src/main/webapp/js/jquery.min.js -text
 src/main/webapp/js/memory-status.js -text
 src/main/webapp/js/oai-pmh-status.js -text
+src/main/webapp/manage/Action.jsp -text
 src/main/webapp/manage/BootloaderService.jsp -text
 src/main/webapp/manage/MemoryService.jsp -text
 src/main/webapp/manage/index.jsp -text

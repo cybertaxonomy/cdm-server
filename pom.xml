@@ -301,6 +301,9 @@
 							<overWriteReleases>true</overWriteReleases>
 							<artifactItems>
 								<artifactItem>
+								    <!--
+								        copy the cdmlib-remote-webapp-${project.version}.war to the build dir
+								     -->
 									<groupId>eu.etaxonomy</groupId>
 									<artifactId>cdmlib-remote-webapp</artifactId>
 									<version>${project.version}</version>
@@ -537,10 +540,14 @@
 			cdm-server Bootlader however relies on a specific name of the cdmlib-remote-webapp
 			war file. In order to achieve this with maven 3 the below dependency is now
 			handled more explicitely by utilizing the dependency:copy-dependencies gloal
-			in the build/plugins section <dependency> <groupId>eu.etaxonomy</groupId>
-			<artifactId>cdmlib-remote-webapp</artifactId> <version>${project.version}</version>
-			<type>war</type> </dependency> -->
-
+			in the build/plugins section
+			 <dependency>
+			     <groupId>eu.etaxonomy</groupId>
+			     <artifactId>cdmlib-remote-webapp</artifactId>
+                 <version>${project.version}</version>
+			     <type>war</type>
+			 </dependency>
+	       -->
 		<!-- JETTY 7 -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>

@@ -32,20 +32,27 @@
 
    for(CdmInstance instance: instances){
     i++;
-    Configuration props = instance.getConfiguration();
-    String basePath = request.getContextPath() + "/" + props.getInstanceName();
+    ObjectNode instanceNode = jsonMapper.createObjectNode();
+    instanceNode.put("status", instance.getStatus().name());
+    instanceNode.put("messages", jsonMapper.valueToTree(instance.getProblems()));
+
+
+    Configuration conf = instance.getConfiguration();
+    String basePath = request.getContextPath() + "/" + conf.getInstanceName();
       URL fullURL = new URL(request.getScheme(),
                   request.getServerName(),
                   request.getServerPort(),
                   basePath);
 
-      JsonNode jsonNode = jsonMapper.valueToTree(props);
-      if(jsonNode instanceof ObjectNode){
-           ((ObjectNode)jsonNode).put("basePath", basePath);
-           ((ObjectNode)jsonNode).put("fullUrl", fullURL.toString());
-           ((ObjectNode)jsonNode).remove("password");
+      JsonNode configNode = jsonMapper.valueToTree(conf);
+      if(configNode instanceof ObjectNode){
+           ((ObjectNode)configNode).put("basePath", basePath);
+           ((ObjectNode)configNode).put("fullUrl", fullURL.toString());
+           ((ObjectNode)configNode).remove("password");
       }
-      arrayNode.add(jsonNode);
+
+      ((ObjectNode)instanceNode).put("configuration", configNode);
+      arrayNode.add(instanceNode);
    }
    out.append(arrayNode.toString());
   }%>
