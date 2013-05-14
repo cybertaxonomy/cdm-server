@@ -128,6 +128,12 @@ public final class Bootloader {
 
     private CommandLine cmdLine;
 
+    private boolean isRunningFromSource;
+
+    private boolean isRunningfromTargetFolder;
+
+    private boolean isRunningFromWarFile;
+
     /* thread save singleton implementation */
 
     private static Bootloader bootloader = new Bootloader();
@@ -277,19 +283,19 @@ public final class Bootloader {
                 logger.info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
             }
 
+            updateServerRunMode();
+
             // load the default-web-application from source if running in development mode mode
-            if(isRunningFromCdmRemoteWebAppSource()){
-                //TODO check if all local paths are valid !!!!
-               defaultWebAppFile = new File("./src/main/webapp");
+            if(isRunningFromWarFile){
+                defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
             } else {
-               defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+                defaultWebAppFile = new File("./src/main/webapp");
             }
 
-            if(isRunningFromCdmRemoteWebAppSource()){
+            if(isRunningFromSource){
                 if(cmdLine.hasOption(WEBAPP_CLASSPATH.getOpt())){
                     String classPathOption = cmdLine.getOptionValue(WEBAPP_CLASSPATH.getOpt());
                     normalizeClasspath(classPathOption);
-//                    webAppClassPath = classPathOption;
                 }
             }
         } else {
@@ -521,7 +527,7 @@ public final class Bootloader {
                 logPath + File.separator + "cdm-"
                         + conf.getInstanceName() + ".log");
 
-        if( getCdmRemoteWebAppFile().isDirectory() && isRunningFromCdmRemoteWebAppSource()){
+        if( isRunningFromSource ){
 
             /*
              * when running the webapp from {projectpath} src/main/webapp we
@@ -531,9 +537,6 @@ public final class Bootloader {
              * the system classloader would load these resources.
              */
             WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
-//            String classPath = System.getProperty("java.class.path");
-//            logger.info("Running cdmlib-remote-webapp from source folder:, thus adding system property 'java.class.path=" + classPath +"'  to WebAppClassLoader");
-//            classLoader.addClassPath(classPath);
             if(webAppClassPath != null){
                 logger.info("Running cdmlib-remote-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
@@ -611,12 +614,11 @@ public final class Bootloader {
         }
     }
 
-    /**
-     * @return
-     */
-    private boolean isRunningFromCdmRemoteWebAppSource() {
+    private void updateServerRunMode() {
         String webappPathNormalized = cdmRemoteWebAppFile.getAbsolutePath().replace('\\', '/');
-        return webappPathNormalized.endsWith("src/main/webapp") || webappPathNormalized.endsWith("cdmlib-remote-webapp/target/cdmserver");
+        isRunningFromSource =  webappPathNormalized.endsWith("src/main/webapp");
+        isRunningfromTargetFolder = webappPathNormalized.endsWith("cdmlib-remote-webapp/target/cdmserver");
+        isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
 
 
