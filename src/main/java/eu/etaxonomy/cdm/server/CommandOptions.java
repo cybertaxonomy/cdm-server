@@ -32,12 +32,27 @@ public class CommandOptions{
             .hasArg()
             .withDescription( "Defines the webapplication to run from, this either can be a compressed war or extracted file.\n" +
                     "Defaults to the cdm-remote-webapp.war which is found in cdm-server/traget\n" +
-                    "If this option is used extraction of the war from the cdmserver jar file is omitted.\n \n" +
-                    "Using the following paths developers can run the cdmlib-remote-webapp instaces completely from the target folder or from source:\n" +
-                    " - '{cdmlib-project-root}/cdmlib-remote-webapp/target/cdmserver'\n " +
-                    " - '{cdmlib-project-root}/cdmlib-remote-webapp/src/main/webapp'\n" +
-                    "This will also affect the cdm-server project, if any of both paths is set cdm-server will be run using the cdm-server/src/main/webapp folder!" )
+                    "If this option is used extracting the war from the cdmserver jar file is omitted.\n \n" +
+                    "DEVELOPMENT MODE:\n" +
+                    "  If the specified path points to a directory the cdm-server will run in development mode.\n" +
+                    "  In development mode the default webapplication containing the cdm-server management web \n" +
+                    "  interface will be loaded from the source folder cdm-server/src/main/webapp. In normal \n" +
+                    "  mode the default-webapp.war file will be used insead.\n" +
+                    "  Using the following paths developers can run the cdmlib-remote-webapp instaces completely\n" +
+                    "  from the target folder or from source (examples are for the eclipse ide):\n" +
+                    "   - run from maven target: '{cdmlib-project-root}/cdmlib-remote-webapp/target/cdmserver'\n " +
+                    "   - run from source: '{cdmlib-project-root}/cdmlib-remote-webapp/src/main/webapp'\n" +
+                    "     When running from source you must also set the webapp-classpath option: \n" +
+                    "     -webappClasspath=${project_classpath} " )
             .create("webapp");
+
+  @SuppressWarnings("static-access")
+    public static final Option WEBAPP_CLASSPATH = OptionBuilder
+            .withArgName("classpath")
+            .hasArg()
+            .withDescription("Sets the classpath for the cdmlib-remote-webapp instance when running from source code." +
+                    " See option -webapp")
+            .create("webappClasspath");
 
     @SuppressWarnings("static-access")
     public static final Option HTTP_PORT = OptionBuilder
@@ -56,10 +71,10 @@ public class CommandOptions{
 
     @SuppressWarnings("static-access")
     public static final Option DATASOURCES_FILE = OptionBuilder
-    .withArgName("datasourcesfile")
-    .hasArg()
-    .withDescription( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
-    .create("datasources");
+        .withArgName("datasourcesfile")
+        .hasArg()
+        .withDescription( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
+        .create("datasources");
 
 
 
@@ -69,6 +84,7 @@ public class CommandOptions{
             options = new Options();
             options.addOption(HELP);
             options.addOption(WEBAPP);
+            options.addOption(WEBAPP_CLASSPATH);
             options.addOption(HTTP_PORT);
             options.addOption(LOG_DIR);
             options.addOption(DATASOURCES_FILE);

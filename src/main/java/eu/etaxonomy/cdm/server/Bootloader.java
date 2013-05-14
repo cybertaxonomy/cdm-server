@@ -17,6 +17,7 @@ import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
 import static eu.etaxonomy.cdm.server.CommandOptions.LOG_DIR;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP;
+import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP_CLASSPATH;
 import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
 
 import java.io.BufferedReader;
@@ -119,6 +120,8 @@ public final class Bootloader {
     private File defaultWebAppFile = null;
 
     private String logPath = null;
+
+    private String webAppClassPath = null;
 
     private Server server = null;
     private final ContextHandlerCollection contexts = new ContextHandlerCollection();
@@ -262,40 +265,52 @@ public final class Bootloader {
         tempDir = null;
 
 
-         // WARFILE
-         if(cmdLine.hasOption(WEBAPP.getOpt())){
-             cdmRemoteWebAppFile = new File(cmdLine.getOptionValue(WEBAPP.getOpt()));
-             if(cdmRemoteWebAppFile.isDirectory()){
-                 logger.info("using user defined web application folder: " + cdmRemoteWebAppFile.getAbsolutePath());
-             } else {
-                 logger.info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
-             }
-             if(isRunningFromCdmRemoteWebAppSource()){
-                 //TODO check if all local paths are valid !!!!
-                defaultWebAppFile = new File("./src/main/webapp");
+        // WEBAPP options
+        //   prepare web application files to run either from war files (production mode)
+        //   or from source (development mode)
+        if(cmdLine.hasOption(WEBAPP.getOpt())){
 
-             } else {
-                defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
-             }
-         } else {
-             // read version number
-             String version = readCdmRemoteVersion();
-
-             cdmRemoteWebAppFile = extractWar(CDMLIB_REMOTE_WEBAPP + "-" + version);
-             defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
-         }
-
-         // HTTP Port
-         int httpPort = 8080;
-         if(cmdLine.hasOption(HTTP_PORT.getOpt())){
-             try {
-                httpPort = Integer.parseInt(cmdLine.getOptionValue(HTTP_PORT.getOpt()));
-                logger.info(HTTP_PORT.getOpt()+" set to "+cmdLine.getOptionValue(HTTP_PORT.getOpt()));
-            } catch (NumberFormatException e) {
-                logger.error("Supplied portnumber is not an integer");
-                System.exit(-1);
+            cdmRemoteWebAppFile = new File(cmdLine.getOptionValue(WEBAPP.getOpt()));
+            if(cdmRemoteWebAppFile.isDirectory()){
+                logger.info("using user defined web application folder: " + cdmRemoteWebAppFile.getAbsolutePath());
+            } else {
+                logger.info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
             }
-         }
+
+            // load the default-web-application from source if running in development mode mode
+            if(isRunningFromCdmRemoteWebAppSource()){
+                //TODO check if all local paths are valid !!!!
+               defaultWebAppFile = new File("./src/main/webapp");
+            } else {
+               defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+            }
+
+            if(isRunningFromCdmRemoteWebAppSource()){
+                if(cmdLine.hasOption(WEBAPP_CLASSPATH.getOpt())){
+                    String classPathOption = cmdLine.getOptionValue(WEBAPP_CLASSPATH.getOpt());
+                    normalizeClasspath(classPathOption);
+//                    webAppClassPath = classPathOption;
+                }
+            }
+        } else {
+            // read version number
+            String version = readCdmRemoteVersion();
+            cdmRemoteWebAppFile = extractWar(CDMLIB_REMOTE_WEBAPP + "-" + version);
+            defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+        }
+
+
+        // HTTP Port
+        int httpPort = 8080;
+        if(cmdLine.hasOption(HTTP_PORT.getOpt())){
+            try {
+               httpPort = Integer.parseInt(cmdLine.getOptionValue(HTTP_PORT.getOpt()));
+               logger.info(HTTP_PORT.getOpt()+" set to "+cmdLine.getOptionValue(HTTP_PORT.getOpt()));
+           } catch (NumberFormatException e) {
+               logger.error("Supplied portnumber is not an integer");
+               System.exit(-1);
+           }
+        }
 
          if(cmdLine.hasOption(DATASOURCES_FILE.getOpt())){
              logger.error(DATASOURCES_FILE.getOpt() + " NOT JET IMPLEMENTED!!!");
@@ -374,6 +389,22 @@ public final class Bootloader {
             logger.info(APPLICATION_NAME+" stopped.");
             System.exit(0);
         }
+    }
+
+    /**
+     * @param classpath
+     */
+    private void normalizeClasspath(String classpath) {
+        StringBuilder classPathBuilder = new StringBuilder((int) (classpath.length() * 1.2));
+        String[] cpEntries = classpath.split("[\\:]");
+        for(String cpEntry : cpEntries){
+            classPathBuilder.append(',');
+//            if(cpEntry.endsWith(".jar")){
+//                classPathBuilder.append("jar:");
+//            }
+            classPathBuilder.append(cpEntry);
+        }
+        webAppClassPath = classPathBuilder.toString();
     }
 
     public String readCdmRemoteVersion() throws IOException {
@@ -499,10 +530,16 @@ public final class Bootloader {
              * dependencies of the webapplication can be found. Otherwise
              * the system classloader would load these resources.
              */
-            String classPath = System.getProperty("java.class.path");
-            logger.info("Running webapp from source folder, thus adding system property 'java.class.path=" + classPath +"'  to WebAppClassLoader");
             WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
-            classLoader.addClassPath(classPath);
+//            String classPath = System.getProperty("java.class.path");
+//            logger.info("Running cdmlib-remote-webapp from source folder:, thus adding system property 'java.class.path=" + classPath +"'  to WebAppClassLoader");
+//            classLoader.addClassPath(classPath);
+            if(webAppClassPath != null){
+                logger.info("Running cdmlib-remote-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
+                classLoader.addClassPath(webAppClassPath);
+            } else {
+                throw new RuntimeException("Classpath cdmlib-remote-webapp for missing while running cdmlib-remote-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
+            }
             cdmWebappContext.setClassLoader(classLoader);
         }
 
