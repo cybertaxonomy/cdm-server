@@ -43,15 +43,16 @@ public class CommandOptions{
                     "   - run from maven target: '{cdmlib-project-root}/cdmlib-remote-webapp/target/cdmserver'\n " +
                     "   - run from source: '{cdmlib-project-root}/cdmlib-remote-webapp/src/main/webapp'\n" +
                     "     When running from source you must also set the webapp-classpath option: \n" +
-                    "     -webappClasspath=${project_classpath} " )
+                    "     -webappClasspath=${project_classpath:cdmlib-remote-webapp} " )
             .create("webapp");
 
   @SuppressWarnings("static-access")
     public static final Option WEBAPP_CLASSPATH = OptionBuilder
             .withArgName("classpath")
             .hasArg()
-            .withDescription("Sets the classpath for the cdmlib-remote-webapp instance when running from source code." +
-                    " See option -webapp")
+            .withDescription("Sets the classpath for the cdmlib-remote-webapp instance when running from source code,\n" +
+                    "e.g: ${project_classpath:cdmlib-remote-webapp}\n" +
+                    "See option -webapp")
             .create("webappClasspath");
 
     @SuppressWarnings("static-access")
