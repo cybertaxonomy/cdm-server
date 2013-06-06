@@ -103,8 +103,8 @@ case "$1" in
 			mkdir $CDM_USER_HOME/.cdmLibrary
 		fi
 		cd $CDM_USER_HOME/.cdmLibrary
-    ln -s $ETC_CDMSERVER/datasources.xml datasources.xml
-		ln -s $ETC_CDMSERVER/cdm-server-realm.properties cdm-server-realm.properties
+    ln -sf $ETC_CDMSERVER/datasources.xml datasources.xml
+		ln -sf $ETC_CDMSERVER/cdm-server-realm.properties cdm-server-realm.properties
 
 		#
 		# set group and owner for home directory

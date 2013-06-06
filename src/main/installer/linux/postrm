@@ -45,9 +45,19 @@ groupExist(){
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-do_remove_files(){
+do_remove_tmp_files(){
 
-    echo "postrm: do_remove_files()"
+    echo "postrm: do_remove_tmp_files()"
+
+    rm -rf $CDM_USER_HOME/.cdmLibrary/server
+    rm -rf $CDM_USER_HOME/.cdmLibrary/writableResources
+
+    return 0
+}
+
+do_remove_all_files(){
+
+    echo "postrm: do_remove_all_files()"
 
     rm -rf $CDM_USER_HOME/.cdmLibrary
 
@@ -87,9 +97,10 @@ do_purge(){
 
 case "$1" in
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-        do_remove_files
+        do_remove_tmp_files
     ;;
     purge)
+        do_remove_all_files
         do_purge
     ;;
     *)
