@@ -319,7 +319,14 @@ public final class Bootloader {
         }
 
          if(cmdLine.hasOption(DATASOURCES_FILE.getOpt())){
-             logger.error(DATASOURCES_FILE.getOpt() + " NOT JET IMPLEMENTED!!!");
+             File datasourcesFile = new File(cmdLine.getOptionValue(DATASOURCES_FILE.getOpt()));
+             if(datasourcesFile.canRead()) {
+                instanceManager.setDatasourcesFile(datasourcesFile);
+            } else {
+                logger.error("File set as " + DATASOURCES_FILE.getOpt()
+                        + " (" + cmdLine.getOptionValue(DATASOURCES_FILE.getOpt())
+                        + ") is not readable.");
+            }
          }
 
         verifySystemResources();

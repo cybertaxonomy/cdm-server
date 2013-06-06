@@ -42,7 +42,22 @@ public class InstanceManager implements LifeCycle.Listener {
 
     boolean serverIsRunning = false;
 
-    private final File datasourcesFile;
+    private File datasourcesFile;
+
+    /**
+     * @return the datasourcesFile
+     */
+    public File getDatasourcesFile() {
+        return datasourcesFile;
+    }
+
+    /**
+     * @param datasourcesFile the datasourcesFile to set
+     */
+    public void setDatasourcesFile(File datasourcesFile) {
+        this.datasourcesFile = datasourcesFile;
+    }
+
     private ListOrderedMap instances = new ListOrderedMap();
 
     private final boolean austostart = true;
