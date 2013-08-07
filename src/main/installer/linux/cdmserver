@@ -113,8 +113,8 @@ BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
   log_failure_msg "Could not start $DESC because no Java Development Kit"
-  log_failure_msg "(JDK) was found. Please download and install JDK 1.4 or higher and set"
-  log_failure_msg "JAVA_HOME in /etc/default/jetty to the JDK's installation directory."
+  log_failure_msg "(JDK) was found. Please download and install JDK 1.6 or higher and set"
+  log_failure_msg "JAVA_HOME in /etc/default/cdmserver to the JDK's installation directory."
   exit 0
 fi
 
