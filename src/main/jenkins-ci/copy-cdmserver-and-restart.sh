@@ -2,16 +2,20 @@
 #
 # prior using this script make sure the required sudo
 # commands are allowed in /etc/sudoers by allowing the
-# following command alias to be executed without password:
-#  Cmnd_Alias      CDMSERVER = /bin/cp -f cdm-server*.jar /opt/cdmserver/, /etc/init.d/cdmserver *, /bin/rm -f /opt/cdmserver/cdm-server.jar, /bin/ln -s cdm-server*.jar cdm-server.jar
+# following the below used commands to be executed without
+# password. Add the following enties to /etc/sudoers: 
+# ------------------------------------------------------------
+#   User_Alias      CDMUSERS = jenkins
+#   Cmnd_Alias      CDMSERVER = /bin/cp -f cdm-server*.jar /opt/cdmserver/, /etc/init.d/cdmserver *, /bin/rm -f /opt/cdmserver/cdm-server.jar, /bin/ln -s cdm-server*.jar cdm-server.jar
+#   CDMUSERS        ALL=(ALL)NOPASSWD: CDMSERVER
+# ------------------------------------------------------------
 
-
-#MVN_PROJECT_TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
-MVN_PROJECT_TARGET_DIR="$WORKSPACE/cdm-server/target"
+#TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
+TARGET_DIR="$WORKSPACE/cdm-server/target"
 
 CDMSERVER_HOME="/opt/cdmserver"
 
-cd "${MVN_PROJECT_TARGET_DIR}"
+cd "${TARGET_DIR}"
 
 CDMSERVER_JAR=$(ls -1 | grep cdm-server.*jar | grep -v sources)
 
