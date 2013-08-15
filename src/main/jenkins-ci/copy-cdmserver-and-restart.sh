@@ -11,9 +11,15 @@
 # ------------------------------------------------------------
 
 #TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
-TARGET_DIR="$WORKSPACE/cdm-server/target"
-
-CDMSERVER_HOME="/opt/cdmserver"
+if [ -z $TARGET_DIR ]; then
+  TARGET_DIR="$WORKSPACE/cdm-server/target"
+fi
+if [ -z $CDMSERVER_HOME ]; then
+  CDMSERVER_HOME="/opt/cdmserver"
+fi
+echo "copy-cdmserver-and-restart:"
+echo "  TARGET_DIR="$TARGET_DIR
+echo "  CDMSERVER_HOME="$CDMSERVER_HOME
 
 cd "${TARGET_DIR}"
 
