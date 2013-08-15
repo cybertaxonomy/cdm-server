@@ -11,10 +11,10 @@
 # ------------------------------------------------------------
 
 #TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
-if [ -z $TARGET_DIR ]; then
+if [ -z "$TARGET_DIR" ]; then
   TARGET_DIR="$WORKSPACE/cdm-server/target"
 fi
-if [ -z $CDMSERVER_HOME ]; then
+if [ -z "$CDMSERVER_HOME" ]; then
   CDMSERVER_HOME="/opt/cdmserver"
 fi
 echo "copy-cdmserver-and-restart:"
@@ -27,7 +27,7 @@ CDMSERVER_JAR=$(ls -1 | grep cdm-server.*jar | grep -v sources)
 
 if [ ! -e $CDMSERVER_JAR ]
 then
-    echo "cdmserver*.jar missing in target folder"
+    echo "cdmserver.*jar missing in target folder"
     exit 1
 fi
 
