@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # prior using this script make sure the required sudo
 # commands are allowed in /etc/sudoers by allowing the
