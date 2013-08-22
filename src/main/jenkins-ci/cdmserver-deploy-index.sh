@@ -66,9 +66,9 @@ else
 fi
 
 echo "switching to new index"
-ssh ${REMOTE_SERVER} rm -rf ${REMOTE_INDEX_CONTAINER}index
-ssh ${REMOTE_SERVER} mv ${REMOTE_INDEX_CONTAINER}tmp/index ${REMOTE_INDEX_CONTAINER}index
-ssh ${REMOTE_SERVER} rm -rf ${REMOTE_INDEX_CONTAINER}tmp
+ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}index
+ssh ${REMOTE_SERVER} sudo mv ${REMOTE_INDEX_CONTAINER}tmp/index ${REMOTE_INDEX_CONTAINER}index
+ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp
 
 if [ "${REMOTE_SERVER_DO_RESTART}" == "restart" ]; then
 	echo "restarting server"

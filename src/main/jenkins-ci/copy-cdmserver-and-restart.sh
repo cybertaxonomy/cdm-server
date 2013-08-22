@@ -10,6 +10,10 @@
 #   CDMUSERS        ALL=(ALL)NOPASSWD: CDMSERVER
 # ------------------------------------------------------------
 
+if [ -z "${RESTART_AFTER_UPDATE}" ]; then
+	RESTART_AFTER_UPDATE="restart"
+fi
+
 #TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
 if [ -z "$TARGET_DIR" ]; then
   TARGET_DIR="$WORKSPACE/cdm-server/target"
@@ -20,6 +24,7 @@ fi
 echo "copy-cdmserver-and-restart:"
 echo "  TARGET_DIR="$TARGET_DIR
 echo "  CDMSERVER_HOME="$CDMSERVER_HOME
+echo "  RESTART_AFTER_UPDATE="$RESTART_AFTER_UPDATE
 
 cd "${TARGET_DIR}"
 
@@ -36,4 +41,7 @@ sudo -u cdm /bin/rm -f /opt/cdmserver/cdm-server.jar
 sudo -u cdm /bin/cp -f $CDMSERVER_JAR /opt/cdmserver/
 cd $CDMSERVER_HOME
 sudo -u cdm /bin/ln -s $CDMSERVER_JAR cdm-server.jar
-sudo /etc/init.d/cdmserver start
+echo "restarting server"
+if [ "${RESTART_AFTER_UPDATE}" == "restart" ]; then
+    sudo /etc/init.d/cdmserver start
+fi
