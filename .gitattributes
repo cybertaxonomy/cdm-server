@@ -40,6 +40,7 @@ src/main/java/eu/etaxonomy/cdm/server/instance/Status.java -text
 src/main/java/eu/etaxonomy/cdm/server/jsvc/ServiceWrapper.java -text
 src/main/java/eu/etaxonomy/cdm/server/win32service/CDMServerWrapperListener.java -text
 src/main/java/eu/etaxonomy/cdm/server/win32service/Win32Service.java -text
+src/main/jenkins-ci/cdmserver-deploy-index.sh -text
 src/main/jenkins-ci/copy-cdmserver-and-restart.sh -text
 src/main/resources/c3p0.properties -text
 src/main/resources/log4j.properties -text
