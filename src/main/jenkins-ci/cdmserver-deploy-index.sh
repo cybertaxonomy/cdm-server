@@ -77,7 +77,7 @@ else
 fi
 
 echo "switching to new index"
-for name in $names
+for name in "${names[@]}"
 do
   echo "  - $name" 
   ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}/index/$name
