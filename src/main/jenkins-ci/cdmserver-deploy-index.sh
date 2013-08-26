@@ -38,13 +38,24 @@ if [ -z "${REMOTE_SERVER}" ]; then
 	echo '$REMOTE_SERVER missing'
 	exit 1
 fi
+if [ -z "${INSTANCE_NAMES}" ]; then
+  echo '$INSTANCE_NAMES missing'
+  exit 1
+fi
 
 echo "cdmserver-delpoy-index:"
 echo "  REMOTE_SERVER = ${REMOTE_SERVER}"
 echo "  LOCAL_INDEX_CONTAINER = ${LOCAL_INDEX_CONTAINER}"
 echo "  REMOTE_INDEX_CONTAINER = ${REMOTE_INDEX_CONTAINER}"
 echo "  REMOTE_SERVER_DO_RESTART = ${REMOTE_SERVER_DO_RESTART}"
+echo "  INSTANCE_NAMES = ${INSTANCE_NAMES}"
 echo "  "
+
+# parse INSTANCE_NAMES by whitespace
+TMP_IFS=$IFS
+IFS=' '
+names=($INSTANCE_NAMES)
+IFS=$TMP_IFS
 
 echo "transferring  index to "${REMOTE_SERVER}
 ssh ${REMOTE_SERVER} "sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp; mkdir -p ${REMOTE_INDEX_CONTAINER}tmp"
@@ -66,9 +77,13 @@ else
 fi
 
 echo "switching to new index"
-ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}index
-ssh ${REMOTE_SERVER} sudo mv ${REMOTE_INDEX_CONTAINER}tmp/index ${REMOTE_INDEX_CONTAINER}index
-ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp
+for name in $names
+do
+  echo "  - $name" 
+  ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}/index/$name
+  ssh ${REMOTE_SERVER} sudo mv ${REMOTE_INDEX_CONTAINER}tmp/index/$name ${REMOTE_INDEX_CONTAINER}index/$name
+  ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp
+done
 
 if [ "${REMOTE_SERVER_DO_RESTART}" == "restart" ]; then
 	echo "restarting server"
