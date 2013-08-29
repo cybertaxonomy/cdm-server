@@ -80,7 +80,7 @@ echo "switching to new index"
 for name in "${names[@]}"
 do
   echo "  - $name" 
-  ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}/index/$name
+  ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}index/$name
   ssh ${REMOTE_SERVER} sudo mv ${REMOTE_INDEX_CONTAINER}tmp/index/$name ${REMOTE_INDEX_CONTAINER}index/$name
   ssh ${REMOTE_SERVER} sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp
 done
