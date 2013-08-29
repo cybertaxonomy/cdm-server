@@ -56,6 +56,7 @@ src/main/webapp/js/jquery.js -text
 src/main/webapp/js/jquery.min.js -text
 src/main/webapp/js/memory-status.js -text
 src/main/webapp/js/oai-pmh-status.js -text
+src/main/webapp/js/redirect-to-rewriter.js -text
 src/main/webapp/manage/Action.jsp -text
 src/main/webapp/manage/BootloaderService.jsp -text
 src/main/webapp/manage/MemoryService.jsp -text

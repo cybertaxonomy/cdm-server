@@ -16,10 +16,8 @@
 
 <head>
 <title>CDM Server</title>
-<link type="text/css" rel="stylesheet" media="all"
-  href="../css/style.css" />
-<link type="text/css" rel="stylesheet" media="all"
-  href="../css/server.css" />
+<link type="text/css" rel="stylesheet" media="all"  href="../css/style.css" />
+<link type="text/css" rel="stylesheet" media="all"  href="../css/server.css" />
 </head>
 <body class="layout-main">
   <div id="page" class="clearfix">
@@ -63,7 +61,7 @@
             <div class="block-wrapper">
               <div class="block" id="instances">
                 <h2 class="title block-title pngfix">CDM Server Instances</h2>
-                <div><a href="Action.jsp?&redirectTo=./&action=reloadConfig">Reload configuration</a></div>
+                <div><a class="redirect-rewrite" href="Action.jsp?&redirectTo=./&action=reloadConfig">Reload configuration</a></div>
                 <div class="container">
                   <table>
                     <tr>
@@ -112,7 +110,7 @@
                                 out.append("<td class=\"db-url\">" + props.getDataSourceUrl() + "</td>");
                                 out.append("<td class=\"status " + instance.getStatus() + "\">" + instance.getStatus() + "</td>");
                                 out.append("<td class=\"operation\">" + (actionParams != null ?
-                                        "<a href=\"Action.jsp?" + actionParams + "\">" + action + "</a>"
+                                        "<a class=\"redirect-rewrite\" href=\"Action.jsp?" + actionParams + "\">" + action + "</a>"
                                         : "&nbsp;")
                                         + "</td>");
 
@@ -169,5 +167,6 @@
   <script type="text/javascript" src="../js/oai-pmh-status.js"></script>
   <script type="text/javascript" src="../js/memory-status.js"></script>
   <script type="text/javascript" src="../js/instance-status.js"></script>
+  <script type="text/javascript" src="../js/redirect-to-rewriter.js"></script>
 </body>
 </html>
