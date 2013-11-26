@@ -38,5 +38,10 @@ public enum Status{
     /**
      * The instance has been removed from the configuration file.
      */
-    removed
+    removed,
+    /**
+     * The version of the instance database is not compatible.
+     * It is potentially updateable
+     */
+    incompatible_version
 }

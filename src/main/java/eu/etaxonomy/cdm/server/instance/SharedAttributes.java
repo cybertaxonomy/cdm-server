@@ -47,4 +47,10 @@ public class SharedAttributes {
      */
     public static final String ATTRIBUTE_ERROR_MESSAGES = "cdm.errorMessages";
 
+    /**
+     * Force a schema update when the cdmlib-remote-webapp instance is starting up
+     * same as <code>eu.etaxonomy.cdm.remote.config.DataSourceConfigurer.ATTRIBUTE_FORCE_SCHEMA_UPDATE</code>
+     */
+    public static final String ATTRIBUTE_FORCE_SCHEMA_UPDATE = "cdm.forceSchemaUpdate";
+
 }

@@ -93,6 +93,9 @@
                                 String actionParams = null;
                                 if(instance.getStatus().equals(Status.started) || instance.getStatus().equals(Status.starting)){
                                     action = "stop";
+/* diusabled due to  #3910 (eu.etaxonomy.cdm.database.ICdmDataSource is not compatible to javax.sql.DataSource)
+} else if(instance.getStatus().equals(Status.incompatible_version)){
+                                    action = "update"; */
                                 } else if(!instance.getStatus().equals(Status.removed) && !instance.getStatus().equals(Status.uninitialized)){
                                     action = "start";
                                 }

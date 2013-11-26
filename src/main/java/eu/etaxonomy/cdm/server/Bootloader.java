@@ -150,6 +150,13 @@ public final class Bootloader {
     /* end of singleton implementation */
 
 
+    /**
+     * @param input
+     * @param output
+     * @param bufferSize
+     * @return
+     * @throws IOException
+     */
     public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
@@ -192,7 +199,7 @@ public final class Bootloader {
             if(pomxml.exists()){
                 // 2. try finding in target folder of maven project
                 File warFile = new File("target" + File.separator + warFileName);
-                logger.debug("looging for war file at " + warFile.getAbsolutePath());
+                logger.debug("looking for war file at " + warFile.getAbsolutePath());
                 if (warFile.canRead()) {
                     resource = warFile.toURI().toURL();
                 } else {

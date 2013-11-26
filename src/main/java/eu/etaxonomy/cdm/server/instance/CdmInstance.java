@@ -151,17 +151,29 @@ public class CdmInstance implements Listener {
         String dataSourceName = getServletContextAttribute(webAppContext, SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, String.class);
 
         if (messages != null && dataSourceName != null) {
+            // Problems with instance
+            Status errorStatus = Status.error;
+            for(String message : messages){
+                if(message.startsWith("Incompatible version")){
+                    errorStatus = Status.incompatible_version;
+                    break;
+                }
+            }
+            setStatus(errorStatus);
 
             getProblems().addAll(messages);
-            setStatus(Status.error);
+
             try {
                 logger.warn("Stopping context '" + dataSourceName + "' due to errors reported in ServletContext");
                 webAppContext.stop();
+                setStatus(errorStatus);
             } catch (Exception e) {
                 logger.error(e);
             }
+        } else {
+            // Instance is OK
+            setStatus(Status.started);
         }
-        setStatus(Status.started);
     }
 
     @Override

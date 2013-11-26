@@ -45,6 +45,10 @@
                 bootloader.addCdmInstanceContext(instance);
                 instanceManager.start(instance);
             }
+            if(action.equals("update")){
+                bootloader.addCdmInstanceContext(instance);
+                instanceManager.updateToCurrentVersion(instance);
+            }
         }
         if(redirectTo != null){
           response.sendRedirect(redirectTo);

@@ -103,12 +103,29 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     public void stop(CdmInstance instance) throws Exception{
+        // TODO do we need to bootloader().removeCdmInstanceContext(existingInstance); always?
+        //    see reLoadInstanceConfigurations()
         if(instance.getWebAppContext() != null){
             instance.getWebAppContext().stop();
         }
+        instance.unbindJndiDataSource();
         instance.getProblems().clear();
         // explicitly set status stopped here to clear up prior error states
         instance.setStatus(Status.stopped);
+    }
+
+    /**
+     * Sets the {@link SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE} attribute
+     * to the application context and starts the instance
+     *
+     * @param instance
+     * @throws Exception
+     */
+    public void updateToCurrentVersion(CdmInstance instance) throws Exception{
+        if(instance.getWebAppContext() != null){
+            instance.getWebAppContext().getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, true);
+        }
+        start(instance);
     }
 
     /**
