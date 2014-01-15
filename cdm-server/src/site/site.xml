@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+  <skin>
+    <groupId>eu.etaxonomy.site</groupId>
+    <artifactId>platform-site-skin</artifactId>
+    <version>1.0</version>
+  </skin>
+  <body>
+    <menu name="General Information">
+      <item name="Overview" href="index.html"/>
+      <!--item name="FAQ" href="faq.html"/-->
+      <item name="Download" href="http://wp5.e-taxonomy.eu/download/cdmserver/stable/"/>
+      <item name="Installation" href="http://wp5.e-taxonomy.eu/cdm-setups/?q=cdm-setups/group/cdmserver_installation/"/>
+    </menu>
+    <menu name="Developer">
+      <item name="FAQ &amp; Troubleshooting" href="troubleshooting.html"/>
+      <item name="Wiki" href="http://dev.e-taxonomy.eu/trac/wiki/CdmServerDev"/>
+    </menu>
+    <menu name="Project">
+      <item name="Mailing Lists" href="mail-lists.html"/>
+      <item name="Project Team" href="team-list.html"/>
+      <item name="Continuous Integration" href="integration.html"/>
+      <item name="Issue Tracking" href="http://dev.e-taxonomy.eu/trac/"/>
+      <item name="Source Repository" href="source-repository.html"/>
+      <item name="License" href="license.html"/>
+    </menu>
+  </body>
+</project>

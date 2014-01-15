@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
+<stringAttribute key="bad_container_name" value="run_cdm-server_jar"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${system_property:sun.boot.library.path}${system_property:file.separator}java.exe"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n&#13;&#10;&#13;&#10;-Xmx1024M&#13;&#10;&#13;&#10;-XX:PermSize=128m &#13;&#10;-XX:MaxPermSize=192m&#13;&#10;&#13;&#10;-XX:+UseConcMarkSweepGC &#13;&#10;-XX:+CMSClassUnloadingEnabled &#13;&#10;-XX:+CMSPermGenSweepingEnabled&#13;&#10;&#13;&#10;-jar cdm-server-2.5.jar  -datasources &quot;C:\Dokumente und Einstellungen\a.kohlbecker.BGBM\.cdmLibrary\datasources-tdwg.xml&quot;"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/cdm-server/target}"/>
+</launchConfiguration>

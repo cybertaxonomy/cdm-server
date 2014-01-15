@@ -2,6 +2,13 @@
 /.externalToolBuilders
 /.project
 /.settings
+cdm-server/.classpath
+cdm-server/.externalToolBuilders
+cdm-server/.project
+cdm-server/.settings
+cdm-server/dist
+cdm-server/maven-eclipse.xml
+cdm-server/target
 /dist
 /maven-eclipse.xml
 /target

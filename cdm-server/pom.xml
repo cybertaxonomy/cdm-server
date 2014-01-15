@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.etaxonomy</groupId>
+  <artifactId>cdm-server</artifactId>
+  <version>3.3</version>
+  <packaging>jar</packaging>
+  <name>CDM Community Standalone Server</name>
+
+  <properties>
+    <jetty-version>7.2.2.v20101205</jetty-version>
+  </properties>
+
+  <scm>
+    <!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html
+      for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml -->
+    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.3</connection>
+    <developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.3</developerConnection>
+    <url>http://dev.e-taxonomy.eu/trac/browser/tags/cdm-server/cdm-server-3.3</url>
+  </scm>
+
+  <mailingLists>
+    <mailingList>
+      <name>dev-edit</name>
+      <subscribe>
+        https://listes.mnhn.fr/wws/subrequest/dev-edit
+      </subscribe>
+      <unsubscribe>
+        https://listes.mnhn.fr/wws/sigrequest/dev-edit
+      </unsubscribe>
+      <post>dev-edit@mnhn.fr</post>
+      <archive>https://listes.mnhn.fr/wws/arc/dev-edit/</archive>
+    </mailingList>
+    <mailingList>
+      <name>cdm-edit</name>
+      <post>cdm-edit@mnhn.fr</post>
+      <subscribe>
+        https://listes.mnhn.fr/wws/subrequest/cdm-edit
+      </subscribe>
+      <unsubscribe>
+        https://listes.mnhn.fr/wws/sigrequest/cdm-edit
+      </unsubscribe>
+      <archive>https://listes.mnhn.fr/wws/arc/cdm-edit/</archive>
+    </mailingList>
+  </mailingLists>
+  <licenses>
+    <license>
+      <name>Mozilla Public License Version 1.1</name>
+      <url>http://www.mozilla.org/MPL/MPL-1.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <!-- your SVN account id please! -->
+      <id>a.kohlbecker</id>
+      <name>
+        Andreas Kohlbecker
+      </name>
+      <email>a.kohlbecker [at] bgbm.org</email>
+      <organization>
+        Botanical Garden Botanical Museum Berlin
+      </organization>
+      <organizationUrl>http://www.bgbm.org/BioDivInf/</organizationUrl>
+      <timezone>+1</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <url />
+    </developer>
+  </developers>
+
+  <!-- contributors> <contributor> <name>Test-Contributor</name> </contributor>
+    </contributors -->
+  <issueManagement>
+    <system>Trac</system>
+    <url>http://dev.e-taxonomy.eu/trac/</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://160.45.63.201/jenkins</url>
+  </ciManagement>
+  <!-- **** REPOSITORIES **** -->
+  <repositories>
+    <!-- sun repository -->
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1/</url>
+      <layout>legacy</layout>
+    </repository>
+    <!-- the localhost Maven Repository -->
+    <repository>
+          <id>EditLocalRepository</id>
+          <!--
+            disable the local repo to let maven always retrieve the
+            latest cdmlib-remote-webapp.war
+
+            TODO: use ${localrepo} for ${user.home}/.m2/repository
+            in MAVEN 3
+          -->
+          <url>file://${user.home}/.m2/repository/eu/etaxonomy/</url>
+          <releases>
+            <enabled>false</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+    <!-- the EDIT Maven Repository -->
+    <repository>
+      <id>EditRepository</id>
+      <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <!-- apache incubating repository -->
+    <repository>
+      <id>ApacheIncubating</id>
+      <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+    </repository>
+  </repositories>
+
+  <!-- **** PLUGINS **** -->
+  <build>
+    <resources>
+      <!-- ${basedir}/src/main/resources -->
+      <resource>
+        <!-- replace the project-version placeholder in the version.properties
+          file. This property can then be used to retrieve the version number in the
+          Bootloader -->
+        <targetPath>${project.build.directory}/classes</targetPath>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/main/resources</directory>
+        <includes>
+          <include>version.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <!-- all other files in classes -->
+        <targetPath>${project.build.directory}/classes</targetPath>
+        <directory>${basedir}/src/main/resources</directory>
+        <excludes>
+          <exclude>version.properties</exclude>
+        </excludes>
+      </resource>
+      <!-- ${basedir}/src/main/installer/win32 -->
+      <resource>
+        <targetPath>${project.build.directory}/installer</targetPath>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/main/installer</directory>
+        <includes>
+          <include>win32/program-folder/etc/CDMServer.conf</include>
+          <include>win32/setup.nsi</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>${project.build.directory}/installer</targetPath>
+        <directory>${basedir}/src/main/installer</directory>
+        <excludes>
+          <exclude>win32/program-folder/etc/CDMServer.conf</exclude>
+          <exclude>win32/setup.nsi</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <!-- ====== IDE ====== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <!-- only needed for testing the svn credentials credentials are usually
+          stored by svn automatically unless not configured differently in {user.home}\.subversion\config
+          So in order to use a specific svn account with maven firts to a commit manually
+          by svn ci -m "commit message" and answer the question wether to store the
+          credential with yes. There is no specific maven configuration required for
+          svn to work with maven! -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <connectionType>developerConnection</connectionType>
+        </configuration>
+      </plugin>
+      <!-- ====== CREATE ====== -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx512M</argLine>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <systemProperties>
+            <property>
+              <name>hibernate.connection.driver_class</name>
+              <value>${hibernate.connection.driver_class}</value>
+            </property>
+            <property>
+              <name>hibernate.connection.url</name>
+              <value>${hibernate.connection.url}</value>
+            </property>
+            <property>
+              <name>hibernate.connection.username</name>
+              <value>${hibernate.connection.username}</value>
+            </property>
+            <property>
+              <name>hibernate.connection.password</name>
+              <value>${hibernate.connection.password}</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <!-- ====== CREATE ====== -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0-beta-3</version>
+        <executions>
+          <execution>
+            <!--<phase>deploy</phase> -->
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <!-- Only create the build number if there are no local modifications -->
+          <doUpdate>false</doUpdate>
+          <!-- automatically update the local svn copy -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <locales>en</locales>
+        </configuration>
+      </plugin>
+      <!-- ====== VERIFY ====== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <stylesheet>maven</stylesheet>
+        </configuration>
+      </plugin>
+
+      <!-- ====== PROCESS-SOURCES ====== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <silent>flase</silent>
+              <stripVersion>true</stripVersion>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem>
+                    <!--
+                        copy the cdmlib-remote-webapp-${project.version}.war to the build dir
+                     -->
+                  <groupId>eu.etaxonomy</groupId>
+                  <artifactId>cdmlib-remote-webapp</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                  <!-- <classifier> [classifier - optional] </classifier> -->
+                  <overWrite>true</overWrite>
+                  <destFileName>cdmlib-remote-webapp-${project.version}.war</destFileName>
+                  <outputDirectory>
+                    ${project.build.directory}/cdm-server-${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ====== PACKAGE ====== -->
+      <!-- package the default webapp, // (and also add the cdmlib-remote-webapp.war)
+        test with: mvn war:war -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1-beta-1</version>
+        <configuration>
+          <warName>default-webapp</warName>
+          <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdmlib-remote-webapp</artifactId>
+            <!- - version is set in dependency - -> <skip>true</skip><!- - Do Not overlay
+            - -> </overlay> </overlays> -->
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- ====== INSTALL ====== -->
+      <plugin>
+        <!-- Assemble the runnable server jar test with: mvn assembly:single -->
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifest>
+              <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>install</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- Build a Debian package -->
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <configuration>
+              <tasks>
+                <property name="project.fullversionstring" value="${project.version}" />
+                <property name="project.version" value="${project.version}" />
+                <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Build windows installer -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>makensis</executable>
+          <!-- optional -->
+          <workingDirectory>/tmp</workingDirectory>
+          <arguments>
+            <!-- <argument>-V3</argument> -->
+            <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+      <!-- ====== DEPLOY ====== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+          <autoVersionSubmodules>false</autoVersionSubmodules>
+          <preparationGoals>clean verify install</preparationGoals>
+          <goals>deploy</goals><!-- skipping site-deploy by explicitly configuring
+            the goal here -->
+          <tagBase>http://dev.e-taxonomy.eu/svn/tags/cdm-server</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>wagon-maven-plugin</artifactId>
+        <version>1.0-beta-3</version>
+        <!-- Problems with the wagon-maven-plugin have been encounterd on Windows,
+          it should work properly on linux though. -->
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>upload</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <fromDir>target</fromDir>
+          <includes>*${project.version}*.deb,*${project.version}*.jar,*${project.version}*.exe</includes>
+          <url>scpexe://wp5.e-taxonomy.eu/var/www/download/cdmserver/${project.version}</url>
+          <serverId>wp5.e-taxonomy.eu</serverId>
+        </configuration>
+      </plugin>
+    </plugins>
+    <!-- EXTENSIONS -->
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-scm</artifactId>
+        <version>1.0-alpha-5</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>1.0-beta-7</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.scm</groupId>
+        <artifactId>maven-scm-manager-plexus</artifactId>
+        <version>1.0</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.scm</groupId>
+        <artifactId>maven-scm-provider-svnexe</artifactId>
+        <version>1.0</version>
+      </extension>
+      <!-- WebDAV plugin to upload snapshots -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <!-- you will want to start by publishing your classes' Javadocs -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/j2se/1.6.0/docs/api/</link>
+            <!-- more libraries? -->
+          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- this will generate an indexed and cross-referenced HTML version
+          of your source code -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- if you use @todo tags to remind you of things to be done (which
+          is a good coding practice), the taglist report will generate a list of all
+          the items marked @todo or TODO -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Test coverage can be a useful indication of the quality of your
+          unit tests. It basically tells you how much of your code is actually run
+          by your unit tests, which, in turn, can give you a good idea of the tests'
+          quality -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+
+
+    </plugins>
+  </reporting>
+  <!-- DISTRIBUTION MANAGEMENT -->
+  <distributionManagement>
+    <site>
+      <id>wp5.e-taxonomy.eu</id>
+      <url>
+        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/cdm-server/
+      </url>
+    </site>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>wp5.e-taxonomy.eu</id>
+      <name>Edit Maven Repository</name>
+      <url>
+        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/mavenrepo
+      </url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <!-- maven 3 no longer supports uniqueVerions for SNAPSHOT artifacts. The
+      cdm-server Bootlader however relies on a specific name of the cdmlib-remote-webapp
+      war file. In order to achieve this with maven 3 the below dependency is now
+      handled more explicitely by utilizing the dependency:copy-dependencies gloal
+      in the build/plugins section
+       <dependency>
+           <groupId>eu.etaxonomy</groupId>
+           <artifactId>cdmlib-remote-webapp</artifactId>
+                 <version>${project.version}</version>
+           <type>war</type>
+       </dependency>
+         -->
+    <!-- JETTY 7 -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jmx</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-security</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jsp-2.1-glassfish</artifactId>
+      <version>9.1.1.B60.25.p2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <!-- JSON -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.8.8</version>
+    </dependency>
+    <!-- windows service -->
+    <dependency>
+      <groupId>tanukisoft</groupId>
+      <artifactId>wrapper</artifactId>
+      <version>3.2.3</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+    <dependency>
+      <groupId>net.sf.jopt-simple</groupId>
+      <artifactId>jopt-simple</artifactId>
+      <version>3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.2</version>
+    </dependency>
+    <!-- DATABASE DRIVER -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.24</version>
+    </dependency>
+  </dependencies>
+
+</project>
