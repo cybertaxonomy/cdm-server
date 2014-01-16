@@ -61,7 +61,7 @@
             <div class="block-wrapper">
               <div class="block" id="instances">
                 <h2 class="title block-title pngfix">CDM Server Instances</h2>
-                <div><a class="redirect-rewrite" href="Action.jsp?&redirectTo=./&action=reloadConfig">Reload configuration</a></div>
+                <div><a class="redirect-rewrite" href="Action.jsp?&redirectTo=./&action=reloadConfig">Reload configuration</a> (When clicked during the sever startup phase, the automatic startup up all instances listed in the configuration will be interrupted)</div>
                 <div class="container">
                   <table>
                     <tr>
