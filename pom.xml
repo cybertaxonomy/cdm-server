@@ -176,6 +176,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
         <configuration>
           <downloadSources>true</downloadSources>
           <downloadJavadocs>true</downloadJavadocs>
@@ -198,14 +199,18 @@
       </plugin>
       <!-- ====== CREATE ====== -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
         <configuration>
           <argLine>-Xmx512M</argLine>
           <includes>
@@ -263,6 +268,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -276,6 +282,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
         <configuration>
           <aggregate>true</aggregate>
           <stylesheet>maven</stylesheet>
@@ -345,7 +352,9 @@
       <!-- ====== INSTALL ====== -->
       <plugin>
         <!-- Assemble the runnable server jar test with: mvn assembly:single -->
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptors>
@@ -371,6 +380,7 @@
       </plugin>
       <plugin>
         <!-- Build a Debian package -->
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.3</version>
         <executions>
@@ -485,6 +495,7 @@
         <!-- you will want to start by publishing your classes' Javadocs -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
         <configuration>
           <links>
             <link>http://java.sun.com/j2se/1.6.0/docs/api/</link>
@@ -497,6 +508,7 @@
           of your source code -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
       <plugin>
         <!-- if you use @todo tags to remind you of things to be done (which
@@ -504,6 +516,7 @@
           the items marked @todo or TODO -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
       <plugin>
         <!-- Test coverage can be a useful indication of the quality of your
@@ -512,6 +525,7 @@
           quality -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
 
 
@@ -544,7 +558,7 @@
        <dependency>
            <groupId>eu.etaxonomy</groupId>
            <artifactId>cdmlib-remote-webapp</artifactId>
-                 <version>${project.version}</version>
+           <version>${project.version}</version>
            <type>war</type>
        </dependency>
          -->
@@ -557,11 +571,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <version>${jetty-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
       <version>${jetty-version}</version>
     </dependency>
     <dependency>
