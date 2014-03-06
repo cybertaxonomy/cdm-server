@@ -140,6 +140,7 @@ public class CdmInstance implements Listener {
     public void lifeCycleStarting(LifeCycle event) {
         logger.info("lifeCycleStarting");
         setStatus(Status.starting);
+        setProblems(null);
     }
 
     @SuppressWarnings("unchecked")
