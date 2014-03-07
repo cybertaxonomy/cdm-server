@@ -82,12 +82,36 @@
     <url>http://160.45.63.201/jenkins</url>
   </ciManagement>
   <!-- **** REPOSITORIES **** -->
+  <profiles>
+    <profile>
+      <id>local-repository</id>
+      <activation>
+        <property>
+          <name>localrepo</name>
+        </property>
+      </activation>
+      <repositories>
+        <repository>
+          <id>EditLocalRepository</id>
+          <url>file://${localrepo}/eu/etaxonomy/</url>
+          <releases>
+            <enabled>false</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
   <repositories>
     <!-- sun repository -->
     <repository>
-      <id>java.net</id>
-      <url>http://download.java.net/maven/1/</url>
-      <layout>legacy</layout>
+        <id>java.net-Public</id>
+        <name>Maven Java Net Snapshots and Releases</name>
+        <url>https://maven.java.net/content/groups/public/</url>
     </repository>
     <!-- the localhost Maven Repository -->
     <repository>
@@ -319,7 +343,8 @@
                   <overWrite>true</overWrite>
                   <destFileName>cdmlib-remote-webapp-${project.version}.war</destFileName>
                   <outputDirectory>
-                    ${project.build.directory}/cdm-server-${project.version}</outputDirectory>
+                    ${project.build.directory}
+                  </outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -336,9 +361,20 @@
         <version>2.1-beta-1</version>
         <configuration>
           <warName>default-webapp</warName>
-          <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdmlib-remote-webapp</artifactId>
-            <!- - version is set in dependency - -> <skip>true</skip><!- - Do Not overlay
-            - -> </overlay> </overlays> -->
+          <packagingExcludes>
+            cdmlib-remote-webapp-*.war
+          </packagingExcludes>
+          <!-- 
+            <overlays>
+              <overlay>
+                <groupId>eu.etaxonomy</groupId>
+                <artifactId>cdmlib-remote-webapp</artifactId>
+                <!- - version is set in dependency - -> 
+                <skip>true</skip>
+                <!- - Do Not overlay - -> 
+            </overlay> 
+          </overlays> 
+          -->
         </configuration>
         <executions>
           <execution>
@@ -550,7 +586,7 @@
   </distributionManagement>
 
   <dependencies>
-    <!-- maven 3 no longer supports uniqueVerions for SNAPSHOT artifacts. The
+    <!-- maven 3 no longer supports uniqueVersions for SNAPSHOT artifacts. The
       cdm-server Bootlader however relies on a specific name of the cdmlib-remote-webapp
       war file. In order to achieve this with maven 3 the below dependency is now
       handled more explicitely by utilizing the dependency:copy-dependencies gloal
