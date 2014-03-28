@@ -358,22 +358,22 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-beta-1</version>
+        <version>2.1.1</version>
         <configuration>
           <warName>default-webapp</warName>
           <packagingExcludes>
             cdmlib-remote-webapp-*.war
           </packagingExcludes>
-          <!-- 
+          <!--
             <overlays>
               <overlay>
                 <groupId>eu.etaxonomy</groupId>
                 <artifactId>cdmlib-remote-webapp</artifactId>
-                <!- - version is set in dependency - -> 
+                <!- - version is set in dependency - ->
                 <skip>true</skip>
-                <!- - Do Not overlay - -> 
-            </overlay> 
-          </overlays> 
+                <!- - Do Not overlay - ->
+            </overlay>
+          </overlays>
           -->
         </configuration>
         <executions>
@@ -459,6 +459,20 @@
         </configuration>
       </plugin>
       <!-- ====== DEPLOY ====== -->
+      <!-- potentialy needed for maven 3
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-depoly-plugin</artifactId>
+        <version>2.7</version>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-7</version>
+            </dependency>
+        </dependencies>
+      </plugin>
+      --> 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
