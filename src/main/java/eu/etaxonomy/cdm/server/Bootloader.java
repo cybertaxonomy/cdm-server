@@ -381,7 +381,8 @@ public final class Bootloader {
         WebAppContext defaultWebappContext = new WebAppContext();
 
         setWebApp(defaultWebappContext, defaultWebAppFile);
-        defaultWebappContext.setContextPath("/" + contextPathPrefix.substring(0, contextPathPrefix.length() - 1));
+
+        defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
         defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
 
