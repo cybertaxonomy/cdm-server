@@ -42,9 +42,9 @@ CONTEXT_PATH_PREFIX=/
 
 CDMSERVER_PORT=8080
 
-JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:MaxPermSize=192m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
+CDMSERVER_ARGS=""
 
-CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -contextPathPrefix=$CONTEXT_PATH_PREFIX"
+JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:MaxPermSize=192m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
 
 JSVC_CLASSPATH="/usr/share/java/commons-daemon.jar:${JAVA_HOME}lib/tools.jar:$CDM_HOME/cdm-server.jar"
 JSVC_JVM="server"
@@ -97,6 +97,8 @@ fi
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
+#### finally compile overridable variables
+CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -contextPathPrefix=$CONTEXT_PATH_PREFIX $CDMSERVER_ARGS"
 
 #### setting java home for JSVC ####
 
