@@ -78,15 +78,15 @@
                             int i = 0;
                             for (CdmInstance instance : instances) {
                                 i++;
-                                Configuration props = instance.getConfiguration();
+                                Configuration instanceConfig = instance.getConfiguration();
 
-                                String basePath = props.getInstanceName();
+                                String basePath = bootloader.constructContextPath(instanceConfig);
                                 /*  URL fullURL = new URL(request.getScheme(),
                                          request.getServerName(),
                                          request.getServerPort(),
                                          basePath); */
 
-                                String fullURL = "../" + basePath;
+                                //String fullURL = "../" + basePath;
 
                                 // prepare actions parameters
                                 String action = null;
@@ -100,7 +100,7 @@
                                     action = "start";
                                 }
                                 if(action != null){
-                                    actionParams = "instanceName=" + props.getInstanceName() + "&redirectTo=./&action=" + action;
+                                    actionParams = "instanceName=" + instanceConfig.getInstanceName() + "&redirectTo=./&action=" + action;
                                 }
 
                                 // styling
@@ -108,9 +108,9 @@
 
                                 // render a table row
                                 out.append("<tr id=\"" + basePath + "\" class=\"entry " + oddOrEven + "\">");
-                                out.append("<td class=\"base-url\"><a href=\"" + fullURL + "/\">" + basePath + "</a></td>");
-                                out.append("<td class=\"test-url\"><a href=\"" + fullURL + "/portal/classification\">Test</a></td>");
-                                out.append("<td class=\"db-url\">" + props.getDataSourceUrl() + "</td>");
+                                out.append("<td class=\"base-url\"><a href=\"" + basePath + "/\">" + basePath + "</a></td>");
+                                out.append("<td class=\"test-url\"><a href=\"" + basePath + "/portal/classification\">Test</a></td>");
+                                out.append("<td class=\"db-url\">" + instanceConfig.getDataSourceUrl() + "</td>");
                                 out.append("<td class=\"status " + instance.getStatus() + "\">" + instance.getStatus() + "</td>");
                                 out.append("<td class=\"operation\">" + (actionParams != null ?
                                         "<a class=\"redirect-rewrite\" href=\"Action.jsp?" + actionParams + "\">" + action + "</a>"

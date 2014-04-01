@@ -77,7 +77,14 @@ public class CommandOptions{
         .withDescription( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
         .create("datasources");
 
-
+    @SuppressWarnings("static-access")
+    public static final Option CONTEXT_PATH_PREFIX = OptionBuilder
+            .withArgName("url path element")
+            .hasArg()
+            .withDescription(
+                    "The url path element to use as prefix for all cdm-server instances.\n" +
+                    "Per default the instances are running at the server root.")
+            .create("contextPathPrefix") ;
 
 
     public static Options getOptions(){
@@ -91,6 +98,7 @@ public class CommandOptions{
             options.addOption(DATASOURCES_FILE);
             options.addOption(JMX);
             options.addOption(WIN32SERVICE);
+            options.addOption(CONTEXT_PATH_PREFIX);
         }
         return options;
     }

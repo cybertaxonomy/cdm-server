@@ -11,6 +11,7 @@
 package eu.etaxonomy.cdm.server;
 
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.KB;
+import static eu.etaxonomy.cdm.server.CommandOptions.CONTEXT_PATH_PREFIX;
 import static eu.etaxonomy.cdm.server.CommandOptions.DATASOURCES_FILE;
 import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
@@ -32,6 +33,7 @@ import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -123,6 +125,12 @@ public final class Bootloader {
 
     private String webAppClassPath = null;
 
+    /**
+     * The contextPathPrefix is expected to be normalized:
+     * it ends with a slash and starts not with a slash character
+     */
+    private String contextPathPrefix = "";
+
     private Server server = null;
     private final ContextHandlerCollection contexts = new ContextHandlerCollection();
 
@@ -133,6 +141,7 @@ public final class Bootloader {
     private boolean isRunningfromTargetFolder;
 
     private boolean isRunningFromWarFile;
+
 
     /* thread save singleton implementation */
 
@@ -325,7 +334,7 @@ public final class Bootloader {
            }
         }
 
-         if(cmdLine.hasOption(DATASOURCES_FILE.getOpt())){
+        if(cmdLine.hasOption(DATASOURCES_FILE.getOpt())){
              File datasourcesFile = new File(cmdLine.getOptionValue(DATASOURCES_FILE.getOpt()));
              if(datasourcesFile.canRead()) {
                 instanceManager.setDatasourcesFile(datasourcesFile);
@@ -335,6 +344,13 @@ public final class Bootloader {
                         + ") is not readable.");
             }
          }
+
+        if(cmdLine.hasOption(CONTEXT_PATH_PREFIX.getOpt())){
+            String cppo  = cmdLine.getOptionValue(CONTEXT_PATH_PREFIX.getOpt());
+            Pattern pattern = Pattern.compile("^/*(.*?)/*$");
+            String replacement = "$1";
+            this.contextPathPrefix = pattern.matcher(cppo).replaceAll(replacement) + "/";
+        }
 
         verifySystemResources();
 
@@ -365,7 +381,8 @@ public final class Bootloader {
         WebAppContext defaultWebappContext = new WebAppContext();
 
         setWebApp(defaultWebappContext, defaultWebAppFile);
-        defaultWebappContext.setContextPath("/");
+        defaultWebappContext.setContextPath("/" + contextPathPrefix.substring(0, contextPathPrefix.length() - 1));
+        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
         defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
 
         // configure security context
@@ -523,6 +540,7 @@ public final class Bootloader {
         WebAppContext cdmWebappContext = new WebAppContext();
 
         cdmWebappContext.setContextPath(constructContextPath(conf));
+        logger.info("contextPath: " + cdmWebappContext.getContextPath());
         cdmWebappContext.setTempDirectory(CDM_WEBAPP_TEMP_FOLDER);
 
         if(!instance.bindJndiDataSource()){
@@ -572,8 +590,9 @@ public final class Bootloader {
      * @param conf
      * @return
      */
-    private String constructContextPath(Configuration conf) {
-        return "/" + conf.getInstanceName();
+    public String constructContextPath(Configuration conf) {
+
+        return "/" + contextPathPrefix + conf.getInstanceName();
     }
 
     /**
