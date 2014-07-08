@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>3.3.6</version>
+  <version>3.3.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
 
@@ -15,9 +15,9 @@
   <scm>
     <!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html
       for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml -->
-    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.3.6</connection>
-    <developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/tags/cdm-server/cdm-server-3.3.6</developerConnection>
-    <url>http://dev.e-taxonomy.eu/trac/browser/tags/cdm-server/cdm-server-3.3.6</url>
+    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</connection>
+    <developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</developerConnection>
+    <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server</url>
   </scm>
 
   <mailingLists>
