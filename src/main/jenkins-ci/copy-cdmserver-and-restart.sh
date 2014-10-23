@@ -10,6 +10,8 @@
 #   CDMUSERS        ALL=(ALL)NOPASSWD: CDMSERVER
 # ------------------------------------------------------------
 
+set -e
+
 if [ -z "${RESTART_AFTER_UPDATE}" ]; then
 	RESTART_AFTER_UPDATE="restart"
 fi
@@ -35,6 +37,11 @@ then
     echo "cdmserver.*jar missing in target folder"
     exit 1
 fi
+
+# setup permissions so we can copy the jar
+# via sudo
+chmod a+x $TARGET_DIR
+chmod a+r $CDMSERVER_JAR
 
 sudo /etc/init.d/cdmserver stop
 sudo -u cdm /bin/rm -f /opt/cdmserver/cdm-server.jar
