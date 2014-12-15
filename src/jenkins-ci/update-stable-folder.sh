@@ -10,7 +10,5 @@ PROJECT_VERSION=(`cat target/classes/version.properties | grep "cdmlib-remote-we
 if [ -n "$PROJECT_VERSION" ]; then
  ssh $SSH_HOST "rm -r /var/www/download/cdmserver/stable"
  ssh $SSH_HOST "ln -s /var/www/download/cdmserver/$PROJECT_VERSION /var/www/download/cdmserver/stable"
- ssh $SSH_HOST "chown -R www-data:www-data /var/www/download/cdmserver/"$PROJECT_VERSION
- ssh $SSH_HOST "chown -R www-data:www-data /var/www/download/cdmserver/stable"
 fi
 
