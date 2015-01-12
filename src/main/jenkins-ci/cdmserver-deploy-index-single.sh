@@ -56,7 +56,7 @@ echo "  INSTANCE_NAME = ${INSTANCE_NAME}"
 echo "  "
 
 echo "transferring  index to "${REMOTE_SERVER}
-ssh ${REMOTE_SERVER} "sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp; sudo mkdir -p ${REMOTE_INDEX_CONTAINER}tmp; sudo chown -R deploy:delpoy ${REMOTE_INDEX_CONTAINER}tmp"
+ssh ${REMOTE_SERVER} "sudo rm -rf ${REMOTE_INDEX_CONTAINER}tmp; sudo mkdir -p ${REMOTE_INDEX_CONTAINER}tmp; sudo chown -R deploy:deploy ${REMOTE_INDEX_CONTAINER}tmp"
 cd ${LOCAL_INDEX_CONTAINER}/index
 tar czf - ${INSTANCE_NAME} | ssh ${REMOTE_SERVER} "cd ${REMOTE_INDEX_CONTAINER}tmp ; tar xzf -"
 # fixing owner and permissions
