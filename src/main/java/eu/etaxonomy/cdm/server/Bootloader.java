@@ -360,13 +360,16 @@ public final class Bootloader {
         server = new Server(httpPort);
         server.addLifeCycleListener(instanceManager);
 
+        org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
+        classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
+        classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+        
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
             logger.info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-            server.getContainer().addEventListener(mBeanContainer);
-            mBeanContainer.addBean(Log.getLog());
-            mBeanContainer.start();
+            server.addEventListener(mBeanContainer);
+            server.addBean(Log.getLog());            
         }
 
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
