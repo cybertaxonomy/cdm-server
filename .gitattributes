@@ -52,6 +52,7 @@ src/main/webapp/css/style.css -text
 src/main/webapp/favicon.ico -text
 src/main/webapp/index.html -text
 src/main/webapp/index.jsp -text
+src/main/webapp/instances.jsp -text
 src/main/webapp/js/instance-status.js -text
 src/main/webapp/js/jquery.js -text
 src/main/webapp/js/jquery.min.js -text
