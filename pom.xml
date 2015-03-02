@@ -489,17 +489,22 @@
         </configuration>
       </plugin>
     </plugins>
-    <!-- EXTENSIONS -->
+    <!-- EXTENSIONS -->   
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>1.0-alpha-5</version>
+        <version>1.0-beta-6</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>1.0-beta-7</version>
+        <version>1.0-beta-6</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-beta-6</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
@@ -517,7 +522,7 @@
         <artifactId>wagon-webdav</artifactId>
         <version>1.0-beta-2</version>
       </extension>
-    </extensions>
+    </extensions>   
   </build>
 
   <reporting>
