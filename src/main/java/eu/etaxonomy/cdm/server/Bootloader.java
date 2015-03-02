@@ -356,20 +356,22 @@ public final class Bootloader {
 
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
-
+        // for jetty 9.2+ we need the following system property
+        // refer : http://www.eclipse.org/jetty/documentation/current/configuring-jsp.html
+        System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
         server = new Server(httpPort);
         server.addLifeCycleListener(instanceManager);
 
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
         classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
         classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
-        
+
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
             logger.info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mBeanContainer);
-            server.addBean(Log.getLog());            
+            server.addBean(Log.getLog());
         }
 
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
