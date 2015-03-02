@@ -489,7 +489,7 @@
         </configuration>
       </plugin>
     </plugins>
-    <!-- EXTENSIONS -->   
+    <!-- EXTENSIONS -->
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
@@ -522,7 +522,7 @@
         <artifactId>wagon-webdav</artifactId>
         <version>1.0-beta-2</version>
       </extension>
-    </extensions>   
+    </extensions>
   </build>
 
   <reporting>
@@ -630,6 +630,11 @@
       <artifactId>apache-jstl</artifactId>
       <version>${jetty-version}</version>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+      <version>2.2</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
