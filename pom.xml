@@ -10,7 +10,7 @@
   <name>CDM Community Standalone Server</name>
 
   <properties>
-    <jetty-version>9.2.5.v20141112</jetty-version>
+    <jetty-version>9.2.9.v20150224</jetty-version>
   </properties>
 
   <scm>
