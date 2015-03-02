@@ -354,6 +354,10 @@ public final class Bootloader {
 
         verifySystemResources();
 
+        // Set JSP to use Standard JavaC always
+        // from https://github.com/jetty-project/embedded-jetty-jsp
+        System.setProperty("org.apache.jasper.compiler.disablejsr199","false");
+
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
         server = new Server(httpPort);
@@ -362,6 +366,7 @@ public final class Bootloader {
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
         classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
         classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+
 
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
@@ -383,6 +388,16 @@ public final class Bootloader {
         WebAppContext defaultWebappContext = new WebAppContext();
 
         setWebApp(defaultWebappContext, defaultWebAppFile);
+
+        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
+        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
+        // Set the ContainerIncludeJarPattern so that jetty examines these
+        // container-path jars for tlds, web-fragments etc.
+        // If you omit the jar that contains the jstl .tlds, the jsp engine will
+        // scan for them instead.
+        defaultWebappContext.setAttribute(
+                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
+                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
 
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
