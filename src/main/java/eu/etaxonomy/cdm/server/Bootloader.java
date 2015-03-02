@@ -356,9 +356,6 @@ public final class Bootloader {
 
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
-        // for jetty 9.2+ we need the following system property
-        // refer : http://www.eclipse.org/jetty/documentation/current/configuring-jsp.html
-        System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
         server = new Server(httpPort);
         server.addLifeCycleListener(instanceManager);
 
