@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -44,7 +45,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
+import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -354,10 +357,6 @@ public final class Bootloader {
 
         verifySystemResources();
 
-        // Set JSP to use Standard JavaC always
-        // from https://github.com/jetty-project/embedded-jetty-jsp
-        System.setProperty("org.apache.jasper.compiler.disablejsr199","false");
-
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
         server = new Server(httpPort);
@@ -389,6 +388,8 @@ public final class Bootloader {
 
         setWebApp(defaultWebappContext, defaultWebAppFile);
 
+        // JSP
+        //
         // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
         // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
         // Set the ContainerIncludeJarPattern so that jetty examines these
@@ -399,6 +400,10 @@ public final class Bootloader {
                 "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                 ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
 
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
+
+        // Context path
+        //
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
         defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
@@ -471,6 +476,18 @@ public final class Bootloader {
             version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION, version);
         }
         return version;
+    }
+
+    /**
+    * Ensure the jsp engine is initialized correctly
+    */
+    private List<ContainerInitializer> jspInitializers()
+    {
+        JettyJasperInitializer sci = new JettyJasperInitializer();
+        ContainerInitializer initializer = new ContainerInitializer(sci, null);
+        List<ContainerInitializer> initializers = new ArrayList<ContainerInitializer>();
+        initializers.add(initializer);
+        return initializers;
     }
 
 
