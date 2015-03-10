@@ -1,18 +1,18 @@
 .uninitialized{
     color: gray;
-	}
+  }
 .initializing{
-	color: yellow;
-	}
+  color: yellow;
+  }
 .starting{
-	color: blue;
-	}
+  color: blue;
+  }
 .started{
-	color: green;
+  color: green;
     }
 .stopped{
     color: black;
-	}
+  }
 .error{
     color: red;
     }
@@ -23,4 +23,9 @@
 #version {
     float:right;
     text-transform: none;
+}
+
+/* overriding default styles from base theme */
+body {
+  font-family: "Droid Sans",Verdana,Arial,Helvetica,sans-serif;
 }
