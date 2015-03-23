@@ -47,7 +47,10 @@ sudo /etc/init.d/cdmserver stop
 sudo -u cdm /bin/rm -f /opt/cdmserver/cdm-server.jar
 sudo -u cdm /bin/cp -f $CDMSERVER_JAR /opt/cdmserver/
 cd $CDMSERVER_HOME
+
+set +e
 sudo -u cdm /bin/ln -s $CDMSERVER_JAR cdm-server.jar
+set -e
 echo "restarting server"
 if [ "${RESTART_AFTER_UPDATE}" == "restart" ]; then
     sudo /etc/init.d/cdmserver start
