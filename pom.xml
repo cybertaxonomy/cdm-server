@@ -590,7 +590,7 @@
     <site>
       <id>wp5.e-taxonomy.eu</id>
       <url>
-        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/cdm-server/
+        scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/cdm-server
       </url>
     </site>
     <repository>
