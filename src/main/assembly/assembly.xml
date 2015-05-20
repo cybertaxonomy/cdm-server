@@ -43,7 +43,7 @@
 		<dependencySet>
 			<outputDirectory />
 			<includes>
-				<include>eu.etaxonomy:cdmlib-remote-webapp</include>
+				<include>eu.etaxonomy:cdm-webapp</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

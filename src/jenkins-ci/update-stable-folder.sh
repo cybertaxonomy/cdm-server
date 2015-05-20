@@ -28,7 +28,7 @@ SSH_HOST='edit-deploy'
 ##############################################################
 
 cd $WORKSPACE
-PROJECT_VERSION=(`cat target/classes/version.properties | grep "cdmlib-remote-webapp.version" | sed -e "s/[^0-9]*\([^\n\r]*\)/\1/g"`)
+PROJECT_VERSION=(`cat target/classes/version.properties | grep "cdm-webapp.version" | sed -e "s/[^0-9]*\([^\n\r]*\)/\1/g"`)
 
 if [ -n "$PROJECT_VERSION" ]; then
  ssh $SSH_HOST "rm -r /var/www/download/cdmserver/stable"

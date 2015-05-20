@@ -121,7 +121,7 @@
     <repository>
       <id>EditLocalRepository</id>
       <!-- disable the local repo to let maven always retrieve the latest 
-        cdmlib-remote-webapp.war TODO: use ${localrepo} for ${user.home}/.m2/repository 
+        cdm-webapp.war TODO: use ${localrepo} for ${user.home}/.m2/repository 
         in MAVEN 3 -->
       <url>file://${user.home}/.m2/repository/eu/etaxonomy/</url>
       <releases>
@@ -339,15 +339,15 @@
               <overWriteReleases>true</overWriteReleases>
               <artifactItems>
                 <artifactItem>
-                  <!-- copy the cdmlib-remote-webapp-${project.version}.war 
+                  <!-- copy the cdm-webapp-${project.version}.war 
                     to the build dir -->
                   <groupId>eu.etaxonomy</groupId>
-                  <artifactId>cdmlib-remote-webapp</artifactId>
+                  <artifactId>cdm-webapp</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
                   <!-- <classifier> [classifier - optional] </classifier> -->
                   <overWrite>true</overWrite>
-                  <destFileName>cdmlib-remote-webapp-${project.version}.war</destFileName>
+                  <destFileName>cdm-webapp-${project.version}.war</destFileName>
                   <outputDirectory>
                     ${project.build.directory}
                   </outputDirectory>
@@ -359,7 +359,7 @@
       </plugin>
 
       <!-- ====== PACKAGE ====== -->
-      <!-- package the default webapp, // (and also add the cdmlib-remote-webapp.war) 
+      <!-- package the default webapp, // (and also add the cdm-webapp.war) 
         test with: mvn war:war -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -368,9 +368,9 @@
         <configuration>
           <warName>default-webapp</warName>
           <packagingExcludes>
-            cdmlib-remote-webapp-*.war
+            cdm-webapp-*.war
           </packagingExcludes>
-          <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdmlib-remote-webapp</artifactId> 
+          <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdm-webapp</artifactId> 
             <!- - version is set in dependency - -> <skip>true</skip> <!- - Do Not overlay 
             - -> </overlay> </overlays> -->
         </configuration>
@@ -603,11 +603,11 @@
 
   <dependencies>
     <!-- maven 3 no longer supports uniqueVersions for SNAPSHOT artifacts. 
-      The cdm-server Bootlader however relies on a specific name of the cdmlib-remote-webapp 
+      The cdm-server Bootlader however relies on a specific name of the cdm-webapp 
       war file. In order to achieve this with maven 3 the below dependency is now 
       handled more explicitely by utilizing the dependency:copy-dependencies gloal 
       in the build/plugins section <dependency> <groupId>eu.etaxonomy</groupId> 
-      <artifactId>cdmlib-remote-webapp</artifactId> <version>${project.version}</version> 
+      <artifactId>cdm-webapp</artifactId> <version>${project.version}</version> 
       <type>war</type> </dependency> -->
     <!-- JETTY 7 -->
     <dependency>

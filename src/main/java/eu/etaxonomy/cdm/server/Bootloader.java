@@ -104,12 +104,12 @@ public final class Bootloader {
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
 
-    private static final String CDMLIB_REMOTE_WEBAPP = "cdmlib-remote-webapp";
-    private static final String CDMLIB_REMOTE_WEBAPP_VERSION = "cdmlib-remote-webapp.version";
+    private static final String CDM_WEBAPP = "cdm-webapp";
+    private static final String CDM_WEBAPP_VERSION = "cdm-webapp.version";
 
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDMLIB_REMOTE_WEBAPP);
+    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
 
     private final InstanceManager instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
 
@@ -320,7 +320,7 @@ public final class Bootloader {
         } else {
             // read version number
             String version = readCdmRemoteVersion();
-            cdmRemoteWebAppFile = extractWar(CDMLIB_REMOTE_WEBAPP + "-" + version);
+            cdmRemoteWebAppFile = extractWar(CDM_WEBAPP + "-" + version);
             defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
         }
 
@@ -473,7 +473,7 @@ public final class Bootloader {
         if (versionInStream != null){
             Properties versionProperties = new Properties();
             versionProperties.load(versionInStream);
-            version = versionProperties.getProperty(CDMLIB_REMOTE_WEBAPP_VERSION, version);
+            version = versionProperties.getProperty(CDM_WEBAPP_VERSION, version);
         }
         return version;
     }
@@ -605,10 +605,10 @@ public final class Bootloader {
              */
             WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
             if(webAppClassPath != null){
-                logger.info("Running cdmlib-remote-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
+                logger.info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
             } else {
-                throw new RuntimeException("Classpath cdmlib-remote-webapp for missing while running cdmlib-remote-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
+                throw new RuntimeException("Classpath cdm-webapp for missing while running cdm-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
             }
             cdmWebappContext.setClassLoader(classLoader);
         }
@@ -685,7 +685,7 @@ public final class Bootloader {
     private void updateServerRunMode() {
         String webappPathNormalized = cdmRemoteWebAppFile.getAbsolutePath().replace('\\', '/');
         isRunningFromSource =  webappPathNormalized.endsWith("src/main/webapp");
-        isRunningfromTargetFolder = webappPathNormalized.endsWith("cdmlib-remote-webapp/target/cdmserver");
+        isRunningfromTargetFolder = webappPathNormalized.endsWith("cdm-webapp/target/cdmserver");
         isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
 
@@ -714,7 +714,7 @@ public final class Bootloader {
     }
 
     /**
-     * @return a File object pointing to the location of the cdmlib-remote-webapp
+     * @return a File object pointing to the location of the cdm-webapp
      */
     public File getCdmRemoteWebAppFile(){
         if(cdmRemoteWebAppFile == null){
