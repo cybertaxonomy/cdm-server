@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -15,6 +16,8 @@ import org.eclipse.jetty.server.handler.ContextHandler.Context;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import com.mchange.v2.c3p0.DataSources;
 
 
 public class CdmInstance implements Listener {
@@ -243,10 +246,25 @@ public class CdmInstance implements Listener {
     }
 
     public void unbindJndiDataSource() {
+
+        try {
+            InitialContext ic = new InitialContext();
+            Object o = ic.lookup(jndiDataSource.getJndiNameInScope());
+            if(o instanceof DataSource) {
+                DataSources.destroy((DataSource) o);
+                logger.info("datasource for " + jndiDataSource.getJndiNameInScope() + " destroyed");
+            }
+        } catch (NamingException e) {
+            logger.error(e);
+        } catch (SQLException e) {
+            logger.error(e);
+        }
         if(jndiDataSource != null){
             jndiDataSource.release();
             jndiDataSource = null;
         }
     }
+
+
 
 }

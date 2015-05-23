@@ -68,18 +68,6 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
 /**
  * A bootstrap class for starting Jetty Runner using an embedded war.
  *
- * Recommended start options for the java virtual machine:
- * <pre>
- * -Xmx1024M
- *
- * -XX:PermSize=128m
- * -XX:MaxPermSize=192m
- *
- * -XX:+UseConcMarkSweepGC
- * -XX:+CMSClassUnloadingEnabled
- * -XX:+CMSPermGenSweepingEnabled
- * </pre>
- *
  * @version $Revision$
  */
 public final class Bootloader {
@@ -578,13 +566,13 @@ public final class Bootloader {
         logger.info("contextPath: " + cdmWebappContext.getContextPath());
         cdmWebappContext.setTempDirectory(CDM_WEBAPP_TEMP_FOLDER);
 
-        if(!instance.bindJndiDataSource()){
-            // a problem with the datasource occurred skip this webapp
-            cdmWebappContext = null;
-            logger.error("a problem with the datasource occurred -> skipping /" + conf.getInstanceName());
-            instance.setStatus(Status.error);
-            return cdmWebappContext;
-        }
+//        if(!instance.bindJndiDataSource()){
+//            // a problem with the datasource occurred skip this webapp
+//            cdmWebappContext = null;
+//            logger.error("a problem with the datasource occurred -> skipping /" + conf.getInstanceName());
+//            instance.setStatus(Status.error);
+//            return cdmWebappContext;
+//        }
 
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());

@@ -96,8 +96,15 @@ public class InstanceManager implements LifeCycle.Listener {
      */
     public void start(CdmInstance instance) throws Exception{
         if(instance.getWebAppContext() != null){
-            instance.unbindJndiDataSource();
-            instance.bindJndiDataSource();
+//            instance.unbindJndiDataSource();
+//            instance.bindJndiDataSource();
+            if(!instance.bindJndiDataSource()){
+                // a problem with the datasource occurred skip this webapp
+//                cdmWebappContext = null;
+                logger.error("a problem with the datasource occurred -> aboarding atartup of /" + instance.getConfiguration().getInstanceName());
+                instance.setStatus(Status.error);
+//                return cdmWebappContext;
+            }
             instance.getWebAppContext().start();
         }
     }
