@@ -337,10 +337,15 @@ public final class Bootloader {
          }
 
         if(cmdLine.hasOption(CONTEXT_PATH_PREFIX.getOpt())){
+
             String cppo  = cmdLine.getOptionValue(CONTEXT_PATH_PREFIX.getOpt());
-            Pattern pattern = Pattern.compile("^/*(.*?)/*$");
-            String replacement = "$1";
-            this.contextPathPrefix = pattern.matcher(cppo).replaceAll(replacement) + "/";
+            if(cppo.equals("/")) {
+                this.contextPathPrefix = "";
+            } else {
+                Pattern pattern = Pattern.compile("^/*(.*?)/*$");
+                String replacement = "$1";
+                this.contextPathPrefix = pattern.matcher(cppo).replaceAll(replacement) + "/";
+            }
         }
 
         verifySystemResources();
