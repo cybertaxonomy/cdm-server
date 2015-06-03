@@ -6,6 +6,7 @@ $(document).ready(function(){
         "MemoryService.jsp",
         function(data){
           $("#status").html(''); // make empty
+          $("#status").html('<div>CPU Cores: ' + data.availableProcessors + '</div>'); // make empty
           $("#status").append(memoryUsageEntry(data.heapMemoryUsage, data.recommendedMinimumHeap, "HeapUsage", "100%", "#F48B65", "#65B1F4"));
           $("#status").append(memoryUsageEntry(data.permGenSpaceUsage, data.recommendedMinimumPermGenSpace, "PermGenSpaceUsage", "100%","#F48B65", "#65B1F4"));
      }); // end JSON

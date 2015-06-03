@@ -105,6 +105,9 @@ public class InstanceManager implements LifeCycle.Listener {
                 instance.setStatus(Status.error);
 //                return cdmWebappContext;
             }
+            if(logger.isDebugEnabled()) {
+                logger.debug("starting " + instance.getConfiguration().getInstanceName());
+            }
             instance.getWebAppContext().start();
         }
     }

@@ -30,6 +30,7 @@
     ObjectNode node = jsonMapper.createObjectNode();
     node.put("recommendedMinimumHeap", recommendedMinimumHeap);
     node.put("recommendedMinimumPermGenSpace", recommendedMinimumPermGenSpace);
+    node.put("availableProcessors", JvmManager.availableProcessors());
     node.putPOJO("heapMemoryUsage", heapMemoryUsage);
     node.putPOJO("permGenSpaceUsage", permGenSpaceUsage);
 

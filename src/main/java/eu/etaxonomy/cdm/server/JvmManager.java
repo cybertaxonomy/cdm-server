@@ -61,4 +61,18 @@ public class JvmManager {
             return null;
         }
 
+    /**
+     *
+     * Note, however, that this does not distinguish virtual cores from physical cores. so, for example,
+     * if your machine has hyperthreading enabled you will see double the number of physical cores.
+     *
+     * see https://community.oracle.com/thread/2141632?start=0&tstart=0
+     *
+     * @return
+     */
+    public static int availableProcessors() {
+
+        return Runtime.getRuntime().availableProcessors();
+    }
+
 }
