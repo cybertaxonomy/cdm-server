@@ -239,9 +239,12 @@ public final class Bootloader {
         bootloader.startServer();
     }
 
-
-
     public void startServer() throws IOException,
+    FileNotFoundException, Exception, InterruptedException {
+        startServer(false);
+    }
+
+    public void startServer(boolean doJoin) throws IOException,
             FileNotFoundException, Exception, InterruptedException {
 
 
@@ -360,6 +363,7 @@ public final class Bootloader {
             logger.info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mBeanContainer);
+            server.setStopAtShutdown(true);
             server.addBean(Log.getLog());
         }
 
@@ -433,7 +437,9 @@ public final class Bootloader {
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
             logger.info("jetty has started as win32 service");
         } else {
-            server.join();
+            if(doJoin) {
+                server.join();
+            }
             logger.info(APPLICATION_NAME+" stopped.");
             System.exit(0);
         }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
@@ -19,7 +20,7 @@
     <developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</developerConnection>
     <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server</url>
   </scm>
-  
+
   <prerequisites>
     <maven>3.0.5</maven>
   </prerequisites>
@@ -121,8 +122,8 @@
     <repository>
       <id>EditLocalRepository</id>
       <!-- disable the local repo to let maven always retrieve the latest 
-        cdm-webapp.war TODO: use ${localrepo} for ${user.home}/.m2/repository 
-        in MAVEN 3 -->
+        cdm-webapp.war TODO: use ${localrepo} for ${user.home}/.m2/repository in 
+        MAVEN 3 -->
       <url>file://${user.home}/.m2/repository/eu/etaxonomy/</url>
       <releases>
         <enabled>false</enabled>
@@ -339,8 +340,8 @@
               <overWriteReleases>true</overWriteReleases>
               <artifactItems>
                 <artifactItem>
-                  <!-- copy the cdm-webapp-${project.version}.war 
-                    to the build dir -->
+                  <!-- copy the cdm-webapp-${project.version}.war to the 
+                    build dir -->
                   <groupId>eu.etaxonomy</groupId>
                   <artifactId>cdm-webapp</artifactId>
                   <version>${project.version}</version>
@@ -389,30 +390,72 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.5.3</version>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/main/assembly/assembly.xml</descriptor>
-          </descriptors>
-          <archive>
-            <manifest>
-              <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-        </configuration>
         <executions>
           <execution>
+            <id>make-base-assembly</id>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>cdm-server-base-${project.version}</finalName>
+              <descriptors>
+                <descriptor>src/main/assembly/base-assembly.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                </manifest>
+              </archive>
+            </configuration>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+          <execution>
             <id>make-assembly</id>
-            <phase>install</phase>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                </manifest>
+              </archive>
+            </configuration>
+            <phase>package</phase>
             <goals>
               <goal>attached</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
-      <plugin>
+       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.4</version>
+          <executions>
+            <execution>
+              <id>cdm-server-base-install</id>
+              <phase>package</phase>
+              <goals>
+                <goal>install-file</goal>
+              </goals>
+              <configuration>
+                <file>target/cdm-server-base-${project.version}.jar</file>
+                <groupId>eu.etaxonomy</groupId>
+                <artifactId>cdm-server-base</artifactId>
+                <version>${project.version}</version>    
+                <packaging>jar</packaging>           
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      <plugin>      
         <!-- Build a Debian package -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -422,9 +465,12 @@
             <phase>install</phase>
             <configuration>
               <tasks>
-                <property name="project.fullversionstring" value="${project.version}" />
+                <property name="project.fullversionstring"
+                  value="${project.version}" />
                 <property name="project.version" value="${project.version}" />
-                <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
+                <ant
+                  antfile="${project.basedir}/src/main/installer/linux/build-deb.xml"
+                  dir="${project.basedir}" />
               </tasks>
             </configuration>
             <goals>
@@ -458,19 +504,13 @@
       </plugin>
       <!-- ====== DEPLOY ====== -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId> 
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.2</version>
-        <!-- potentialy needed for maven 3 
-        <dependencies> 
-          <dependency>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-ssh</artifactId> 
-          <version>1.0-beta-7</version>
-          </dependency>
-        </dependencies>
-        -->
-      </plugin> 
+        <!-- potentialy needed for maven 3 <dependencies> <dependency> <groupId>org.apache.maven.wagon</groupId> 
+          <artifactId>wagon-ssh</artifactId> <version>1.0-beta-7</version> </dependency> 
+          </dependencies> -->
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -709,7 +749,8 @@
     <dependency>
       <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
-      <version>0.9.2</version><!-- version 0.9.5 is causing connection to get lost from jndi, needs further testing ...  -->
+      <version>0.9.2</version><!-- version 0.9.5 is causing connection to 
+        get lost from jndi, needs further testing ... -->
     </dependency>
     <!-- DATABASE DRIVER -->
     <dependency>

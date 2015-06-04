@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <!--
+        USAGE:
+        http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html
+    -->
+    <id>cdmserver-standalone-base</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/classes</directory>
+            <outputDirectory />
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>default-webapp.war</include>
+            </includes>
+            <outputDirectory />
+        </fileSet>
+        <fileSet>
+            <includes>
+                <include>${project.basedir}/LICENSE*</include>
+            </includes>
+            <outputDirectory />
+        </fileSet>
+    </fileSets>
+</assembly>
