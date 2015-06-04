@@ -241,7 +241,7 @@ public final class Bootloader {
 
     public void startServer() throws IOException,
     FileNotFoundException, Exception, InterruptedException {
-        startServer(false);
+        startServer(true);
     }
 
     public void startServer(boolean doJoin) throws IOException,
