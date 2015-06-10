@@ -472,6 +472,8 @@
           <enableSshAgent>true</enableSshAgent>
           <allowSnapshots>true</allowSnapshots>
           <allowUntracked>true</allowUntracked>
+          <!-- only for testing -->
+          <noDeploy>true</noDeploy>
         </configuration>
       </plugin>
       <plugin>
