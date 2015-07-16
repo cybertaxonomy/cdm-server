@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>3.6.2</version>
+  <version>3.7.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
 
@@ -465,16 +465,25 @@
       <plugin>
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
-        <version>1.0-m4.3</version>
+        <version>1.0-m6</version>
         <configuration>
-          <pushHotfixes>false</pushHotfixes>
-          <pushReleases>false</pushReleases>
+          <pushHotfixes>true</pushHotfixes>
+          <pushReleases>true</pushReleases> 
           <enableSshAgent>true</enableSshAgent>
           <allowSnapshots>true</allowSnapshots>
           <allowUntracked>true</allowUntracked>
-          <!-- only for testing -->
-          <noDeploy>true</noDeploy>
         </configuration>
+        <dependencies>
+          <!-- 
+                upgrading dependency jsch.agent.version of jgit-flow plugin to 0.1.53 
+                in order have ssl key exchange algorithms compatible with openssh 6.7 
+             -->
+          <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.53</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

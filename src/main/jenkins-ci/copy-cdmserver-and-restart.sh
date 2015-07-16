@@ -18,7 +18,7 @@ fi
 
 #TARGET_DIR="/home/andreas/workspaces/_svn-trunk/cdm-server/target"
 if [ -z "$TARGET_DIR" ]; then
-  TARGET_DIR="$WORKSPACE/cdm-server/target"
+  TARGET_DIR="$WORKSPACE/target"
 fi
 if [ -z "$CDMSERVER_HOME" ]; then
   CDMSERVER_HOME="/opt/cdmserver"
