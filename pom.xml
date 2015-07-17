@@ -343,7 +343,7 @@
                     to the build dir -->
                   <groupId>eu.etaxonomy</groupId>
                   <artifactId>cdm-webapp</artifactId>
-                  <version>3.6.0</version>
+                  <version>${project.version}</version>
                   <type>war</type>
                   <!-- <classifier> [classifier - optional] </classifier> -->
                   <overWrite>true</overWrite>
