@@ -22,7 +22,7 @@ import com.mchange.v2.c3p0.DataSources;
 
 public class CdmInstance implements Listener {
 
-    private static final Logger logger = Logger.getLogger(CdmInstance.class);
+    private static final Logger logger = Logger.getLogger(InstanceManager.class);
 
     private WebAppContext webAppContext = null;
 
@@ -100,10 +100,6 @@ public class CdmInstance implements Listener {
      */
     public void setWebAppContext(WebAppContext webAppContext) {
         this.webAppContext = webAppContext;
-    }
-
-    public String getName() {
-        return getConfiguration().getInstanceName();
     }
 
     /**
