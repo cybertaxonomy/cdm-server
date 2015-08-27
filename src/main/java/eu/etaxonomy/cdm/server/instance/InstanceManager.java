@@ -89,7 +89,10 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * Starts the given instance. Rebinds the JndiDataSource prior starting.
+     * Starts the instance
+     *
+     * Rebinds the JndiDataSource and starts the given instance.
+     * The method returns once the instance is fully started up.
      *
      * @param instance
      * @throws Exception
@@ -101,12 +104,12 @@ public class InstanceManager implements LifeCycle.Listener {
             if(!instance.bindJndiDataSource()){
                 // a problem with the datasource occurred skip this webapp
 //                cdmWebappContext = null;
-                logger.error("a problem with the datasource occurred -> aboarding atartup of /" + instance.getConfiguration().getInstanceName());
+                logger.error("a problem with the datasource occurred -> aboarding atartup of /" + instance.getName());
                 instance.setStatus(Status.error);
 //                return cdmWebappContext;
             }
             if(logger.isDebugEnabled()) {
-                logger.debug("starting " + instance.getConfiguration().getInstanceName());
+                logger.debug("starting " + instance.getName());
             }
             instance.getWebAppContext().start();
         }
@@ -127,6 +130,8 @@ public class InstanceManager implements LifeCycle.Listener {
     /**
      * Sets the {@link SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE} attribute
      * to the application context and starts the instance
+     *
+     * FIXME This method is only experimental and need most probably to be changed !!!!
      *
      * @param instance
      * @throws Exception
@@ -242,7 +247,7 @@ public class InstanceManager implements LifeCycle.Listener {
                         try {
                             start(instance);
                         } catch (Exception e) {
-                            logger.error("Could not start " + instance.getWebAppContext().getContextPath());
+                            logger.error("Could not start " + instance.getWebAppContext().getContextPath(), e);
                             instance.getProblems().add(e.getMessage());
                             instance.setStatus(Status.error);
                         }
