@@ -132,22 +132,6 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * Sets the {@link SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE} attribute
-     * to the application context and starts the instance
-     *
-     * @param instance
-     * @throws Exception
-     *
-     * FIXME This method i only experimental and need most probably to be changed !!!!
-     */
-    public void updateToCurrentVersion(CdmInstance instance) throws Exception{
-        if(instance.getWebAppContext() != null){
-            instance.getWebAppContext().getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, true);
-        }
-        start(instance);
-    }
-
-    /**
      * @return the number of existing instances, former instances which have been
      * removed are not counted
      */

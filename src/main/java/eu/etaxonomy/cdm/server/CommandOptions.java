@@ -86,6 +86,12 @@ public class CommandOptions{
                     "Per default the instances are running at the server root.")
             .create("contextPathPrefix") ;
 
+    public static final Option FORCE_SCHEMA_UPDATE = new Option( "forceSchemaUpdate",
+            "USE THIS OPTION WITH CARE!"
+            + " Outdated cdm database schema versions will"
+            + " be forcably updated to the version of the cdm-server. This option is only intended"
+            + " to be used for development purposes.");
+
 
     public static Options getOptions(){
         if(options == null){
@@ -99,6 +105,7 @@ public class CommandOptions{
             options.addOption(JMX);
             options.addOption(WIN32SERVICE);
             options.addOption(CONTEXT_PATH_PREFIX);
+            options.addOption(FORCE_SCHEMA_UPDATE);
         }
         return options;
     }

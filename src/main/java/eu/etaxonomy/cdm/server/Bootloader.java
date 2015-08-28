@@ -13,6 +13,7 @@ package eu.etaxonomy.cdm.server;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.KB;
 import static eu.etaxonomy.cdm.server.CommandOptions.CONTEXT_PATH_PREFIX;
 import static eu.etaxonomy.cdm.server.CommandOptions.DATASOURCES_FILE;
+import static eu.etaxonomy.cdm.server.CommandOptions.FORCE_SCHEMA_UPDATE;
 import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
@@ -630,6 +631,9 @@ public final class Bootloader {
 
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
+            cdmWebappContext.getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
+        }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
