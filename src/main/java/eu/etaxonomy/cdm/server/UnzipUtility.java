@@ -46,7 +46,7 @@ public class UnzipUtility {
             destDir.mkdir();
         }
         String destPath = destDir.getAbsolutePath();
-        logger.info("unzip() - unziping " + zipFile + " into " + destPath);
+        logger.info("unpacking " + zipFile + " into " + destPath);
         ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFile));
         ZipEntry entry = zipIn.getNextEntry();
         // iterates over entries in the zip file
