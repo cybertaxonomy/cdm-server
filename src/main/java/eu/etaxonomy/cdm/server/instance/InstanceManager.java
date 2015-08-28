@@ -40,6 +40,12 @@ public class InstanceManager implements LifeCycle.Listener {
 
     private static final Logger logger = Logger.getLogger(InstanceManager.class);
 
+    private ListOrderedMap instances = new ListOrderedMap();
+
+    private final StartupQueue queue = new StartupQueue();
+
+    private final boolean austostart = true;
+
     boolean serverIsRunning = false;
 
     private File datasourcesFile;
@@ -58,12 +64,9 @@ public class InstanceManager implements LifeCycle.Listener {
         this.datasourcesFile = datasourcesFile;
     }
 
-    private ListOrderedMap instances = new ListOrderedMap();
-
-    private final boolean austostart = true;
-
     public InstanceManager(File configurationFile) {
         this.datasourcesFile = configurationFile;
+        queue.setParallelStartUps(JvmManager.availableProcessors());
     }
 
     /**
@@ -97,21 +100,22 @@ public class InstanceManager implements LifeCycle.Listener {
      * @param instance
      * @throws Exception
      */
-    public void start(CdmInstance instance) throws Exception{
+    public void start(CdmInstance instance) {
         if(instance.getWebAppContext() != null){
 //            instance.unbindJndiDataSource();
 //            instance.bindJndiDataSource();
             if(!instance.bindJndiDataSource()){
                 // a problem with the datasource occurred skip this webapp
 //                cdmWebappContext = null;
-                logger.error("a problem with the datasource occurred -> aboarding atartup of /" + instance.getName());
+                logger.error("a problem with the datasource occurred -> aboarding startup of /" + instance.getName());
                 instance.setStatus(Status.error);
 //                return cdmWebappContext;
             }
             if(logger.isDebugEnabled()) {
                 logger.debug("starting " + instance.getName());
             }
-            instance.getWebAppContext().start();
+            // instance.getWebAppContext().start();
+            queue.add(instance);
         }
     }
 
@@ -131,10 +135,10 @@ public class InstanceManager implements LifeCycle.Listener {
      * Sets the {@link SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE} attribute
      * to the application context and starts the instance
      *
-     * FIXME This method is only experimental and need most probably to be changed !!!!
-     *
      * @param instance
      * @throws Exception
+     *
+     * FIXME This method i only experimental and need most probably to be changed !!!!
      */
     public void updateToCurrentVersion(CdmInstance instance) throws Exception{
         if(instance.getWebAppContext() != null){

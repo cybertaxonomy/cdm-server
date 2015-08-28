@@ -51,6 +51,7 @@ import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.log.Log;
@@ -186,7 +187,21 @@ public final class Bootloader {
     }
 
 
-    private File extractWar(String warName) throws IOException, FileNotFoundException {
+    /**
+     * Finds the named war file either in the resources known to the class loader
+     * or in a target folder if the bootloader is started from within a maven project.
+     * Once found the war file is copied to the temp folder defined by {@link TMP_PATH}.
+     *
+     * The war file can optionally be unpacked.
+     *
+     * @param warName
+     * @param unpack
+     *  unzip the war file after extraction
+     * @return
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    private File extractWar(String warName, boolean unpack) throws IOException, FileNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String warFileName = warName + WAR_POSTFIX;
 
@@ -220,8 +235,33 @@ public final class Bootloader {
         writeStreamTo(resource.openStream(), new FileOutputStream(warFile), 8 * KB);
 
         logger.info("Extracted " + warFileName);
+
+        if(unpack) {
+            try {
+                logger.info("Unpacking " + warFileName);
+                warFile = unzip(warFile, warName);
+            } catch (IOException e) {
+                logger.error("extractWar() - Unziping of war file " + warFile + " failed. Will return the war file itself instead of the extracted folder.", e);
+            }
+        }
+
         return warFile;
     }
+
+
+    /**
+     * @param extractWar
+     * @return
+     * @throws IOException
+     */
+    private File unzip(File extractWar, String warName) throws IOException {
+        UnzipUtility unzip = new UnzipUtility();
+
+        File destDirectory = new File(TMP_PATH + File.separator + warName);
+        unzip.unzip(extractWar, destDirectory);
+        return destDirectory;
+    }
+
 
 
     /**
@@ -294,7 +334,7 @@ public final class Bootloader {
 
             // load the default-web-application from source if running in development mode mode
             if(isRunningFromWarFile){
-                defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+                defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME, false);
             } else {
                 defaultWebAppFile = new File("./src/main/webapp");
             }
@@ -308,8 +348,8 @@ public final class Bootloader {
         } else {
             // read version number
             String version = readCdmRemoteVersion();
-            cdmRemoteWebAppFile = extractWar(CDM_WEBAPP + "-" + version);
-            defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME);
+            cdmRemoteWebAppFile = extractWar(CDM_WEBAPP + "-" + version, true);
+            defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME, false);
         }
 
 
@@ -352,8 +392,17 @@ public final class Bootloader {
 
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
-        server = new Server(httpPort);
+
+        // in jetty 9 currently each connector uses
+        // 2 threads -  1 to select for IO activity and 1 to accept new connections.
+        // there fore we need to add 2 to the number of cores
+//        QueuedThreadPool threadPool = new QueuedThreadPool(JvmManager.availableProcessors() +  + 200);
+//        server = new Server(threadPool);
+        server = new Server();
         server.addLifeCycleListener(instanceManager);
+        ServerConnector connector=new ServerConnector(server);
+        connector.setPort(httpPort);
+        server.addConnector(connector );
 
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
         classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
