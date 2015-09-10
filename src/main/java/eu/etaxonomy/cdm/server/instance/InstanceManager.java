@@ -40,6 +40,12 @@ public class InstanceManager implements LifeCycle.Listener {
 
     private static final Logger logger = Logger.getLogger(InstanceManager.class);
 
+    private ListOrderedMap instances = new ListOrderedMap();
+
+    private final StartupQueue queue = new StartupQueue();
+
+    private final boolean austostart = true;
+
     boolean serverIsRunning = false;
 
     private File datasourcesFile;
@@ -58,12 +64,9 @@ public class InstanceManager implements LifeCycle.Listener {
         this.datasourcesFile = datasourcesFile;
     }
 
-    private ListOrderedMap instances = new ListOrderedMap();
-
-    private final boolean austostart = true;
-
     public InstanceManager(File configurationFile) {
         this.datasourcesFile = configurationFile;
+        queue.setParallelStartUps(JvmManager.availableProcessors());
     }
 
     /**
@@ -89,26 +92,30 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * Starts the given instance. Rebinds the JndiDataSource prior starting.
+     * Starts the instance
+     *
+     * Rebinds the JndiDataSource and starts the given instance.
+     * The method returns once the instance is fully started up.
      *
      * @param instance
      * @throws Exception
      */
-    public void start(CdmInstance instance) throws Exception{
+    public void start(CdmInstance instance) {
         if(instance.getWebAppContext() != null){
 //            instance.unbindJndiDataSource();
 //            instance.bindJndiDataSource();
             if(!instance.bindJndiDataSource()){
                 // a problem with the datasource occurred skip this webapp
 //                cdmWebappContext = null;
-                logger.error("a problem with the datasource occurred -> aboarding atartup of /" + instance.getConfiguration().getInstanceName());
+                logger.error("a problem with the datasource occurred -> aboarding startup of /" + instance.getName());
                 instance.setStatus(Status.error);
 //                return cdmWebappContext;
             }
             if(logger.isDebugEnabled()) {
-                logger.debug("starting " + instance.getConfiguration().getInstanceName());
+                logger.debug("starting " + instance.getName());
             }
-            instance.getWebAppContext().start();
+            // instance.getWebAppContext().start();
+            queue.add(instance);
         }
     }
 
@@ -122,20 +129,6 @@ public class InstanceManager implements LifeCycle.Listener {
         instance.getProblems().clear();
         // explicitly set status stopped here to clear up prior error states
         instance.setStatus(Status.stopped);
-    }
-
-    /**
-     * Sets the {@link SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE} attribute
-     * to the application context and starts the instance
-     *
-     * @param instance
-     * @throws Exception
-     */
-    public void updateToCurrentVersion(CdmInstance instance) throws Exception{
-        if(instance.getWebAppContext() != null){
-            instance.getWebAppContext().getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, true);
-        }
-        start(instance);
     }
 
     /**
@@ -242,7 +235,7 @@ public class InstanceManager implements LifeCycle.Listener {
                         try {
                             start(instance);
                         } catch (Exception e) {
-                            logger.error("Could not start " + instance.getWebAppContext().getContextPath());
+                            logger.error("Could not start " + instance.getWebAppContext().getContextPath(), e);
                             instance.getProblems().add(e.getMessage());
                             instance.setStatus(Status.error);
                         }
