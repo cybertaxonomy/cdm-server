@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +36,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
@@ -134,6 +138,9 @@ public final class Bootloader {
     private boolean isRunningfromTargetFolder;
 
     private boolean isRunningFromWarFile;
+
+    private String cdmlibServicesVersion = "";
+    private String cdmlibServicesLastModified = "";
 
 
     /* thread save singleton implementation */
@@ -241,6 +248,47 @@ public final class Bootloader {
             try {
                 logger.info("Unpacking " + warFileName);
                 warFile = unzip(warFile, warName);
+
+                // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
+                // manifest file in the cdmlib services jar
+                if(warFile != null && warFile.isDirectory()) {
+                    // generate the webapp lib dir path
+                    String warLibDirAbsolutePath = warFile.getAbsolutePath() +
+                            File.separator +
+                            "WEB-INF" +
+                            File.separator +
+                            "lib";
+                    File warLibDir = new File(warLibDirAbsolutePath);
+                    if(warLibDir.exists()) {
+                        // get the cdmlib-services jar
+                        File [] files = warLibDir.listFiles(new FilenameFilter() {
+                            @Override
+                            public boolean accept(File dir, String name) {
+                                return name.startsWith("cdmlib-services") && name.endsWith(".jar");
+                            }
+                        });
+                        if(files != null && files.length > 0) {
+                            // get the relevant info from the jar manifest
+                            JarFile jarFile = new JarFile(files[0]);
+                            Manifest manifest = jarFile.getManifest();
+                            Attributes attributes = manifest.getMainAttributes();
+                            // from the OSGI spec the LastModified value is " the number of milliseconds
+                            // since midnight Jan. 1, 1970 UTC with the condition that a change must
+                            // always result in a higher value than the previous last modified time
+                            // of any bundle"
+                            cdmlibServicesVersion = attributes.getValue("Bundle-Version");
+                            logger.warn("cdmlib-services version : " + cdmlibServicesVersion);
+                            cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
+                            logger.warn("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+
+                            if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
+                                throw new IllegalStateException("Invalid cdmlib-services manifest file");
+                            }
+                        } else {
+                            throw new IllegalStateException("cdmlib-services jar not found ");
+                        }
+                    }
+                }
             } catch (IOException e) {
                 logger.error("extractWar() - Unziping of war file " + warFile + " failed. Will return the war file itself instead of the extracted folder.", e);
             }
@@ -250,6 +298,13 @@ public final class Bootloader {
     }
 
 
+    public String getCdmlibServicesVersion() {
+        return cdmlibServicesVersion;
+    }
+
+    public String getCdmlibServicesLastModified() {
+        return cdmlibServicesLastModified;
+    }
     /**
      * @param extractWar
      * @return
