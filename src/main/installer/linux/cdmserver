@@ -148,7 +148,7 @@ do_start()
     echo $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
     # increasing the maximum number of open files
-    ulimit -n 5000
+    ulimit -n 200000
 
     $DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
         -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
