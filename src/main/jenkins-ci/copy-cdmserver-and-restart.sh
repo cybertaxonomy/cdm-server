@@ -10,6 +10,12 @@
 #   CDMUSERS        ALL=(ALL)NOPASSWD: CDMSERVER
 # ------------------------------------------------------------
 
+
+echo "==============================================="
+echo "Skript DEPRECATED !!!!!!!!!!!!!!!!!!!!!!"
+echo "use 'sudo dpkg -i instead'"
+echo "==============================================="
+
 set -e
 
 if [ -z "${RESTART_AFTER_UPDATE}" ]; then
