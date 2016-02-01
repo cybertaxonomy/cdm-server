@@ -674,7 +674,10 @@ public final class Bootloader {
 
         cdmWebappContext.setContextPath(constructContextPath(conf));
         logger.info("contextPath: " + cdmWebappContext.getContextPath());
-        cdmWebappContext.setTempDirectory(CDM_WEBAPP_TEMP_FOLDER);
+        // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
+        // since this behaviour can cause conflicts during parallel start up  of instances.
+        cdmWebappContext.setPersistTempDirectory(true);
+
 
 //        if(!instance.bindJndiDataSource()){
 //            // a problem with the datasource occurred skip this webapp
