@@ -11,8 +11,6 @@ package eu.etaxonomy.cdm.server.instance;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_CDMSERVER;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_PER_INSTANCE;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.MB;
-import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER;
-import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE;
 
 import java.io.File;
 import java.io.IOException;
@@ -282,7 +280,6 @@ public class InstanceManager implements LifeCycle.Listener {
     */
    private void verifyMemoryRequirements() {
 
-       verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_CDMSERVER, PERM_GEN_SPACE_PER_INSTANCE, JvmManager.getPermGenSpaceUsage().getMax());
        verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage().getMax());
 
    }
