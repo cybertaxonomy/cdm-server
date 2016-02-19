@@ -251,6 +251,10 @@ public class CdmInstance implements Listener {
 
     public void unbindJndiDataSource() {
 
+        if(jndiDataSource == null) {
+            return; // nothing to to
+        }
+
         try {
             InitialContext ic = new InitialContext();
             Object o = ic.lookup(jndiDataSource.getJndiNameInScope());
