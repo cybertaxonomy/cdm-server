@@ -107,7 +107,7 @@
                                 String oddOrEven = i % 2 == 0 ? "odd" : "even";
 
                                 // render a table row
-                                out.append("<tr id=\"" + basePath + "\" class=\"entry " + oddOrEven + "\">");
+                                out.append("<tr id=\"" + instanceConfig.getInstanceName() + "\" class=\"entry " + oddOrEven + "\">");
                                 out.append("<td class=\"base-url\"><a href=\"" + basePath + "/\">" + basePath + "</a></td>");
                                 out.append("<td class=\"test-url\"><a href=\"" + basePath + "/portal/classification\">Test</a></td>");
                                 out.append("<td class=\"db-url\">" + instanceConfig.getDataSourceUrl() + "</td>");
@@ -120,7 +120,7 @@
                                 // OAI-PMH Status will be requested using javascript
                                 out.append("<td class=\"oai-pmh\">requesting status ...</td>");
                                 out.append("</tr>");
-                                out.append("<tr id=\"" + basePath + "-messages\" class=\"messages " + oddOrEven + "\">");
+                                out.append("<tr id=\"" + instanceConfig.getInstanceName() + "-messages\" class=\"messages " + oddOrEven + "\">");
                                 out.append("<td></td><td class=\"error messages\" colspan=\"5\">");
                                 for (String problem : instance.getProblems()) {
                                     out.append("<div>" + problem + "</div>");
