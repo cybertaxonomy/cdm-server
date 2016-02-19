@@ -17,22 +17,35 @@
     //the servelt context must use the class loader of the Bootloader class otherwise
     //getting the status will not work in mulithreading environments !!!
     Bootloader bootloader = Bootloader.getBootloader();
-    long recommendedMinimumHeap = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.HEAP_CDMSERVER, AssumedMemoryRequirements.HEAP_PER_INSTANCE, null);
-    long recommendedMinimumPermGenSpace = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER, AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE, null);
-
+    Long recommendedMinimumHeap = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.HEAP_CDMSERVER, AssumedMemoryRequirements.HEAP_PER_INSTANCE, null);
+    Long recommendedMinimumPermGenSpace = null;
+    if(JvmManager.getJvmVersion() == 7){
+        recommendedMinimumPermGenSpace = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER, AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE, null);
+    } 
+    
     ObjectMapper jsonMapper = new ObjectMapper();
 
     response.setHeader("Content-Type", "application/json;charset=UTF-8");
 
     MemoryUsage  heapMemoryUsage = JvmManager.getHeapMemoryUsage();
-    MemoryUsage  permGenSpaceUsage = JvmManager.getPermGenSpaceUsage();
+    MemoryUsage  permGenSpaceUsage = null;
+    MemoryUsage  metaSpaceUsage = null;
+    if(JvmManager.getJvmVersion() == 7){
+        permGenSpaceUsage = JvmManager.getPermGenSpaceUsage();
+    } else {
+        metaSpaceUsage  = JvmManager.getMetaSpaceUsage();
+    }
 
     ObjectNode node = jsonMapper.createObjectNode();
-    node.put("recommendedMinimumHeap", recommendedMinimumHeap);
-    node.put("recommendedMinimumPermGenSpace", recommendedMinimumPermGenSpace);
     node.put("availableProcessors", JvmManager.availableProcessors());
+    node.put("recommendedMinimumHeap", recommendedMinimumHeap);
     node.putPOJO("heapMemoryUsage", heapMemoryUsage);
-    node.putPOJO("permGenSpaceUsage", permGenSpaceUsage);
+    if(JvmManager.getJvmVersion() == 7){
+        node.put("recommendedMinimumPermGenSpace", recommendedMinimumPermGenSpace);
+        node.putPOJO("permGenSpaceUsage", permGenSpaceUsage);
+    } else {
+        node.putPOJO("mataSpaceUsage", metaSpaceUsage);
+    }
 
     JsonFactory jsonFactory = new JsonFactory();
     JsonGenerator jg = jsonFactory.createJsonGenerator(out);

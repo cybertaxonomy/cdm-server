@@ -136,6 +136,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             notifyInstanceStartedUp(instance);
             // release reference to the instance so
             // that the thread can be garbage collected
+            instance.getWebAppContext().removeLifeCycleListener(this);
             instance = null;
         }
 
@@ -147,6 +148,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             notifyInstanceFailed(instance);
             // release reference to the instance so
             // that the thread can be garbage collected
+            instance.getWebAppContext().removeLifeCycleListener(this);
             instance = null;
         }
 

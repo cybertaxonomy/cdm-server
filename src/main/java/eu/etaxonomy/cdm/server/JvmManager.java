@@ -24,15 +24,19 @@ import org.apache.log4j.Logger;
  */
 public class JvmManager {
 
-    /**
-     *
-     */
+    // Java 7
     private static final String SUFFIX_PERM_GEN = "Perm Gen";
+    // Java > 8
+    private static final String SUFFIX_META = "Metaspace";
 
     public static final Logger logger = Logger.getLogger(JvmManager.class);
 
     public static MemoryUsage getPermGenSpaceUsage(){
         return getMemoryPoolUsage(SUFFIX_PERM_GEN);
+    }
+
+    public static MemoryUsage getMetaSpaceUsage(){
+        return getMemoryPoolUsage(SUFFIX_META);
     }
 
     protected static MemoryUsage getMemoryPoolUsage(String nameSuffix) {
@@ -42,8 +46,8 @@ public class JvmManager {
             if(memoryPoolMXBean.getName().endsWith(nameSuffix)){
                 logger.debug(memoryPoolMXBean.getName()
                         + ": init= " + memoryPoolMXBean.getUsage().getInit()
-                        + ", used= "+memoryPoolMXBean.getUsage().getUsed()
-                        + ", max= "+memoryPoolMXBean.getUsage().getMax()
+                        + ", used= "+ memoryPoolMXBean.getUsage().getUsed()
+                        + ", max= "+ memoryPoolMXBean.getUsage().getMax()
                         + ", committed= "+memoryPoolMXBean.getUsage().getCommitted());
                 return memoryPoolMXBean.getUsage();
             }
@@ -73,6 +77,11 @@ public class JvmManager {
     public static int availableProcessors() {
 
         return Runtime.getRuntime().availableProcessors();
+    }
+
+    public static Integer getJvmVersion() {
+        return Integer.parseInt(System.getProperty("java.version").split("\\.")[1]);
+        // alternatively System.getProperty("java.specification.version");
     }
 
 }
