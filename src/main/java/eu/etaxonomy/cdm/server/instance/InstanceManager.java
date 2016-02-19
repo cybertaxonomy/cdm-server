@@ -11,6 +11,8 @@ package eu.etaxonomy.cdm.server.instance;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_CDMSERVER;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_PER_INSTANCE;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.MB;
+import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER;
+import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +58,8 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * @param datasourcesFile the datasourcesFile to set
+     * @param datasourcesFile
+     *            the datasourcesFile to set
      */
     public void setDatasourcesFile(File datasourcesFile) {
         this.datasourcesFile = datasourcesFile;
@@ -68,16 +71,16 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * @return the {@link Bootloader}  singelton instance
+     * @return the {@link Bootloader} singelton instance
      */
     private Bootloader bootloader() {
         return Bootloader.getBootloader();
     }
 
     /**
-     * this list of instances may contain removed
-     * instances.
+     * this list of instances may contain removed instances.
      * {@link #numOfConfiguredInstances()}
+     *
      * @return the instances
      */
     @SuppressWarnings("unchecked")
@@ -86,30 +89,30 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     public CdmInstance getInstance(String instanceName) {
-        return (CdmInstance)instances.get(instanceName);
+        return (CdmInstance) instances.get(instanceName);
     }
 
     /**
      * Starts the instance
      *
-     * Rebinds the JndiDataSource and starts the given instance.
-     * The method returns once the instance is fully started up.
+     * Rebinds the JndiDataSource and starts the given instance. The method
+     * returns once the instance is fully started up.
      *
      * @param instance
      * @throws Exception
      */
     public void start(CdmInstance instance) {
-        if(instance.getWebAppContext() != null){
-//            instance.unbindJndiDataSource();
-//            instance.bindJndiDataSource();
-            if(!instance.bindJndiDataSource()){
+        if (instance.getWebAppContext() != null) {
+            // instance.unbindJndiDataSource();
+            // instance.bindJndiDataSource();
+            if (!instance.bindJndiDataSource()) {
                 // a problem with the datasource occurred skip this webapp
-//                cdmWebappContext = null;
+                // cdmWebappContext = null;
                 logger.error("a problem with the datasource occurred -> aboarding startup of /" + instance.getName());
                 instance.setStatus(Status.error);
-//                return cdmWebappContext;
+                // return cdmWebappContext;
             }
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
                 logger.debug("starting " + instance.getName());
             }
             // instance.getWebAppContext().start();
@@ -117,10 +120,11 @@ public class InstanceManager implements LifeCycle.Listener {
         }
     }
 
-    public void stop(CdmInstance instance) throws Exception{
-        // TODO do we need to bootloader().removeCdmInstanceContext(existingInstance); always?
-        //    see reLoadInstanceConfigurations()
-        if(instance.getWebAppContext() != null){
+    public void stop(CdmInstance instance) throws Exception {
+        // TODO do we need to
+        // bootloader().removeCdmInstanceContext(existingInstance); always?
+        // see reLoadInstanceConfigurations()
+        if (instance.getWebAppContext() != null) {
             instance.getWebAppContext().stop();
         }
         instance.unbindJndiDataSource();
@@ -130,13 +134,13 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * @return the number of existing instances, former instances which have been
-     * removed are not counted
+     * @return the number of existing instances, former instances which have
+     *         been removed are not counted
      */
-    public int numOfConfiguredInstances(){
-        int cnt=0;
-        for(CdmInstance instance : getInstances()){
-            if(instance.getStatus().equals(Status.removed)){
+    public int numOfConfiguredInstances() {
+        int cnt = 0;
+        for (CdmInstance instance : getInstances()) {
+            if (instance.getStatus().equals(Status.removed)) {
                 continue;
             }
             cnt++;
@@ -145,8 +149,8 @@ public class InstanceManager implements LifeCycle.Listener {
     }
 
     /**
-     * loads and reloads the list of instances.
-     * After loading the configuration the required memory is checked
+     * loads and reloads the list of instances. After loading the configuration
+     * the required memory is checked
      * <p>
      * reload behavior:
      * <ol>
@@ -154,7 +158,8 @@ public class InstanceManager implements LifeCycle.Listener {
      * <li>removed instances are stopped, configuration and context are removed,
      * state is set to Status.removed to indicate removal, removed instances can
      * be re-added.</li>
-     * <li>the order of instances as defined in the config file is always retained
+     * <li>the order of instances as defined in the config file is always
+     * retained
      * </ol>
      *
      */
@@ -168,21 +173,26 @@ public class InstanceManager implements LifeCycle.Listener {
 
         for (Configuration config : configList) {
             String key = config.getInstanceName();
-            if(currentInstances.containsKey(key)){
-                CdmInstance existingInstance = (CdmInstance)currentInstances.get(key);
-                if(!(existingInstance.getStatus().equals(Status.removed) && existingInstance.getWebAppContext() == null)){
-                    // re-added instance if not already removed (removed instances will not be re-added if they have been stopped successfully)
+            if (currentInstances.containsKey(key)) {
+                CdmInstance existingInstance = (CdmInstance) currentInstances.get(key);
+                if (!(existingInstance.getStatus().equals(Status.removed) && existingInstance.getWebAppContext() == null)) {
+                    // re-added instance if not already removed (removed
+                    // instances will not be re-added if they have been stopped
+                    // successfully)
                     updatedInstances.put(key, existingInstance);
-                    if ( !(existingInstance).getConfiguration().equals(config)) {
-                        // instance has changed: stop it, clear error states, set new configuration
+                    if (!(existingInstance).getConfiguration().equals(config)) {
+                        // instance has changed: stop it, clear error states,
+                        // set new configuration
                         try {
-                            // TODO change problems into messages + severity (notice, error)
+                            // TODO change problems into messages + severity
+                            // (notice, error)
                             stop(existingInstance);
                             bootloader().removeCdmInstanceContext(existingInstance);
                             existingInstance.setConfiguration(config);
                             existingInstance.getProblems().add("Reloaded with modified configuration");
                         } catch (Exception e) {
-                            existingInstance.getProblems().add("Error while stopping modified instance: " + e.getMessage());
+                            existingInstance.getProblems().add(
+                                    "Error while stopping modified instance: " + e.getMessage());
                             logger.error(e, e);
                         }
                     }
@@ -194,11 +204,11 @@ public class InstanceManager implements LifeCycle.Listener {
         }
 
         // find removed instances
-        for(Object keyOfExisting : currentInstances.keyList()){
-            if(!updatedInstances.containsKey(keyOfExisting)){
-                CdmInstance removedInstance = (CdmInstance)currentInstances.get(keyOfExisting);
+        for (Object keyOfExisting : currentInstances.keyList()) {
+            if (!updatedInstances.containsKey(keyOfExisting)) {
+                CdmInstance removedInstance = (CdmInstance) currentInstances.get(keyOfExisting);
 
-                if(removedInstance.getStatus().equals(Status.removed)){
+                if (removedInstance.getStatus().equals(Status.removed)) {
                     // instance already is removed, forget it now
                     continue;
                 }
@@ -220,7 +230,7 @@ public class InstanceManager implements LifeCycle.Listener {
 
         verifyMemoryRequirements();
 
-        if(serverIsRunning) {
+        if (serverIsRunning) {
             addNewInstancesToServer(false);
         }
     }
@@ -229,7 +239,7 @@ public class InstanceManager implements LifeCycle.Listener {
         for (CdmInstance instance : getInstances()) {
             if (instance.getStatus().equals(Status.uninitialized)) {
                 try {
-                    if(bootloader().addCdmInstanceContext(instance) != null && austostart) {
+                    if (bootloader().addCdmInstanceContext(instance) != null && austostart) {
                         try {
                             start(instance);
                         } catch (Exception e) {
@@ -258,7 +268,6 @@ public class InstanceManager implements LifeCycle.Listener {
 
     }
 
-
     @Override
     public void lifeCycleStarting(LifeCycle event) {
     }
@@ -273,38 +282,38 @@ public class InstanceManager implements LifeCycle.Listener {
         serverIsRunning = false;
     }
 
-
-
     /**
     *
     */
-   private void verifyMemoryRequirements() {
+    private void verifyMemoryRequirements() {
 
-       verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage().getMax());
+        verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage()
+                .getMax());
+        if (JvmManager.getJvmVersion() == 7) {
+            verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_CDMSERVER, PERM_GEN_SPACE_PER_INSTANCE, JvmManager
+                    .getPermGenSpaceUsage().getMax());
+        }
 
-   }
-    private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance, long availableSpace) {
+    }
 
+    private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance,
+            long availableSpace) {
 
         long recommendedMinimumSpace = recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, null);
 
-        if(recommendedMinimumSpace > availableSpace){
+        if (recommendedMinimumSpace > availableSpace) {
 
-            String message = memoryName + " ("
-                + (availableSpace / MB)
-                + "MB) insufficient for "
-                + numOfConfiguredInstances()
-                + " instances. Increase " + memoryName + " to "
-                + (recommendedMinimumSpace / MB)
-                + "MB";
-                ;
+            String message = memoryName + " (" + (availableSpace / MB) + "MB) insufficient for "
+                    + numOfConfiguredInstances() + " instances. Increase " + memoryName + " to "
+                    + (recommendedMinimumSpace / MB) + "MB";
+            ;
             logger.error(message + " => disabling some instances!!!");
 
             // disabling some instances
-            int i=0;
-            for(CdmInstance instance : getInstances()){
+            int i = 0;
+            for (CdmInstance instance : getInstances()) {
                 i++;
-                if(recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, i)  > availableSpace){
+                if (recommendedMinimumSpace(requiredSpaceServer, requiredSpacePerInstance, i) > availableSpace) {
                     instance.setStatus(Status.disabled);
                     instance.getProblems().add("Disabled due to: " + message);
                 }
@@ -315,17 +324,16 @@ public class InstanceManager implements LifeCycle.Listener {
     /**
      * @param requiredServerSpace
      * @param requiredSpacePerIntance
-     * @param numOfInstances may be null, the total number of instances found in
-     *  the current configuration is used in this case.
+     * @param numOfInstances
+     *            may be null, the total number of instances found in the
+     *            current configuration is used in this case.
      * @return
      */
     public long recommendedMinimumSpace(long requiredServerSpace, long requiredSpacePerIntance, Integer numOfInstances) {
-        if(numOfInstances == null){
+        if (numOfInstances == null) {
             numOfInstances = numOfConfiguredInstances();
         }
         return (numOfInstances * requiredSpacePerIntance) + requiredServerSpace;
     }
-
-
 
 }
