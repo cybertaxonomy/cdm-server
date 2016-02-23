@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -72,6 +73,10 @@ public class UnzipUtility {
      * @throws IOException
      */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+
+        File file = new File(filePath);
+        FileUtils.forceMkdir(file.getParentFile());
+
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[BUFFER_SIZE];
         int read = 0;
