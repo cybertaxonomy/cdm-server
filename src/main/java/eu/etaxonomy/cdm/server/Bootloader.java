@@ -220,13 +220,16 @@ public final class Bootloader {
 
             File pomxml = new File("pom.xml");
             if(pomxml.exists()){
+                logger.info("will try find the war in target folder of maven project");
                 // 2. try finding in target folder of maven project
                 File warFile = new File("target" + File.separator + warFileName);
                 logger.debug("looking for war file at " + warFile.getAbsolutePath());
                 if (warFile.canRead()) {
                     resource = warFile.toURI().toURL();
+                    logger.info("Success! Using war file from " + resource.toString());
                 } else {
                     logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
+                    System.exit(-1);
                 }
             }
         }
