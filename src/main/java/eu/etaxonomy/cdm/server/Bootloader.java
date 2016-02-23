@@ -47,6 +47,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
@@ -229,10 +230,10 @@ public final class Bootloader {
                     logger.info("Success! Using war file from " + resource.toString());
                 } else {
                     logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
-                    System.exit(-1);
                 }
             }
         }
+
 
         if (resource == null) {
             // no way finding the war file :-(
@@ -240,23 +241,26 @@ public final class Bootloader {
         }
 
 
-        File warFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
-        logger.info("Extracting " + warFileName + " to " + warFile + " ...");
+        File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
+        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
 
-        writeStreamTo(resource.openStream(), new FileOutputStream(warFile), 8 * KB);
+        writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
 
-        logger.info("Extracted " + warFileName);
-
-        if(unpack) {
+        if(!unpack) {
+            // return the war file
+            return extractedWarFile;
+        } else {
+            // unpack the archive
+            File explodedWebApp = null;
             try {
-                logger.info("Unpacking " + warFileName);
-                warFile = unzip(warFile, warName);
+                logger.info("Unpacking " + extractedWarFile);
+                explodedWebApp  = unzip(extractedWarFile);
 
                 // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
                 // manifest file in the cdmlib services jar
-                if(warFile != null && warFile.isDirectory()) {
+                if(explodedWebApp != null && explodedWebApp.isDirectory()) {
                     // generate the webapp lib dir path
-                    String warLibDirAbsolutePath = warFile.getAbsolutePath() +
+                    String warLibDirAbsolutePath = explodedWebApp.getAbsolutePath() +
                             File.separator +
                             "WEB-INF" +
                             File.separator +
@@ -293,11 +297,10 @@ public final class Bootloader {
                     }
                 }
             } catch (IOException e) {
-                logger.error("extractWar() - Unziping of war file " + warFile + " failed. Will return the war file itself instead of the extracted folder.", e);
+                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
             }
+            return explodedWebApp;
         }
-
-        return warFile;
     }
 
 
@@ -313,10 +316,11 @@ public final class Bootloader {
      * @return
      * @throws IOException
      */
-    private File unzip(File extractWar, String warName) throws IOException {
+    private File unzip(File extractWar) throws IOException {
         UnzipUtility unzip = new UnzipUtility();
 
-        File destDirectory = new File(TMP_PATH + File.separator + warName);
+        String targetFolderName = FilenameUtils.getBaseName(extractWar.getName());
+        File destDirectory = new File(TMP_PATH + File.separator + targetFolderName);
         unzip.unzip(extractWar, destDirectory);
         return destDirectory;
     }
