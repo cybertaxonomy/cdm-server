@@ -52,7 +52,7 @@ public class AssumedMemoryRequirements {
     /*
      * based on the HU value of the  jstat -gc output
      */
-    public static final long HEAP_PER_INSTANCE = (long)(235 * MB * FREE_HEAP);
+    public static final long HEAP_PER_INSTANCE = (long)(153 * MB * FREE_HEAP);
     public static final long HEAP_CDMSERVER = (long) (15 * MB * FREE_HEAP);
 
 }
