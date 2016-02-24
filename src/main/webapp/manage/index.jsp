@@ -65,6 +65,7 @@
                 <div class="container">
                   <table>
                     <tr>
+                      <th>#</th>
                       <th>Path</th>
                       <th></th>
                       <th>Database Url</th>
@@ -108,6 +109,7 @@
 
                                 // render a table row
                                 out.append("<tr id=\"" + instanceConfig.getInstanceName() + "\" class=\"entry " + oddOrEven + "\">");
+                                out.append("<td class=\"index\">" + i + "</td>");
                                 out.append("<td class=\"base-url\"><a href=\"" + basePath + "/\">" + basePath + "</a></td>");
                                 out.append("<td class=\"test-url\"><a href=\"" + basePath + "/portal/classification\">Test</a></td>");
                                 out.append("<td class=\"db-url\">" + instanceConfig.getDataSourceUrl() + "</td>");
