@@ -123,7 +123,7 @@
                                 out.append("<td class=\"oai-pmh\">requesting status ...</td>");
                                 out.append("</tr>");
                                 out.append("<tr id=\"" + instanceConfig.getInstanceName() + "-messages\" class=\"messages " + oddOrEven + "\">");
-                                out.append("<td></td><td class=\"error messages\" colspan=\"5\">");
+                                out.append("<td></td><td></td><td class=\"error messages\" colspan=\"5\">");
                                 for (String problem : instance.getProblems()) {
                                     out.append("<div>" + problem + "</div>");
                                 }
