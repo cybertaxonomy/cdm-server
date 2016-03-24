@@ -26,26 +26,22 @@
 
   <mailingLists>
     <mailingList>
-      <name>dev-edit</name>
-      <subscribe>
-        https://listes.mnhn.fr/wws/subrequest/dev-edit
-      </subscribe>
-      <unsubscribe>
-        https://listes.mnhn.fr/wws/sigrequest/dev-edit
-      </unsubscribe>
-      <post>dev-edit@mnhn.fr</post>
-      <archive>https://listes.mnhn.fr/wws/arc/dev-edit/</archive>
+        <name>EDIT Platform Developers</name>
+        <subscribe>
+            https://lists.fu-berlin.de/listinfo/editplatformdevelopers#subscribe
+        </subscribe>
+        <unsubscribe>
+            https://lists.fu-berlin.de/listinfo/editplatformdevelopers#options
+        </unsubscribe>
     </mailingList>
     <mailingList>
-      <name>cdm-edit</name>
-      <post>cdm-edit@mnhn.fr</post>
-      <subscribe>
-        https://listes.mnhn.fr/wws/subrequest/cdm-edit
-      </subscribe>
-      <unsubscribe>
-        https://listes.mnhn.fr/wws/sigrequest/cdm-edit
-      </unsubscribe>
-      <archive>https://listes.mnhn.fr/wws/arc/cdm-edit/</archive>
+        <name>EDIT User</name>
+        <subscribe>
+            https://lists.fu-berlin.de/listinfo/edituser#subscribe
+        </subscribe>
+        <unsubscribe>
+            https://lists.fu-berlin.de/listinfo/edituser#options
+        </unsubscribe>
     </mailingList>
   </mailingLists>
   <licenses>
