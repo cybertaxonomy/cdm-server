@@ -1,3 +1,4 @@
+pom.xml merge=ours
 * text=auto !eol
 /LICENSE.TXT -text
 ide/eclipse/cdm-server[!!-~]-[!!-~]help.launch -text
