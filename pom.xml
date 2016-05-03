@@ -9,6 +9,8 @@
   <name>CDM Community Standalone Server</name>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <jetty-version>9.2.9.v20150224</jetty-version>
   </properties>
 
@@ -551,6 +553,7 @@
             <!-- more libraries? -->
           </links>
         </configuration>
+        <version>2.10.3</version>
       </plugin>
       <plugin>
         <!-- this will generate an indexed and cross-referenced HTML version 
