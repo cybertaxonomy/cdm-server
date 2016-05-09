@@ -228,8 +228,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>
@@ -472,7 +472,7 @@
         <dependencies>
           <!-- 
                 upgrading dependency jsch.agent.version of jgit-flow plugin to 0.1.53 
-                in order have ssl key exchange algorithms compatible with openssh 6.7 
+                in order to have ssl key exchange algorithms compatible with openssh 6.7 
              -->
           <dependency>
             <groupId>com.jcraft</groupId>
