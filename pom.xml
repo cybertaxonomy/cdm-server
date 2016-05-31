@@ -9,6 +9,7 @@
   <name>CDM Community Standalone Server</name>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.2.9.v20150224</jetty-version>
   </properties>
 
