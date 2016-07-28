@@ -709,22 +709,11 @@
       <artifactId>jopt-simple</artifactId>
       <version>4.9</version>
     </dependency>
+    <!-- Database dependencies -->
     <dependency>
-      <groupId>com.mchange</groupId>
-      <artifactId>c3p0</artifactId>
-      <!-- 
-        IMPORTANT!!!
-        this must exactly match the version as set in 
-        cdmlib-parent pom.xml otherwise the connection 
-        through jndi will not work
-      -->
-      <version>0.9.5.2</version>
-    </dependency>
-    <!-- DATABASE DRIVER -->
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.38</version>
+      <groupId>eu.etaxonomy</groupId>
+      <artifactId>cdmlib-db</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
