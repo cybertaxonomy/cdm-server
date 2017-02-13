@@ -37,7 +37,7 @@ public class SharedAttributes {
 
     /**
      * same as
-     * <code>eu.etaxonomy.cdm.remote.config.LoggingConfigurer#CDM_LOGFILE</code>
+     * <code>eu.etaxonomy.cdm.api.config.LoggingConfigurer#CDM_LOGFILE</code>
      */
     public static final String ATTRIBUTE_CDM_LOGFILE = "cdm.logfile";
 

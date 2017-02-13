@@ -621,7 +621,7 @@ public final class Bootloader {
      * Configures and adds a {@link RollingFileAppender} to the root logger
      *
      * The log files of the cdm-remote instances are configured by the
-     * {@link eu.etaxonomy.cdm.remote.config.LoggingConfigurer}
+     * {@link eu.etaxonomy.cdm.api.config.LoggingConfigurer}
      *
      *
      */
