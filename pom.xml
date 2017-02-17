@@ -17,9 +17,9 @@
   <scm>
     <!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html 
       for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml -->
-    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</connection>
-    <developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdm-server</developerConnection>
-    <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdm-server</url>
+    <connection>scm:git:https://dev.e-taxonomy.eu/git/cdm-server.git</connection>
+    <developerConnection>scm:git:ssh://git@dev.e-taxonomy.eu/var/git/cdm-server.git</developerConnection>
+    <url>https://dev.e-taxonomy.eu/gitweb/cdm-server.git/tree</url>
   </scm>
   
   <prerequisites>
