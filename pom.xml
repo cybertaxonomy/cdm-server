@@ -314,6 +314,7 @@
         <configuration>
           <aggregate>true</aggregate>
           <stylesheet>maven</stylesheet>
+          <failOnError>false</failOnError>
         </configuration>
       </plugin>
 
