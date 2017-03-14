@@ -11,6 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.2.9.v20150224</jetty-version>
+    <javadoc.opts>-Xdoclint:none</javadoc.opts>
   </properties>
 
   <scm>
@@ -314,6 +315,8 @@
         <configuration>
           <aggregate>true</aggregate>
           <stylesheet>maven</stylesheet>
+          <failOnError>false</failOnError>
+          <additionalparam>${javadoc.opts}</additionalparam>
         </configuration>
       </plugin>
 
@@ -546,11 +549,8 @@
         <!-- you will want to start by publishing your classes' Javadocs -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <links>
-            <link>http://java.sun.com/j2se/1.6.0/docs/api/</link>
-            <!-- more libraries? -->
-          </links>
+        <configuration>    
+          <additionalparam>${javadoc.opts}</additionalparam>
         </configuration>
       </plugin>
       <plugin>
