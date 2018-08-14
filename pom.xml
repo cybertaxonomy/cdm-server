@@ -81,7 +81,7 @@
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://160.45.63.201/jenkins</url>
+    <url>http://int.e-taxonomy.eu/jenkins</url>
   </ciManagement>
   <!-- **** REPOSITORIES **** -->
   <profiles>
