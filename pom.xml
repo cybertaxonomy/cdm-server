@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
 
@@ -81,7 +81,7 @@
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://160.45.63.201/jenkins</url>
+    <url>http://int.e-taxonomy.eu/jenkins</url>
   </ciManagement>
   <!-- **** REPOSITORIES **** -->
   <profiles>
@@ -230,8 +230,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
