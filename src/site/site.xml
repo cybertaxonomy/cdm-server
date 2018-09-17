@@ -9,6 +9,7 @@
     <menu name="General Information">
       <item name="Overview" href="index.html"/>
       <!--item name="FAQ" href="faq.html"/-->
+      <item name="Releases" href="https://dev.e-taxonomy.eu/redmine/projects/edit/wiki/CdmPlatformRoadmap"/>
       <item name="Download" href="https://cybertaxonomy.eu/download/cdmserver/stable/"/>
       <item name="Installation" href="https://cybertaxonomy.eu/cdmserver/installation/"/>
     </menu>
