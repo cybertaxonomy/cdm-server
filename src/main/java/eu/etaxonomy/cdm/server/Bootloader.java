@@ -47,7 +47,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -359,7 +362,7 @@ public final class Bootloader {
         }
 
         //append logger
-//        configureFileLogger();
+        configureFileLogger();
 
         logger.info("Starting "+APPLICATION_NAME);
         logger.info("Using  " + System.getProperty("user.home") + " as home directory. Can be specified by -Duser.home=<FOLDER>");
@@ -626,20 +629,18 @@ public final class Bootloader {
      *
      */
 //   ===== removing useless RollingFileAppender logger === see #6287
-//    private void configureFileLogger() {
-//
-//        PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
-//        try {
-//            String logFile = logPath + File.separator + "cdmserver.log";
-//            RollingFileAppender appender = new RollingFileAppender(layout, logFile);
-//            appender.setMaxBackupIndex(3);
-//            appender.setMaxFileSize("2MB");
-//            Logger.getRootLogger().addAppender(appender);
-//            logger.info("logging to :" + logFile);
-//        } catch (IOException e) {
-//            logger.error("Creating RollingFileAppender failed:", e);
-//        }
-//    }
+    private void configureFileLogger() {
+
+        PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
+        try {
+            String logFile = logPath + File.separator + "cdmserver.log";
+            DailyRollingFileAppender appender = new DailyRollingFileAppender(layout, logFile, "'.' yyyy-MM-dd-HH");
+            Logger.getRootLogger().addAppender(appender);
+            logger.info("logging to :" + logFile);
+        } catch (IOException e) {
+            logger.error("Creating RollingFileAppender failed:", e);
+        }
+    }
 
 
     /**
