@@ -47,7 +47,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.helpers.Loader;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -84,7 +88,7 @@ public final class Bootloader {
 
 
 
-    private static final Logger logger = Logger.getLogger(Bootloader.class);
+    private static Logger logger = null;
 
     private static final String DATASOURCE_BEANDEF_FILE = "datasources.xml";
     private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
@@ -92,6 +96,8 @@ public final class Bootloader {
     private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
     private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
     private static final String LOG_PATH = USERHOME_CDM_LIBRARY_PATH + "log" + File.separator;
+
+    private static final String SYSPROPKEY_LOGGING_FOLDER = "LOGGING_FOLDER";
 
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
@@ -103,20 +109,34 @@ public final class Bootloader {
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
     private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
 
-    private final InstanceManager instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
+    private InstanceManager instanceManager = null;
 
     public List<CdmInstance> getCdmInstances() {
-        return instanceManager.getInstances();
+        return instanceManager().getInstances();
     }
 
-    public InstanceManager getInstanceManager(){
+
+    public InstanceManager instanceManager() {
+        if(instanceManager == null){
+            // the logging needs to be configured before instantiating the manager since it will need
+            // the logging right away.
+            configureLogging();
+            instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
+        }
         return instanceManager;
     }
+
 
     private File cdmRemoteWebAppFile = null;
     private File defaultWebAppFile = null;
 
+    /**
+     * will either be set to {{@link #LOG_PATH} or to the path supplied
+     * via the cdm-server start up options {@link CommandOptions#LOG_DIR}
+     */
     private String logPath = null;
+
+    private URL log4jconfigFileURL = null;
 
     private String webAppClassPath = null;
 
@@ -127,7 +147,7 @@ public final class Bootloader {
     private String contextPathPrefix = "";
 
     private Server server = null;
-    private final ContextHandlerCollection contexts = new ContextHandlerCollection();
+    private ContextHandlerCollection contexts = null;
 
     private CommandLine cmdLine;
 
@@ -156,6 +176,69 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
+    private ContextHandlerCollection contexts(){
+        if(contexts == null){
+            contexts = new ContextHandlerCollection();
+        }
+        return contexts;
+    }
+
+    /**
+     * @return
+     */
+    public Logger logger() {
+        configureLogging();
+        return logger;
+    }
+
+    /**
+     *
+     */
+    public void configureLogging() {
+        if(logger == null){
+            if(cmdLine.hasOption(LOG_DIR.getOpt())){
+                logPath = cmdLine.getOptionValue(LOG_DIR.getOpt());
+            } else {
+                logPath = LOG_PATH;
+            }
+            System.setProperty(SYSPROPKEY_LOGGING_FOLDER, logPath);
+            logger = Logger.getLogger(Bootloader.class);
+            if(System.getProperty(LogManager.DEFAULT_CONFIGURATION_KEY) == null){
+                // externally defined log4j config file is supplied, this will be
+                // used by the per instance logging configuration automatically
+                logger.info("system property " + LogManager.DEFAULT_CONFIGURATION_KEY + " is not set, applying the default log4jconfigFile: " + log4jconfigFileURL);
+                log4jconfigFileURL = Loader.getResource(LogManager.DEFAULT_CONFIGURATION_FILE);
+                System.getProperties().put(LogManager.DEFAULT_CONFIGURATION_KEY, log4jconfigFileURL);
+            } else {
+                logger.info("system property " + LogManager.DEFAULT_CONFIGURATION_KEY + " is set to " + System.getProperty(LogManager.DEFAULT_CONFIGURATION_KEY));
+            }
+            logger.info("Logging to " + logPath);
+        }
+    }
+
+    /**
+         * Configures and adds a {@link RollingFileAppender} to the root logger
+         *
+         * The log files of the cdm-remote instances are configured by the
+         * {@link eu.etaxonomy.cdm.api.config.LoggingConfigurer}
+         *
+         *
+         */
+       // ===== removing useless RollingFileAppender logger === see #6287
+        private void configureFileLogger() {
+
+            PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
+            try {
+                String logFile = logPath + File.separator + "cdmserver.log";
+                RollingFileAppender appender = new RollingFileAppender(layout, logFile);
+                appender.setMaxBackupIndex(3);
+                appender.setMaxFileSize("2MB");
+                Logger.getRootLogger().addAppender(appender);
+                Logger.getRootLogger().info("logging to :" + logFile);
+            } catch (IOException e) {
+                Logger.getRootLogger().error("Creating RollingFileAppender failed:", e);
+            }
+        }
 
     /**
      * @param input
@@ -214,19 +297,19 @@ public final class Bootloader {
         // 1. find in classpath
         URL resource = classLoader.getResource(warFileName);
         if (resource == null) {
-            logger.error("Could not find the " + warFileName + " on classpath!");
+            logger().error("Could not find the " + warFileName + " on classpath!");
 
             File pomxml = new File("pom.xml");
             if(pomxml.exists()){
-                logger.info("will try find the war in target folder of maven project");
+                logger().info("will try find the war in target folder of maven project");
                 // 2. try finding in target folder of maven project
                 File warFile = new File("target" + File.separator + warFileName);
-                logger.debug("looking for war file at " + warFile.getAbsolutePath());
+                logger().debug("looking for war file at " + warFile.getAbsolutePath());
                 if (warFile.canRead()) {
                     resource = warFile.toURI().toURL();
-                    logger.info("Success! Using war file from " + resource.toString());
+                    logger().info("Success! Using war file from " + resource.toString());
                 } else {
-                    logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
+                    logger().error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
                 }
             }
         }
@@ -239,7 +322,7 @@ public final class Bootloader {
 
 
         File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
-        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
+        logger().info("Extracting " + resource + " to " + extractedWarFile + " ...");
 
         writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
 
@@ -250,7 +333,7 @@ public final class Bootloader {
             // unpack the archive
             File explodedWebApp = null;
             try {
-                logger.info("Unpacking " + extractedWarFile);
+                logger().info("Unpacking " + extractedWarFile);
                 explodedWebApp  = unzip(extractedWarFile);
 
                 // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
@@ -281,9 +364,9 @@ public final class Bootloader {
                             // always result in a higher value than the previous last modified time
                             // of any bundle"
                             cdmlibServicesVersion = attributes.getValue("Bundle-Version");
-                            logger.warn("cdmlib-services version : " + cdmlibServicesVersion);
+                            logger().warn("cdmlib-services version : " + cdmlibServicesVersion);
                             cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
-                            logger.warn("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+                            logger().warn("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
 
                             if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
                                 throw new IllegalStateException("Invalid cdmlib-services manifest file");
@@ -294,12 +377,11 @@ public final class Bootloader {
                     }
                 }
             } catch (IOException e) {
-                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
+                logger().error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
             }
             return explodedWebApp;
         }
     }
-
 
     public String getCdmlibServicesVersion() {
         return cdmlibServicesVersion;
@@ -344,13 +426,7 @@ public final class Bootloader {
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {
 
-
-        if(cmdLine.hasOption(LOG_DIR.getOpt())){
-            logPath = cmdLine.getOptionValue(LOG_DIR.getOpt());
-        } else {
-            logPath = LOG_PATH;
-        }
-
+        configureLogging();
 
         //assure LOG_PATH exists
         File logPathFile = new File(logPath);
@@ -361,18 +437,18 @@ public final class Bootloader {
         //append logger
 //        configureFileLogger();
 
-        logger.info("Starting "+APPLICATION_NAME);
-        logger.info("Using  " + System.getProperty("user.home") + " as home directory. Can be specified by -Duser.home=<FOLDER>");
+        logger().info("Starting "+APPLICATION_NAME);
+        logger().info("Using  " + System.getProperty("user.home") + " as home directory. Can be specified by -Duser.home=<FOLDER>");
 
         //assure TMP_PATH exists and clean it up
         File tempDir = new File(TMP_PATH);
         if(!tempDir.exists() && !tempDir.mkdirs()){
-            logger.error("Error creating temporary directory for webapplications " + tempDir.getAbsolutePath());
+            logger().error("Error creating temporary directory for webapplications " + tempDir.getAbsolutePath());
             System.exit(-1);
         } else {
             if(FileUtils.deleteQuietly(tempDir)){
                 tempDir.mkdirs();
-                logger.info("Old webapplications successfully cleared");
+                logger().info("Old webapplications successfully cleared");
             }
         }
         tempDir = null;
@@ -385,9 +461,9 @@ public final class Bootloader {
 
             cdmRemoteWebAppFile = new File(cmdLine.getOptionValue(WEBAPP.getOpt()));
             if(cdmRemoteWebAppFile.isDirectory()){
-                logger.info("using user defined web application folder: " + cdmRemoteWebAppFile.getAbsolutePath());
+                logger().info("using user defined web application folder: " + cdmRemoteWebAppFile.getAbsolutePath());
             } else {
-                logger.info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
+                logger().info("using user defined warfile: " + cdmRemoteWebAppFile.getAbsolutePath());
             }
 
             updateServerRunMode();
@@ -418,9 +494,9 @@ public final class Bootloader {
         if(cmdLine.hasOption(HTTP_PORT.getOpt())){
             try {
                httpPort = Integer.parseInt(cmdLine.getOptionValue(HTTP_PORT.getOpt()));
-               logger.info(HTTP_PORT.getOpt()+" set to "+cmdLine.getOptionValue(HTTP_PORT.getOpt()));
+               logger().info(HTTP_PORT.getOpt()+" set to "+cmdLine.getOptionValue(HTTP_PORT.getOpt()));
            } catch (NumberFormatException e) {
-               logger.error("Supplied portnumber is not an integer");
+               logger().error("Supplied portnumber is not an integer");
                System.exit(-1);
            }
         }
@@ -428,9 +504,9 @@ public final class Bootloader {
         if(cmdLine.hasOption(DATASOURCES_FILE.getOpt())){
              File datasourcesFile = new File(cmdLine.getOptionValue(DATASOURCES_FILE.getOpt()));
              if(datasourcesFile.canRead()) {
-                instanceManager.setDatasourcesFile(datasourcesFile);
+                instanceManager().setDatasourcesFile(datasourcesFile);
             } else {
-                logger.error("File set as " + DATASOURCES_FILE.getOpt()
+                logger().error("File set as " + DATASOURCES_FILE.getOpt()
                         + " (" + cmdLine.getOptionValue(DATASOURCES_FILE.getOpt())
                         + ") is not readable.");
             }
@@ -451,7 +527,7 @@ public final class Bootloader {
         verifySystemResources();
 
          // load the configured instances for the first time
-        instanceManager.reLoadInstanceConfigurations();
+        instanceManager().reLoadInstanceConfigurations();
 
         // in jetty 9 currently each connector uses
         // 2 threads -  1 to select for IO activity and 1 to accept new connections.
@@ -459,7 +535,7 @@ public final class Bootloader {
 //        QueuedThreadPool threadPool = new QueuedThreadPool(JvmManager.availableProcessors() +  + 200);
 //        server = new Server(threadPool);
         server = new Server();
-        server.addLifeCycleListener(instanceManager);
+        server.addLifeCycleListener(instanceManager());
         ServerConnector connector=new ServerConnector(server);
         connector.setPort(httpPort);
         server.addConnector(connector );
@@ -471,7 +547,7 @@ public final class Bootloader {
 
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
-            logger.info("adding JMX support ...");
+            logger().info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mBeanContainer);
             server.addBean(Log.getLog());
@@ -485,7 +561,7 @@ public final class Bootloader {
         }
 
         // add default servlet context
-        logger.info("preparing default WebAppContext");
+        logger().info("preparing default WebAppContext");
         WebAppContext defaultWebappContext = new WebAppContext();
 
         setWebApp(defaultWebappContext, defaultWebAppFile);
@@ -507,7 +583,7 @@ public final class Bootloader {
         // Context path
         //
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
-        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
+        logger().info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
         defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
 
         // configure security context
@@ -521,11 +597,11 @@ public final class Bootloader {
         // the defaultWebappContext MUST USE the super classloader
         // otherwise the status page (index.jsp) might not work
         defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
-        contexts.addHandler(defaultWebappContext);
+        contexts().addHandler(defaultWebappContext);
 
-        logger.info("setting contexts ...");
-        server.setHandler(contexts);
-        logger.info("starting jetty ...");
+        logger().info("setting contexts ...");
+        server.setHandler(contexts());
+        logger().info("starting jetty ...");
 //        try {
 
             server.start();
@@ -545,10 +621,10 @@ public final class Bootloader {
 //        }
 
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
-            logger.info("jetty has started as win32 service");
+            logger().info("jetty has started as win32 service");
         } else {
             server.join();
-            logger.info(APPLICATION_NAME+" stopped.");
+            logger().info(APPLICATION_NAME+" stopped.");
             System.exit(0);
         }
     }
@@ -606,40 +682,15 @@ public final class Bootloader {
                      while ((line = in.readLine()) != null) {
                          response.append(line);
                      }
-               logger.info("OS Limit (Linux): maximum number of open files: " + response);
+               logger().info("OS Limit (Linux): maximum number of open files: " + response);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
-            logger.info("verifySystemResources only implemented for linux");
+            logger().info("verifySystemResources only implemented for linux");
         }
     }
-
-
-    /**
-     * Configures and adds a {@link RollingFileAppender} to the root logger
-     *
-     * The log files of the cdm-remote instances are configured by the
-     * {@link eu.etaxonomy.cdm.api.config.LoggingConfigurer}
-     *
-     *
-     */
-//   ===== removing useless RollingFileAppender logger === see #6287
-//    private void configureFileLogger() {
-//
-//        PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
-//        try {
-//            String logFile = logPath + File.separator + "cdmserver.log";
-//            RollingFileAppender appender = new RollingFileAppender(layout, logFile);
-//            appender.setMaxBackupIndex(3);
-//            appender.setMaxFileSize("2MB");
-//            Logger.getRootLogger().addAppender(appender);
-//            logger.info("logging to :" + logFile);
-//        } catch (IOException e) {
-//            logger.error("Creating RollingFileAppender failed:", e);
-//        }
-//    }
 
 
     /**
@@ -663,24 +714,25 @@ public final class Bootloader {
      *         {@link Status.#disabled} or if it is already added.
      * @throws IOException
      */
+    @SuppressWarnings("deprecation")
     public WebAppContext addCdmInstanceContext(CdmInstance instance) throws IOException {
 
         Configuration conf = instance.getConfiguration();
         if(!instance.isEnabled()){
-            logger.info(conf.getInstanceName() + " is disabled, possibly due to JVM memory limitations");
+            logger().info(conf.getInstanceName() + " is disabled, possibly due to JVM memory limitations");
             return null;
         }
         if(getContextFor(conf) != null){
-            logger.info(conf.getInstanceName() + " is alreaddy added to the contexts - skipping");
+            logger().info(conf.getInstanceName() + " is alreaddy added to the contexts - skipping");
             return null;
         }
 
         instance.setStatus(Status.initializing);
-        logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
+        logger().info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
         WebAppContext cdmWebappContext = new WebAppContext();
 
         cdmWebappContext.setContextPath(constructContextPath(conf));
-        logger.info("contextPath: " + cdmWebappContext.getContextPath());
+        logger().info("contextPath: " + cdmWebappContext.getContextPath());
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
         // since this behaviour can cause conflicts during parallel start up  of instances.
         cdmWebappContext.setPersistTempDirectory(true);
@@ -696,6 +748,11 @@ public final class Bootloader {
 
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
         cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        if(log4jconfigFileURL != null){
+            cdmWebappContext.setAttribute(LogManager.DEFAULT_CONFIGURATION_KEY, log4jconfigFileURL);
+            System.getProperties().put(LogManager.DEFAULT_CONFIGURATION_KEY, log4jconfigFileURL);
+        }
+        // log4jconfigFileURL
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
             cdmWebappContext.getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
@@ -716,7 +773,7 @@ public final class Bootloader {
              */
             WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
             if(webAppClassPath != null){
-                logger.info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
+                logger().info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
             } else {
                 throw new RuntimeException("Classpath cdm-webapp for missing while running cdm-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
@@ -724,7 +781,7 @@ public final class Bootloader {
             cdmWebappContext.setClassLoader(classLoader);
         }
 
-        contexts.addHandler(cdmWebappContext);
+        contexts().addHandler(cdmWebappContext);
         instance.setWebAppContext(cdmWebappContext);
         cdmWebappContext.addLifeCycleListener(instance);
         instance.setStatus(Status.stopped);
@@ -761,14 +818,14 @@ public final class Bootloader {
                     throw e;
                 }
             }
-            contexts.removeHandler(instance.getWebAppContext());
+            contexts().removeHandler(instance.getWebAppContext());
             instance.releaseWebAppContext();
         } else  {
             // maybe something went wrong before, try to find the potentially lost
             // contexts directly in the server
             ContextHandler handler = getContextFor(instance.getConfiguration());
             if(handler != null){
-                contexts.removeHandler(handler);
+                contexts().removeHandler(handler);
             }
         }
         instance.unbindJndiDataSource();
@@ -786,10 +843,10 @@ public final class Bootloader {
     private void setWebApp(WebAppContext context, File webApplicationResource) {
         if(webApplicationResource.isDirectory()){
             context.setResourceBase(webApplicationResource.getAbsolutePath());
-            logger.debug("setting directory " + webApplicationResource.getAbsolutePath() + " as webapplication");
+            logger().debug("setting directory " + webApplicationResource.getAbsolutePath() + " as webapplication");
         } else {
             context.setWar(webApplicationResource.getAbsolutePath());
-            logger.debug("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
+            logger().debug("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
         }
     }
 
@@ -810,7 +867,7 @@ public final class Bootloader {
     }
 
     public ContextHandler getContextFor(String contextPath) {
-        for( Handler handler : contexts.getHandlers()){
+        for( Handler handler : contexts().getHandlers()){
             if(handler instanceof ContextHandler){
                 if(((ContextHandler)handler).getContextPath().equals(contextPath)){
                     return (ContextHandler)handler;
@@ -821,7 +878,7 @@ public final class Bootloader {
     }
 
     public ContextHandlerCollection getContexts() {
-        return contexts;
+        return contexts();
     }
 
     /**
