@@ -1,0 +1,16 @@
+version: '3'
+services: 
+    cdmserver:
+        ports:
+        - "8080:8080" 
+        env_file:
+        - ./cdm-server.env
+        volumes:
+        # recommended settings for development
+        - type: bind
+          source: ~/ # user-home as a cdm-server-home => use the .cdmLibrary in user home
+          target: /data
+        - type: bind
+          source: ./ # log directly into the working directory
+          target: /log/cdmserver
+  

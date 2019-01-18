@@ -456,6 +456,71 @@
           </arguments>
         </configuration>
       </plugin>
+      <!-- Build Docker image -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.28.0</version>
+        <configuration>
+           <images>
+             <image>
+               <!-- docker hub does not allow dots in organizations, so the name is
+                    just 'cybertaxonomy', this MUST NOT BE CHANGED!!!!  -->
+               <name>cybertaxonomy/${project.artifactId}:${project.version}</name>
+               <build>
+                 <!-- use a Dockerfile in the directory src/main/docker/production -->
+                 <dockerFileDir>production</dockerFileDir>
+                 <!-- fabric8-maven-plugin filters given Dockerfile with Maven properties -->
+                 <!-- For example, the default <filter>${*}</filter> parse Maven properties 
+                     in the format that we know. If you specify a single character for 
+                     <filter> then this delimiter is taken for both, the start and the end. 
+                     E.g a <filter>@</filter> triggers on parameters in the format @…​@, -->
+                 <filter>@</filter>
+                 <assembly>
+                    <descriptorRef>artifact</descriptorRef>
+                    <!--
+                         1. The maven plugin copies the jar to the artifacts assembly locaton at:
+                            ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
+                         2. a tar is being created at target/docker/eu.etaxonomy/cdm-server/${project.version}/tmp/docker-build.tar 
+                            which contains all files located in /target/docker/production and the artifacts. 
+                            Artifacts are put into the folder maven/ inside the tar archive
+                         3. The tar archive is passed to the docker daemon and is used as working directory for the build 
+                     -->
+                  </assembly>
+               </build>
+               
+               <run>
+                 <ports>8080:8080</ports>
+                 <!-- TODO configure if needed, see src/main/docker/production/README for examples -->
+               </run>
+             </image>
+           </images>
+
+        </configuration>
+
+        <!-- Connect start/stop to pre- and
+             post-integration-test phase, respectively if you want to start
+             your docker containers during integration tests -->
+        <executions>
+          <execution>
+             <id>start</id>
+             <phase>pre-integration-test</phase>
+             <goals>
+               <!-- "build" should be used to create the images with the
+                    artifact -->
+               <goal>build</goal>
+               <goal>start</goal>
+             </goals>
+          </execution>
+          <execution>
+             <id>stop</id>
+             <phase>post-integration-test</phase>
+             <goals>
+               <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <!-- ====== DEPLOY ====== -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId> 
