@@ -48,6 +48,16 @@ NOTE: If you are using **symlinks** in the `.cdmLibrary` these must be use path 
     
 ### with docker-compose
 
+Run as detached service 
+
+    docker-compose run -d cdmserver
+
+Run and inspect the running container with the bash shell
+
+    docker-compose run cdmserver /bin/bash
+
+
+
 ### with maven
 
     ...

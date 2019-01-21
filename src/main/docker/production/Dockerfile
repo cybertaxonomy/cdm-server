@@ -25,13 +25,12 @@ ENV DATASOURCES=$CDM_HOME/.cdmLibrary/datasources.xml
 ENV JAVA_OPTIONS="-Dspring.profiles.active=remoting"
 
 # fixed java options which must not be overwritten
-ARG JAVA_OPTS="-Xmx$HEAP_SIZE \
+ENV JAVA_OPTS="-Xmx$HEAP_SIZE \
     -XX:+UseG1GC -XX:ParallelGCThreads=$CPU_CORES -XX:ConcGCThreads=$CPU_CORES  \
     -Duser.home=$CDM_HOME $JAVA_OPTIONS"
 
-ARG SERVER_ARGS="-forceSchemaUpdate -jmx"
-
-ENV CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -datasources $DATASOURCES"
+ENV SERVER_ARGS="-forceSchemaUpdate -jmx"
+ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -datasources $DATASOURCES"
 
 EXPOSE $CDMSERVER_PORT
 
