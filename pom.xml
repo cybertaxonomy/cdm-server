@@ -489,10 +489,12 @@
                   </assembly>
                </build>
                
+               <!-- TODO the run configuration if needed, see src/main/docker/production/README for examples -->
+               <!-- 
                <run>
                  <ports>8080:8080</ports>
-                 <!-- TODO configure if needed, see src/main/docker/production/README for examples -->
                </run>
+                -->
              </image>
            </images>
 
