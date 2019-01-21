@@ -14,11 +14,4 @@ services:
         - type: bind
           source: /var/log/cdmserver
           target: /log/cdmserver
-        # recommended settings for development
-        #- type: bind
-        #  source: ~/ # user-home as a cdm-server-home => use the .cdmLibrary in user home
-        #  target: /data
-        #- type: bind
-        #  source: ./ # log directly into the working directory
-        #  target: /log/cdmserver
   

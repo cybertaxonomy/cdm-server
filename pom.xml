@@ -479,7 +479,7 @@
                  <assembly>
                     <descriptorRef>artifact</descriptorRef>
                     <!--
-                         1. The maven plugin copies the jar to the artifacts assembly locaton at:
+                         1. The maven plugin copies the jar to the artifacts assembly location at:
                             ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
                          2. a tar is being created at target/docker/eu.etaxonomy/cdm-server/${project.version}/tmp/docker-build.tar 
                             which contains all files located in /target/docker/production and the artifacts. 

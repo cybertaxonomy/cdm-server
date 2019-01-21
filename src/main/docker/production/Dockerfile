@@ -13,13 +13,11 @@ FROM anapsix/alpine-java:8
 ADD maven/@project.artifactId@-@project.version@.jar /root/cdm-server.jar
 
 ARG CDMSERVER_PORT=8080
-ARG HEAP_SIZE=1024M
+ARG HEAP_SIZE_ARG=1024M
 ARG LOGDIR="/log/cdmserver"
 
 ENV CDM_HOME=/data
-ENV NAME=cdmserver
-ENV DESC="CDM Server"
-# ENV CDMSERVER_SHUTDOWN=30
+ENV HEAP_SIZE=$HEAP_SIZE_ARG
 ENV CPU_CORES=1
 ENV DATASOURCES=$CDM_HOME/.cdmLibrary/datasources.xml
 
