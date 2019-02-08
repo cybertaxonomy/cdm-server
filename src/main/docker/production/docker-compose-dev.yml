@@ -2,7 +2,9 @@ version: '3'
 services: 
     cdmserver:
         ports:
-        - "8080:8080" 
+        - "8080:8080"
+        # makes the host available as localhost in the container so that the cdm can access the localhosts mysql server
+        network_mode: host
         env_file:
         - ./cdm-server.env
         volumes:

@@ -50,7 +50,9 @@ NOTE: If you are using **symlinks** in the `.cdmLibrary` these must be use path 
 
 Run as detached service 
 
-    docker-compose run -d cdmserver
+    docker-compose up -d
+    
+this starts the containers in the background and leaves them running.
 
 Run and inspect the running container with the bash shell
 
