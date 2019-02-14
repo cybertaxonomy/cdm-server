@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.4.0</version>
+  <version>5.5.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
 
@@ -383,7 +383,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- ====== INSTALL ====== -->
       <plugin>
         <!-- Assemble the runnable server jar test with: mvn assembly:single -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -405,7 +404,7 @@
         <executions>
           <execution>
             <id>make-assembly</id>
-            <phase>install</phase>
+            <phase>package</phase>
             <goals>
               <goal>attached</goal>
             </goals>
@@ -413,6 +412,7 @@
         </executions>
       </plugin>
       <plugin>
+      <!-- ====== INSTALL ====== -->
         <!-- Build a Debian package -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -455,6 +455,56 @@
             <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
           </arguments>
         </configuration>
+      </plugin>
+      <!-- Build Docker image -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.28.0</version>
+        <configuration>
+           <images>
+             <image>
+               <!-- docker hub does not allow dots in organizations, so the name is
+                    just 'cybertaxonomy', this MUST NOT BE CHANGED!!!!  -->
+               <name>cybertaxonomy/${project.artifactId}:${project.version}</name>
+               <build>
+                 <!-- use a Dockerfile in the directory src/main/docker/production -->
+                 <dockerFileDir>production</dockerFileDir>
+                 <!-- fabric8-maven-plugin filters given Dockerfile with Maven properties -->
+                 <!-- For example, the default <filter>${*}</filter> parse Maven properties 
+                     in the format that we know. If you specify a single character for 
+                     <filter> then this delimiter is taken for both, the start and the end. 
+                     E.g a <filter>@</filter> triggers on parameters in the format @…​@, -->
+                 <filter>@</filter>
+                 <assembly>
+                    <descriptorRef>artifact</descriptorRef>
+                    <!--
+                         1. The maven plugin copies the jar to the artifacts assembly location at:
+                            ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
+                         2. a tar is being created at target/docker/eu.etaxonomy/cdm-server/${project.version}/tmp/docker-build.tar 
+                            which contains all files located in /target/docker/production and the artifacts. 
+                            Artifacts are put into the folder maven/ inside the tar archive
+                         3. The tar archive is passed to the docker daemon and is used as working directory for the build 
+                     -->
+                  </assembly>
+               </build>
+               
+               <!-- TODO the run configuration if needed, see src/main/docker/production/README for examples -->
+               <!-- 
+               <run>
+                 <ports>8080:8080</ports>
+               </run>
+                -->
+             </image>
+           </images>
+
+        </configuration>
+
+        <!-- Connect start/stop to pre- and
+             post-integration-test phase, respectively if you want to start
+             your docker containers during integration tests -->
+        <executions>
+        </executions>
       </plugin>
       <!-- ====== DEPLOY ====== -->
       <plugin>
