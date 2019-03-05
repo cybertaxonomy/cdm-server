@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.5.2-SNAPSHOT</version>
+  <version>5.5.2</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
@@ -753,7 +753,7 @@
     <dependency>
       <groupId>eu.etaxonomy</groupId>
       <artifactId>cdmlib-db</artifactId>
-      <version>${project.version}</version>
+      <version>5.5.1</version>
     </dependency>
   </dependencies>
 </project>
