@@ -64,7 +64,7 @@
       <roles>
         <role>Developer</role>
       </roles>
-      <url />
+      <url/>
     </developer>
   </developers>
   <!-- contributors> <contributor> <name>Test-Contributor</name> </contributor> 
@@ -273,6 +273,7 @@
           <!-- Only create the build number if there are no local modifications -->
           <doUpdate>false</doUpdate>
         
+        
           <!-- automatically update the local svn copy -->
         </configuration>
       </plugin>
@@ -362,6 +363,7 @@
             cdm-webapp-*.war
           </packagingExcludes>
         
+        
           <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdm-webapp</artifactId> 
             <!- - version is set in dependency - -> <skip>true</skip> <!- - Do Not overlay 
             - -> </overlay> </overlays> -->
@@ -414,9 +416,9 @@
             <phase>install</phase>
             <configuration>
               <tasks>
-                <property name="project.fullversionstring" value="${project.version}" />
-                <property name="project.version" value="${project.version}" />
-                <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
+                <property name="project.fullversionstring" value="${project.version}"/>
+                <property name="project.version" value="${project.version}"/>
+                <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}"/>
               </tasks>
             </configuration>
             <goals>
@@ -471,6 +473,7 @@
                 <assembly>
                   <descriptorRef>artifact</descriptorRef>
                 
+                
                     <!--
                          1. The maven plugin copies the jar to the artifacts assembly location at:
                             ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
@@ -481,6 +484,7 @@
                      -->
                   </assembly>
               </build>
+            
             
                
                <!-- TODO the run configuration if needed, see src/main/docker/production/README for examples -->
@@ -495,7 +499,7 @@
         <!-- Connect start/stop to pre- and
              post-integration-test phase, respectively if you want to start
              your docker containers during integration tests -->
-        <executions />
+        <executions/>
       </plugin>
       <!-- ====== DEPLOY ====== -->
       <plugin>
