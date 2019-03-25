@@ -117,7 +117,7 @@ public class CdmInstance implements Listener {
     private <T> T getServletContextAttribute(WebAppContext webAppContext, String attributeName, Class<T> type) {
 
         Context servletContext = webAppContext.getServletContext();
-        Object value = servletContext.getAttribute(attributeName);
+        Object value = servletContext.getInitParameter(attributeName);
         if (value != null && type.isAssignableFrom(value.getClass())) {
 
         }

@@ -704,14 +704,14 @@ public final class Bootloader {
 //            return cdmWebappContext;
 //        }
 
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
-            cdmWebappContext.getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
+            cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
                 logPath + File.separator + "cdm-"
                         + conf.getInstanceName() + ".log");
 
