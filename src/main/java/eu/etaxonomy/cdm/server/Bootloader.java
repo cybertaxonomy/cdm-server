@@ -78,6 +78,11 @@ public final class Bootloader {
     /**
      *
      */
+    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
+
+    /**
+     *
+     */
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
 
     //private static final String DEFAULT_WARFILE = "target/";
@@ -453,6 +458,11 @@ public final class Bootloader {
          // load the configured instances for the first time
         instanceManager.reLoadInstanceConfigurations();
 
+        if(System.getProperty(SPRING_PROFILES_ACTIVE) == null){
+            logger.info(SPRING_PROFILES_ACTIVE + " is undefined, and will be set to : \"remoting\"");
+            System.setProperty(SPRING_PROFILES_ACTIVE, "remoting");
+        }
+
         // in jetty 9 currently each connector uses
         // 2 threads -  1 to select for IO activity and 1 to accept new connections.
         // there fore we need to add 2 to the number of cores
@@ -694,14 +704,14 @@ public final class Bootloader {
 //            return cdmWebappContext;
 //        }
 
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
-            cdmWebappContext.getAttributes().setAttribute(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
+            cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
-        cdmWebappContext.setAttribute(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
+        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
                 logPath + File.separator + "cdm-"
                         + conf.getInstanceName() + ".log");
 
