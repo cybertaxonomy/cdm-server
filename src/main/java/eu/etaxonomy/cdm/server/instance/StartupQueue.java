@@ -182,23 +182,29 @@ public class StartupQueue extends LinkedList<CdmInstance> {
         @Override
         public void run() {
             try {
+                instance.getWebAppContext().setThrowUnavailableOnStartupException(true);
                 instance.getWebAppContext().start();
                 // release reference to the instance so
                 // that the thread can be garbage collected
                 instance = null;
-            }
-            catch(InterruptedException e) {
+            } catch(InterruptedException e) {
                 try {
                     instance.getWebAppContext().stop();
                 } catch (Exception e1) {
                     logger.error("Error on stopping instance", e1);
                     notifyInstanceFailed(instance);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.error("Could not start " + instance.getWebAppContext().getContextPath(), e);
                 instance.getProblems().add(e.getMessage());
                 instance.setStatus(Status.error);
                 notifyInstanceFailed(instance);
+                try {
+                    // try to stop
+                    instance.getWebAppContext().stop();
+                } catch (Exception e1) {
+                    /* IGNORE */
+                }
             }
 
         }
