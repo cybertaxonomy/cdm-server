@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -469,6 +470,9 @@ public final class Bootloader {
 //        QueuedThreadPool threadPool = new QueuedThreadPool(JvmManager.availableProcessors() +  + 200);
 //        server = new Server(threadPool);
         server = new Server();
+
+        jdk8MemleakFix();
+
         server.addLifeCycleListener(instanceManager);
         ServerConnector connector=new ServerConnector(server);
         connector.setPort(httpPort);
@@ -560,6 +564,23 @@ public final class Bootloader {
             server.join();
             logger.info(APPLICATION_NAME+" stopped.");
             System.exit(0);
+        }
+    }
+
+    /**
+     * jdk8 memleak workaround: disable url caching
+     *  see https://dev.e-taxonomy.eu/redmine/issues/5048
+     *
+     * @throws IOException
+     * @throws MalformedURLException
+     */
+    private void jdk8MemleakFix() throws IOException, MalformedURLException {
+        String javaVersion = System.getProperty("java.version");
+        if(javaVersion.startsWith("1.8")){
+            logger.info("jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
+            org.eclipse.jetty.util.resource.Resource.setDefaultUseCaches(false);
+            File tmpio = new File(System.getProperty("java.io.tmpdir"));
+            tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
         }
     }
 
