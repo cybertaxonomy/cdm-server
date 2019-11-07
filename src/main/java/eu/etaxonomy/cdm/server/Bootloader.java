@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -471,7 +472,7 @@ public final class Bootloader {
 //        server = new Server(threadPool);
         server = new Server();
 
-        jdk8MemleakFix();
+        jdk8MemleakFixServer();
 
         server.addLifeCycleListener(instanceManager);
         ServerConnector connector=new ServerConnector(server);
@@ -574,13 +575,27 @@ public final class Bootloader {
      * @throws IOException
      * @throws MalformedURLException
      */
-    private void jdk8MemleakFix() throws IOException, MalformedURLException {
+    private void jdk8MemleakFixServer() throws IOException, MalformedURLException {
         String javaVersion = System.getProperty("java.version");
         if(javaVersion.startsWith("1.8")){
-            logger.info("jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
+            logger.info("jdk8 memory leak fix: jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
             org.eclipse.jetty.util.resource.Resource.setDefaultUseCaches(false);
             File tmpio = new File(System.getProperty("java.io.tmpdir"));
             tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
+        } else {
+            logger.info("jdk8 memory leak fix: unaffected jdk " + javaVersion + " detected");
+        }
+    }
+
+    private void jdk8MemleakFixInstance(ClassLoader classLoader, CdmInstance instance) throws IOException, MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        String javaVersion = System.getProperty("java.version");
+        if(javaVersion.startsWith("1.8")){
+            logger.info("jdk8 memory leak fix for " + instance.getName() + ": jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
+            Class<?> fileClass = classLoader.loadClass("java.io.File");
+            File tmpio = (File) fileClass.getConstructor(String.class).newInstance("java.io.tmpdir");
+            tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
+        } else {
+            logger.info("jdk8 memory leak fix, " + instance.getName() + "unaffected jdk " + javaVersion + " detected");
         }
     }
 
@@ -749,6 +764,13 @@ public final class Bootloader {
             if(webAppClassPath != null){
                 logger.info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
+                try {
+                    jdk8MemleakFixInstance(classLoader, instance);
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                        | SecurityException e) {
+                    logger.error("Cannot apply jdk8MemleakFix to instance " + instance, e);
+                }
             } else {
                 throw new RuntimeException("Classpath cdm-webapp for missing while running cdm-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
             }
