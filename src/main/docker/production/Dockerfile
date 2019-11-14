@@ -1,4 +1,5 @@
-FROM anapsix/alpine-java:8
+FROM ubuntu:bionic
+# using same image as for https://github.com/mariadb-corporation/mariadb-server-docker/blob/master/10.3/Dockerfile
 
 # paths of files and directories will be interpreted as relative to the source of the context of the build.
 
@@ -10,6 +11,7 @@ FROM anapsix/alpine-java:8
 #    Artifacts are put into the folder maven/ inside the tar archive
 # 3. The tar archive is passed to the dockerdaemon and is used as working directory for the build
 #ADD target/docker/@project.groupId@/@project.artifactId@/@project.version@/build/maven/@project.build.finalName@.jar /root/cdm-server.jar
+#ADD target/cdm-server-5.11.0-SNAPSHOT.jar /root/cdm-server.jar
 ADD maven/@project.artifactId@-@project.version@.jar /root/cdm-server.jar
 
 ARG CDMSERVER_PORT=8080
@@ -27,11 +29,14 @@ ENV JAVA_OPTIONS="-Dspring.profiles.active=remoting"
 # fixed java options which must not be overwritten
 ENV JAVA_OPTS="-Xmx$HEAP_SIZE \
     -XX:+UseG1GC -XX:ParallelGCThreads=$CPU_CORES -XX:ConcGCThreads=$CPU_CORES  \
-    -Duser.home=$CDM_HOME $JAVA_OPTIONS"
+    -Duser.home=$CDM_HOME"
 
 ENV SERVER_ARGS="-forceSchemaUpdate -jmx"
 ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -datasources $DATASOURCES"
 
 EXPOSE $CDMSERVER_PORT
+
+RUN apt-get update; apt-get install -y openjdk-8-jre-headless libjemalloc1; apt-get clean
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 
 CMD java $JAVA_OPTS $JAVA_OPTIONS  -jar /root/cdm-server.jar $SERVER_ARGS $CDMSERVER_ARGS
