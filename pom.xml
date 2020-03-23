@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.12.0</version>
+  <version>5.13.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty-version>9.2.9.v20150224</jetty-version>
+    <jetty-version>9.4.26.v20200117</jetty-version>
     <javadoc.opts>-Xdoclint:none</javadoc.opts>
   </properties>
   <scm>
