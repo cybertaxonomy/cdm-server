@@ -144,6 +144,10 @@
         <updatePolicy>always</updatePolicy>
       </snapshots>
     </repository>
+	<repository>
+	  <id>OSGeo Repository</id>
+      <url>https://repo.osgeo.org/repository/release/</url>
+    </repository>
     <!-- apache incubating repository -->
     <repository>
       <id>ApacheIncubating</id>
