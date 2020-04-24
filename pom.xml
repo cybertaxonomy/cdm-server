@@ -23,7 +23,7 @@
   </scm>
   
   <prerequisites>
-    <maven>3.0.5</maven>
+    <maven>3.2.3</maven>
   </prerequisites>
 
   <mailingLists>
@@ -76,8 +76,8 @@
   <!-- contributors> <contributor> <name>Test-Contributor</name> </contributor> 
     </contributors -->
   <issueManagement>
-    <system>Trac</system>
-    <url>http://dev.e-taxonomy.eu/trac/</url>
+    <system>Redmine</system>
+    <url>http://dev.e-taxonomy.eu/redmine/</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
@@ -653,7 +653,7 @@
     <!-- maven 3 no longer supports uniqueVersions for SNAPSHOT artifacts. 
       The cdm-server Bootlader however relies on a specific name of the cdm-webapp 
       war file. In order to achieve this with maven 3 the below dependency is now 
-      handled more explicitely by utilizing the dependency:copy-dependencies gloal 
+      handled more explicitely by utilizing the dependency:copy-dependencies goal 
       in the build/plugins section -->
       <!-- <dependency> -->
       <!--   <groupId>eu.etaxonomy</groupId>  -->
