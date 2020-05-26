@@ -475,8 +475,9 @@ public final class Bootloader {
         jdk8MemleakFixServer();
 
         server.addLifeCycleListener(instanceManager);
-        ServerConnector connector=new ServerConnector(server);
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpPort);
+        logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
 
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
