@@ -282,9 +282,6 @@ public class InstanceManager implements LifeCycle.Listener {
         serverIsRunning = false;
     }
 
-    /**
-    *
-    */
     private void verifyMemoryRequirements() {
 
         verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage()
@@ -306,7 +303,7 @@ public class InstanceManager implements LifeCycle.Listener {
             String message = memoryName + " (" + (availableSpace / MB) + "MB) insufficient for "
                     + numOfConfiguredInstances() + " instances. Increase " + memoryName + " to "
                     + (recommendedMinimumSpace / MB) + "MB";
-            ;
+
             logger.error(message + " => disabling some instances!!!");
 
             // disabling some instances

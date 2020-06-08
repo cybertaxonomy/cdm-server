@@ -77,21 +77,10 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  * @version $Revision$
  */
 public final class Bootloader {
-    /**
-     *
-     */
-    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-
-    /**
-     *
-     */
-    private static final String VERSION_PROPERTIES_FILE = "version.properties";
-
-    //private static final String DEFAULT_WARFILE = "target/";
-
-
 
     private static final Logger logger = Logger.getLogger(Bootloader.class);
+
+    //private static final String DEFAULT_WARFILE = "target/";
 
     private static final String DATASOURCE_BEANDEF_FILE = "datasources.xml";
     private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
@@ -109,6 +98,9 @@ public final class Bootloader {
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
     private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+
+    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
+    private static final String VERSION_PROPERTIES_FILE = "version.properties";
 
     private final InstanceManager instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
 

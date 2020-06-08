@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 /**
  * @author a.kohlbecker
  * @date 30.07.2010
- *
  */
 public class JvmManager {
 
