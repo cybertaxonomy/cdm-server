@@ -22,16 +22,10 @@ import org.apache.log4j.Logger;
  */
 public class JvmManager {
 
-    // Java 7
-    private static final String SUFFIX_PERM_GEN = "Perm Gen";
     // Java > 8
     private static final String SUFFIX_META = "Metaspace";
 
     public static final Logger logger = Logger.getLogger(JvmManager.class);
-
-    public static MemoryUsage getPermGenSpaceUsage(){
-        return getMemoryPoolUsage(SUFFIX_PERM_GEN);
-    }
 
     public static MemoryUsage getMetaSpaceUsage(){
         return getMemoryPoolUsage(SUFFIX_META);
