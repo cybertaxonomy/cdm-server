@@ -45,7 +45,7 @@ CDMSERVER_PORT=8080
 
 CDMSERVER_ARGS=""
 
-JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:MaxPermSize=192m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
+JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
 
 JSVC_JVM="server"
 
@@ -98,7 +98,7 @@ fi
 . /lib/lsb/init-functions
 
 #### finally compile overridable variables
-CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -contextPathPrefix=$CONTEXT_PATH_PREFIX $CDMSERVER_ARGS"
+CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -Dcdm.logDir=$LOGDIR -contextPathPrefix=$CONTEXT_PATH_PREFIX $CDMSERVER_ARGS"
 
 #### setting java home for JSVC ####
 
