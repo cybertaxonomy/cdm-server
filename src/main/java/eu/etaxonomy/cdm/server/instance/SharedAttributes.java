@@ -35,11 +35,6 @@ public class SharedAttributes {
      */
     public static final String ATTRIBUTE_DATASOURCE_NAME = "cdm.datasource";
 
-    /**
-     * same as
-     * <code>eu.etaxonomy.cdm.api.config.LoggingConfigurer#CDM_LOGFILE</code>
-     */
-    public static final String ATTRIBUTE_CDM_LOGFILE = "cdm.logfile";
 
     /**
      * same as
