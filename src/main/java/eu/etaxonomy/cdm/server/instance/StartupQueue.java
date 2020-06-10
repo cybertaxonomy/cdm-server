@@ -15,6 +15,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
+import org.slf4j.MDC;
+
+import eu.etaxonomy.cdm.server.logging.InstanceLogWrapper;
 
 /**
  * @author a.kohlbecker
@@ -182,6 +185,8 @@ public class StartupQueue extends LinkedList<CdmInstance> {
         @Override
         public void run() {
             try {
+                MDC.put(InstanceLogWrapper.CDM_INSTANCE, instance.getName());
+
                 instance.getWebAppContext().setThrowUnavailableOnStartupException(true);
                 instance.getWebAppContext().start();
                 // release reference to the instance so
@@ -205,6 +210,8 @@ public class StartupQueue extends LinkedList<CdmInstance> {
                 } catch (Exception e1) {
                     /* IGNORE */
                 }
+            } finally {
+                MDC.clear();
             }
 
         }

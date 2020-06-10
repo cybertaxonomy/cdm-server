@@ -1,0 +1,73 @@
+<!-- 
+This is the default logfile for the cdm-sever. 
+
+Logback provides a system property variable (see ch.qos.logback.classic.util.ContextInitializer#CONFIG_FILE_PROPERTY) 
+by which custom configuration files can be specified for production and test environments:
+
+-Dlogback.configurationFile=file:/app/logback.xml
+
+ -->
+<configuration>
+  <!-- address performance concern with jul-to-slf4j -->
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
+  <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+  
+  <property name="LOG_FOLDER" value="${cdm.logDir}:-${user.home}/.cdmLibrary/log}" />
+  <property name="ROLL_DAY" value="%d{yyyy-MM-dd}" />
+  <property name="ROLL_MINUTE" value="%d{yyyy-MM-dd-mm}" />
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <append>true</append>
+    <file>${LOG_FOLDER}/cdm-server.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>${LOG_FOLDER}/cdm-server.${ROLL_DAY}.log.gz</fileNamePattern>
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%X{cdmInstance}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout>
+      <pattern>%d{HH:mm:ss.SSS} [%X{cdmInstance}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </layout>
+  </appender>
+  
+  <logger name="eu.etaxonomy.cdm.server" level="INFO" />
+
+  <logger name="eu.etaxonomy.cdm" level="INFO" />
+  <!-- avoid vast amount of "getCitation not yet implemented" & "getProblems not yet implemented" messages -->
+  <logger name="eu.etaxonomy.cdm.model.name.TaxonNameBase" level="ERROR" />
+  <logger name="eu.etaxonomy.cdm.persistence.dao.initializer" level="ERROR" />
+  <logger name="eu.etaxonomy.cdm.cache.CdmTransientEntityCacher" level="WARN" />
+  <logger name="eu.etaxonomy.cdm.remote.controller.interceptor" level="WARN" />
+  <!-- prevent CdmExceptionResolver from logging errors -->
+  <logger name="eu.etaxonomy.cdm.persistence.dao.initializer" level="ERROR" />
+  <!-- json-lib -->
+  <logger name="net.sf.json.JSONObject" level="ERROR" />
+  <!-- Hibernate -->
+  <logger name="org.hibernate" level="WARN" />
+  <logger name="org.hibernate.search" level="ERROR" />
+  <logger name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog" level="ERROR" />
+  <!--      > supress HHH90000003 -->
+  <logger name="org.hibernate.orm.deprecation" level="ERROR" />
+  <!--  connection pool -->
+  <logger name="com.mchange.v2.c3p0" level="WARN" />
+  
+  <!-- suppress nasty ehcache OutOfMemory warnings -->
+  <logger name="net.sf.ehcache.config.CacheConfiguration" level="WARN" />
+  
+  <logger name="org.eclipse.jetty" level="INFO" />
+
+  <root level="WARN">
+    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

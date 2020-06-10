@@ -16,7 +16,6 @@ import static eu.etaxonomy.cdm.server.CommandOptions.FORCE_SCHEMA_UPDATE;
 import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
-import static eu.etaxonomy.cdm.server.CommandOptions.LOG_DIR;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP_CLASSPATH;
 import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
@@ -68,6 +67,7 @@ import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
 import eu.etaxonomy.cdm.server.instance.SharedAttributes;
 import eu.etaxonomy.cdm.server.instance.Status;
+import eu.etaxonomy.cdm.server.logging.LoggingConfigurator;
 import eu.etaxonomy.cdm.server.win32service.Win32Service;
 
 
@@ -115,8 +115,6 @@ public final class Bootloader {
     private File cdmRemoteWebAppFile = null;
     private File defaultWebAppFile = null;
 
-    private String logPath = null;
-
     private String webAppClassPath = null;
 
     /**
@@ -127,6 +125,7 @@ public final class Bootloader {
 
     private Server server = null;
     private final ContextHandlerCollection contexts = new ContextHandlerCollection();
+    private final LoggingConfigurator loggingConfigurator = new LoggingConfigurator();
 
     private CommandLine cmdLine;
 
@@ -343,24 +342,7 @@ public final class Bootloader {
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {
 
-
-        if(cmdLine.hasOption(LOG_DIR.getOpt())){
-            logPath = cmdLine.getOptionValue(LOG_DIR.getOpt());
-        } else {
-            logPath = LOG_PATH;
-        }
-
-
-        //assure LOG_PATH exists
-        File logPathFile = new File(logPath);
-        if(!logPathFile.exists()){
-            FileUtils.forceMkdir(new File(logPath));
-        }
-
-        //append logger
-//        configureFileLogger();
-
-        logger.info("Starting "+APPLICATION_NAME);
+        logger.info("Starting " + APPLICATION_NAME);
         logger.info("Using  " + System.getProperty("user.home") + " as home directory. Can be specified by -Duser.home=<FOLDER>");
 
         //assure TMP_PATH exists and clean it up
@@ -466,6 +448,8 @@ public final class Bootloader {
 
         jdk8MemleakFixServer();
 
+        loggingConfigurator.configureServer();
+
         server.addLifeCycleListener(instanceManager);
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpPort);
@@ -533,6 +517,8 @@ public final class Bootloader {
 
         logger.info("setting contexts ...");
         server.setHandler(contexts);
+        // server.setContexts(contexts);
+
         logger.info("starting jetty ...");
 //        try {
 
@@ -657,31 +643,6 @@ public final class Bootloader {
 
 
     /**
-     * Configures and adds a {@link RollingFileAppender} to the root logger
-     *
-     * The log files of the cdm-remote instances are configured by the
-     * {@link eu.etaxonomy.cdm.api.config.LoggingConfigurer}
-     *
-     *
-     */
-//   ===== removing useless RollingFileAppender logger === see #6287
-//    private void configureFileLogger() {
-//
-//        PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
-//        try {
-//            String logFile = logPath + File.separator + "cdmserver.log";
-//            RollingFileAppender appender = new RollingFileAppender(layout, logFile);
-//            appender.setMaxBackupIndex(3);
-//            appender.setMaxFileSize("2MB");
-//            Logger.getRootLogger().addAppender(appender);
-//            logger.info("logging to :" + logFile);
-//        } catch (IOException e) {
-//            logger.error("Creating RollingFileAppender failed:", e);
-//        }
-//    }
-
-
-    /**
      * Adds a new WebAppContext to the contexts of the running jetty instance.
      * <ol>
      * <li>Initialize WebAppContext:
@@ -740,10 +701,6 @@ public final class Bootloader {
         }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
-                logPath + File.separator + "cdm-"
-                        + conf.getInstanceName() + ".log");
-
         if( isRunningFromSource ){
 
             /*
@@ -770,7 +727,7 @@ public final class Bootloader {
             cdmWebappContext.setClassLoader(classLoader);
         }
 
-        contexts.addHandler(cdmWebappContext);
+        contexts.addHandler(loggingConfigurator.configureWebApp(cdmWebappContext, instance));
         instance.setWebAppContext(cdmWebappContext);
         cdmWebappContext.addLifeCycleListener(instance);
         instance.setStatus(Status.stopped);
