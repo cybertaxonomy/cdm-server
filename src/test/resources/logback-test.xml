@@ -1,8 +1,6 @@
 <!-- 
-This is the default logging configuration file for the cdm-sever 
-which  also serves as template for the test logging configuration.
-
-The STDOUT should be disabled!!!!
+This is the test logging configuration for the cdm-sever which should be an exact copy of logback.xml
+with the only difference that the STDOUT appender is being used instead of the FILE appender.
 
 Logback provides a system property variable (see ch.qos.logback.classic.util.ContextInitializer#CONFIG_FILE_PROPERTY) 
 by which custom configuration files can be specified for production and test environments:
@@ -70,7 +68,7 @@ by which custom configuration files can be specified for production and test env
   <logger name="org.eclipse.jetty" level="INFO" />
 
   <root level="WARN">
-    <appender-ref ref="FILE" />
-<!--     <appender-ref ref="STDOUT" /> -->
+<!--     <appender-ref ref="FILE" /> -->
+    <appender-ref ref="STDOUT" />
   </root>
 </configuration>

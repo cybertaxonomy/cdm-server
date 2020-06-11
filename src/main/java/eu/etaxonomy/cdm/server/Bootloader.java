@@ -33,6 +33,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -49,6 +50,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.SimpleInstanceManager;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -87,7 +89,6 @@ public final class Bootloader {
 
     private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
     private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
-    private static final String LOG_PATH = USERHOME_CDM_LIBRARY_PATH + "log" + File.separator;
 
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
@@ -476,49 +477,11 @@ public final class Bootloader {
             server.addBean(win32Service);
         }
 
-        // add default servlet context
-        logger.info("preparing default WebAppContext");
-        WebAppContext defaultWebappContext = new WebAppContext();
-
-        setWebApp(defaultWebappContext, defaultWebAppFile);
-
-        // JSP
-        //
-        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
-        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
-        // Set the ContainerIncludeJarPattern so that jetty examines these
-        // container-path jars for tlds, web-fragments etc.
-        // If you omit the jar that contains the jstl .tlds, the jsp engine will
-        // scan for them instead.
-        defaultWebappContext.setAttribute(
-                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
-                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
-
-        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
-
-        // Context path
-        //
-        defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
-        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
-        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
-
-        // configure security context
-        // see for reference * http://docs.codehaus.org/display/JETTY/Realms
-        //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
-        HashLoginService loginService = new HashLoginService();
-        loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
-        defaultWebappContext.getSecurityHandler().setLoginService(loginService);
-
-        // Important:
-        // the defaultWebappContext MUST USE the super classloader
-        // otherwise the status page (index.jsp) might not work
-        defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
+        WebAppContext defaultWebappContext = createDefaultWebappContext();
         contexts.addHandler(defaultWebappContext);
 
         logger.info("setting contexts ...");
         server.setHandler(contexts);
-        // server.setContexts(contexts);
-
         logger.info("starting jetty ...");
 //        try {
 
@@ -545,6 +508,50 @@ public final class Bootloader {
             logger.info(APPLICATION_NAME+" stopped.");
             System.exit(0);
         }
+    }
+
+    private WebAppContext createDefaultWebappContext() {
+        // add default servlet context
+        logger.info("preparing default WebAppContext");
+
+        WebAppContext defaultWebappContext = new WebAppContext();
+        setWebApp(defaultWebappContext, defaultWebAppFile);
+
+        // JSP
+        //
+        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
+        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
+        // Set the ContainerIncludeJarPattern so that jetty examines these
+        // container-path jars for tlds, web-fragments etc.
+        // If you omit the jar that contains the jstl .tlds, the jsp engine will
+        // scan for them instead.
+        defaultWebappContext.setAttribute(
+                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
+                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
+
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
+        defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
+
+        // Context path
+        //
+        defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
+        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
+        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
+
+        // configure security context
+        // see for reference * http://docs.codehaus.org/display/JETTY/Realms
+        //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
+        HashLoginService loginService = new HashLoginService();
+        loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
+        defaultWebappContext.getSecurityHandler().setLoginService(loginService);
+
+        // Set Classloader of Context to be sane (needed for JSTL)
+        // JSP requires a non-System classloader, this simply wraps the
+        // embedded System classloader in a way that makes it suitable
+        // for JSP to use
+        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
+        defaultWebappContext.setClassLoader(jspClassLoader);
+        return defaultWebappContext;
     }
 
     /**

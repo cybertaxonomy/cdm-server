@@ -149,15 +149,19 @@ do_start()
 
     # increasing the maximum number of open files
     ulimit -n 200000
+    
+    LOGFILE=$LOGDIR/startup.log
+    
+    rm -f $LOGFILE
 
     $DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
-        -outfile /dev/null -errfile /dev/null \
+        -outfile $LOGFILE -errfile $LOGFILE \
         -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
     sleep 5
     if start-stop-daemon --test --start --pidfile "$PIDFILE" \
       --user $CDM_USER --startas "$JAVA" >/dev/null; then
-      log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log"
+      log_daemon_msg "$DESC did not start, please check $LOGFILE"
       return 2
     else
       log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/."
