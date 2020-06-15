@@ -545,6 +545,9 @@ public final class Bootloader {
         loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
         defaultWebappContext.getSecurityHandler().setLoginService(loginService);
 
+        // NOTE: recently it has become necessary to add the InstanceManager explicitly, reason unknown
+        defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
+
         // Set Classloader of Context to be sane (needed for JSTL)
         // JSP requires a non-System classloader, this simply wraps the
         // embedded System classloader in a way that makes it suitable
