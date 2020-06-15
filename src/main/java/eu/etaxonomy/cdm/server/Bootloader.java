@@ -180,10 +180,17 @@ public final class Bootloader {
 
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
-        cmdLine = parser.parse( CommandOptions.getOptions(), args );
+
+        boolean hasProblem = false;
+            try {
+                cmdLine = parser.parse( CommandOptions.getOptions(), args );
+            } catch (ParseException e) {
+                hasProblem = true;
+                logger.warn(e);
+            }
 
          // print the help message
-         if(cmdLine.hasOption(HELP.getOpt())){
+         if(cmdLine.hasOption(HELP.getOpt()) || hasProblem){
              HelpFormatter formatter = new HelpFormatter();
              formatter.setWidth(200);
              formatter.printHelp( "java .. ", CommandOptions.getOptions() );
