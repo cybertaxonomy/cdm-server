@@ -33,7 +33,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -181,16 +180,10 @@ public final class Bootloader {
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
 
-        boolean hasProblem = false;
-            try {
-                cmdLine = parser.parse( CommandOptions.getOptions(), args );
-            } catch (ParseException e) {
-                hasProblem = true;
-                logger.warn(e);
-            }
+         cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
          // print the help message
-         if(cmdLine.hasOption(HELP.getOpt()) || hasProblem){
+         if(cmdLine.hasOption(HELP.getOpt())){
              HelpFormatter formatter = new HelpFormatter();
              formatter.setWidth(200);
              formatter.printHelp( "java .. ", CommandOptions.getOptions() );
