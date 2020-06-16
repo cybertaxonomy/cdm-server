@@ -44,8 +44,8 @@
     <mkdir dir="target" />
     <deb todir="target"
         package="${package.name}"
-        preDepends="jsvc"
-        section="web"
+        preDepends="jsvc, libjemalloc1"
+        section="science"
         postinst="${linux.installer.path}/postinst"
         postrm="${linux.installer.path}/postrm"
         prerm="${linux.installer.path}/prerm"
@@ -56,7 +56,7 @@
         The CDM Community Standalone Server exposes data stored in a CDM data base to the web.
         It is a Jetty based web application container bundeled with a simple management
         webapplication and of course with the remote component of the CDM Library.
-        For more information please refer to http://wp5.e-taxonomy.eu/
+        For more information please refer to https://cybertaxonomy.eu/cdm-server/
       </description>
       <tarfileset file="${linux.installer.path}/${cdmserverscript.filename}" prefix="/etc/init.d/" />
       <tarfileset file="${installer.path}/templates/.cdmLibrary/*" prefix="/opt/cdmserver/templates/.cdmLibrary/" />

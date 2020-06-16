@@ -65,14 +65,7 @@ JDK_DIRS="
     /usr/lib/jvm/default-java \
     /usr/lib/jvm/java-6-sun \
     /usr/lib/jvm/java-6-openjdk \
-    /usr/lib/jvm/java-1.5.0-sun \
     /usr/lib/jvm/java-gcj \
-    /usr/lib/j2sdk1.6-sun \
-    /usr/lib/j2sdk1.5-sun \
-    /usr/lib/j2sdk1.5-ibm \
-    /usr/lib/j2sdk1.4-sun \
-    /usr/lib/j2sdk1.4 \
-    /usr/lib/j2se/1.4 \
     /usr/lib/kaffe/ \
    "
 
@@ -109,6 +102,10 @@ for jdir in $JDK_DIRS; do
     JAVA_HOME="$jdir"
   fi
 done
+
+### configuring environment to use jemalloc for the jvm (see https://dev.e-taxonomy.eu/redmine/issues/5048)
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+
 
 #BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.Bootloader"
 BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
