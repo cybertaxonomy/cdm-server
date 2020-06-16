@@ -91,6 +91,8 @@ do_purge(){
     then
       rm -r $ETC_CDMSERVER
     fi
+    
+    rm -f /etc/default/cdmserver
 
     return 0
 }

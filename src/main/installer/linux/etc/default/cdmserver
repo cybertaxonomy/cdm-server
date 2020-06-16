@@ -1,0 +1,41 @@
+#/etc/defaults/cdmserver
+
+# CONTEXT_PATH_PREFIX per default is set to / in the cdmserver init script
+# enable the below line to override this variable
+#CONTEXT_PATH_PREFIX=cdmserver
+
+# The JAVA_HOME variable
+# must point to the location of the jdk you want to run the CDM Server with
+#JAVA_HOME=/opt/java-oracle/jdk1.8
+
+# To configure an alternative logging directory (default is /var/log/cdmserver) 
+#LOGDIR=
+
+# determine the number of processors available in the system
+CPU_CORES=$(nproc)
+
+# HEAP_SIZE=5000M
+
+# jvm settings for jdk 1.8
+#JAVA_OPTIONS="-Xms${HEAP_SIZE} -Xmx${HEAP_SIZE} -XX:+UseG1GC -XX:ParallelGCThreads=${CPU_CORES} -XX:ConcGCThreads=${CPU_CORES} -Duser.home=$CDM_HOME -Dcdm.logDir=$LOGDIR"
+
+#
+# enable jmx
+#
+CDMSERVER_ARGS="$CDMSERVER_ARGS -jmx"
+JAVA_OPTIONS="$JAVA_OPTIONS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=9999"
+
+#
+# enable remode debugging
+#
+#JAVA_OPTIONS="$JAVA_OPTIONS -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n"
+
+#
+# user custom logback configuration file
+#
+#JAVA_OPTIONS="$JAVA_OPTIONS -Dlogback.configurationFile=~/.cdmLibrary/logback.xml
+
+#
+# force schema update
+#
+CDMSERVER_ARGS="$CDMSERVER_ARGS -forceSchemaUpdate"
