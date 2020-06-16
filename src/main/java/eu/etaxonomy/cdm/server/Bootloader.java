@@ -33,6 +33,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -50,6 +51,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -59,6 +61,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -458,8 +462,14 @@ public final class Bootloader {
         server.addConnector(connector );
 
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-        classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-        classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+        classlist.addAfter(
+                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
+                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
+                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
+                );
+        classlist.addBefore(
+                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
+                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
 
 
         // JMX support
@@ -510,7 +520,7 @@ public final class Bootloader {
         }
     }
 
-    private WebAppContext createDefaultWebappContext() {
+    private WebAppContext createDefaultWebappContext() throws FileNotFoundException {
         // add default servlet context
         logger.info("preparing default WebAppContext");
 
@@ -542,18 +552,22 @@ public final class Bootloader {
         // see for reference * http://docs.codehaus.org/display/JETTY/Realms
         //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
         HashLoginService loginService = new HashLoginService();
-        loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
+        File realmConfigFile = new File(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
+        if(!realmConfigFile.canRead()) {
+            throw new FileNotFoundException("Unable to find or read the realm file at " + realmConfigFile.getPath());
+        }
+        loginService.setConfig(realmConfigFile.getPath());
         defaultWebappContext.getSecurityHandler().setLoginService(loginService);
-
-        // NOTE: recently it has become necessary to add the InstanceManager explicitly, reason unknown
-        defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
         // Set Classloader of Context to be sane (needed for JSTL)
         // JSP requires a non-System classloader, this simply wraps the
         // embedded System classloader in a way that makes it suitable
         // for JSP to use
         ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
-        defaultWebappContext.setClassLoader(jspClassLoader);
+        defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
+        // JspStarter to solve java.lang.IllegalStateException: No org.apache.tomcat.InstanceManager set in ServletContext problems
+        // when running not from within the IDE (see https://issues.apache.org/jira/browse/KNOX-1639)
+        defaultWebappContext.addBean(new JspStarter(defaultWebappContext));
         return defaultWebappContext;
     }
 
@@ -627,6 +641,40 @@ public final class Bootloader {
         return initializers;
     }
 
+    /**
+     * JspStarter for embedded ServletContextHandlers
+     *
+     * This is added as a bean that is a jetty LifeCycle on the ServletContextHandler.
+     * This bean's doStart method will be called as the ServletContextHandler starts,
+     * and will call the ServletContainerInitializer for the jsp engine.
+     *
+     */
+    public static class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
+      JettyJasperInitializer sci;
+      ServletContextHandler context;
+
+      public JspStarter (ServletContextHandler context) {
+        this.sci = new JettyJasperInitializer();
+        this.context = context;
+        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
+      }
+
+      @Override
+      protected void doStart() throws Exception
+      {
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(context.getClassLoader());
+        try
+        {
+          sci.onStartup(null, context.getServletContext());
+          super.doStart();
+        }
+        finally
+        {
+          Thread.currentThread().setContextClassLoader(old);
+        }
+      }
+    }
 
 
     private void verifySystemResources() {
