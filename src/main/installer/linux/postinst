@@ -7,7 +7,7 @@
 # variables
 #
 CDM_HOME="/opt/cdmserver"
-CDM_CONFIG_TEMPLATE="/opt/cdmserver/templates/.cdmLibrary"
+TEMPLATE_DIR="/opt/cdmserver/templates"
 CDM_LOG="/var/log/cdmserver"
 
 INIT_SCRIPT="cdmserver"
@@ -92,24 +92,35 @@ case "$1" in
     if [ ! -d $ETC_CDMSERVER ]
     then
       mkdir -p $ETC_CDMSERVER
-      cp -r $CDM_CONFIG_TEMPLATE/* $ETC_CDMSERVER/
+      cp -r $TEMPLATE_DIR/etc/cdmserver/* $ETC_CDMSERVER/
     fi
-		#
-		# create a .cdmLibrary folder in user home, it will hold temporary files
-		# and symlinks to the configfiles
-		#
-		if [ ! -e $CDM_USER_HOME/.cdmLibrary ]
-		then
-			mkdir $CDM_USER_HOME/.cdmLibrary
-		fi
-		cd $CDM_USER_HOME/.cdmLibrary
+    
+    if [ ! -e /etc/default/cdmserver ]
+    then
+      cp $TEMPLATE_DIR/etc/default/cdmserver /etc/default/cdmserver
+    fi
+    
+	#
+	# create a .cdmLibrary folder in user home, it will hold temporary files
+	# and symlinks to the configfiles
+	#
+	if [ ! -e $CDM_USER_HOME/.cdmLibrary ]
+	then
+		mkdir $CDM_USER_HOME/.cdmLibrary
+	fi
+	
+	cd $CDM_USER_HOME/.cdmLibrary
+	
     ln -sf $ETC_CDMSERVER/datasources.xml datasources.xml
-		ln -sf $ETC_CDMSERVER/cdm-server-realm.properties cdm-server-realm.properties
+    ln -sf $ETC_CDMSERVER/cdm-server-realm.properties cdm-server-realm.properties
+    
+    # clean up
+    rm -rf $TEMPLATE_DIR
 
-		#
-		# set group and owner for home directory
-		#
-		chown -R $CDM_USER:$CDM_GROUP $CDM_HOME
+    #
+    # set group and owner for home directory
+    #
+    chown -R $CDM_USER:$CDM_GROUP $CDM_HOME
 
     # let the cdm server start automatically on boot
     update-rc.d $INIT_SCRIPT defaults 98 02

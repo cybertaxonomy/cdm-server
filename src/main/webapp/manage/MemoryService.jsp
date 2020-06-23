@@ -28,24 +28,15 @@
     response.setHeader("Content-Type", "application/json;charset=UTF-8");
 
     MemoryUsage  heapMemoryUsage = JvmManager.getHeapMemoryUsage();
-    MemoryUsage  permGenSpaceUsage = null;
     MemoryUsage  metaSpaceUsage = null;
-    if(JvmManager.getJvmVersion() == 7){
-        permGenSpaceUsage = JvmManager.getPermGenSpaceUsage();
-    } else {
-        metaSpaceUsage  = JvmManager.getMetaSpaceUsage();
-    }
+    metaSpaceUsage  = JvmManager.getMetaSpaceUsage();
+    
 
     ObjectNode node = jsonMapper.createObjectNode();
     node.put("availableProcessors", JvmManager.availableProcessors());
     node.put("recommendedMinimumHeap", recommendedMinimumHeap);
     node.putPOJO("heapMemoryUsage", heapMemoryUsage);
-    if(JvmManager.getJvmVersion() == 7){
-        node.put("recommendedMinimumPermGenSpace", recommendedMinimumPermGenSpace);
-        node.putPOJO("permGenSpaceUsage", permGenSpaceUsage);
-    } else {
-        node.putPOJO("mataSpaceUsage", metaSpaceUsage);
-    }
+    node.putPOJO("mataSpaceUsage", metaSpaceUsage);
 
     JsonFactory jsonFactory = new JsonFactory();
     JsonGenerator jg = jsonFactory.createJsonGenerator(out);

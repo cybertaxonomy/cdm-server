@@ -11,8 +11,6 @@ package eu.etaxonomy.cdm.server.instance;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_CDMSERVER;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.HEAP_PER_INSTANCE;
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.MB;
-import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER;
-import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE;
 
 import java.io.File;
 import java.io.IOException;
@@ -282,18 +280,10 @@ public class InstanceManager implements LifeCycle.Listener {
         serverIsRunning = false;
     }
 
-    /**
-    *
-    */
     private void verifyMemoryRequirements() {
 
         verifyMemoryRequirement("HeapSpace", HEAP_CDMSERVER, HEAP_PER_INSTANCE, JvmManager.getHeapMemoryUsage()
                 .getMax());
-        if (JvmManager.getJvmVersion() == 7) {
-            verifyMemoryRequirement("PermGenSpace", PERM_GEN_SPACE_CDMSERVER, PERM_GEN_SPACE_PER_INSTANCE, JvmManager
-                    .getPermGenSpaceUsage().getMax());
-        }
-
     }
 
     private void verifyMemoryRequirement(String memoryName, long requiredSpaceServer, long requiredSpacePerInstance,
@@ -306,7 +296,7 @@ public class InstanceManager implements LifeCycle.Listener {
             String message = memoryName + " (" + (availableSpace / MB) + "MB) insufficient for "
                     + numOfConfiguredInstances() + " instances. Increase " + memoryName + " to "
                     + (recommendedMinimumSpace / MB) + "MB";
-            ;
+
             logger.error(message + " => disabling some instances!!!");
 
             // disabling some instances

@@ -6,4 +6,6 @@
 /maven-eclipse.xml
 /target
 cdmlib-developer.log
+cdm-server.log
+cdm-server.*.log.gz
 workbench.xmi

@@ -45,7 +45,7 @@ CDMSERVER_PORT=8080
 
 CDMSERVER_ARGS=""
 
-JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:MaxPermSize=192m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
+JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME -Dcdm.logDir=$LOGDIR"
 
 JSVC_JVM="server"
 
@@ -62,17 +62,9 @@ CDMSERVER_SHUTDOWN=30
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in /etc/default/jetty). Should contain a list of space separated directories.
 JDK_DIRS="
+    /usr/lib/jvm/java-8-openjdk-amd64
     /usr/lib/jvm/default-java \
-    /usr/lib/jvm/java-6-sun \
-    /usr/lib/jvm/java-6-openjdk \
-    /usr/lib/jvm/java-1.5.0-sun \
     /usr/lib/jvm/java-gcj \
-    /usr/lib/j2sdk1.6-sun \
-    /usr/lib/j2sdk1.5-sun \
-    /usr/lib/j2sdk1.5-ibm \
-    /usr/lib/j2sdk1.4-sun \
-    /usr/lib/j2sdk1.4 \
-    /usr/lib/j2se/1.4 \
     /usr/lib/kaffe/ \
    "
 
@@ -98,7 +90,7 @@ fi
 . /lib/lsb/init-functions
 
 #### finally compile overridable variables
-CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -logdir=$LOGDIR -contextPathPrefix=$CONTEXT_PATH_PREFIX $CDMSERVER_ARGS"
+CDMSERVER_ARGS="-httpPort=$CDMSERVER_PORT -contextPathPrefix=$CONTEXT_PATH_PREFIX $CDMSERVER_ARGS"
 
 #### setting java home for JSVC ####
 
@@ -109,6 +101,10 @@ for jdir in $JDK_DIRS; do
     JAVA_HOME="$jdir"
   fi
 done
+
+### configuring environment to use jemalloc for the jvm (see https://dev.e-taxonomy.eu/redmine/issues/5048)
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+
 
 #BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.Bootloader"
 BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
@@ -149,15 +145,19 @@ do_start()
 
     # increasing the maximum number of open files
     ulimit -n 200000
+    
+    LOGFILE=$LOGDIR/startup.log
+    
+    rm -f $LOGFILE
 
     $DAEMON -home "$JAVA_HOME" -user "$CDM_USER" -jvm $JSVC_JVM -cp $JSVC_CLASSPATH \
-        -outfile $LOGDIR/out.log -errfile $LOGDIR/out.log \
+        -outfile $LOGFILE -errfile $LOGFILE \
         -pidfile "$PIDFILE" $JAVA_OPTIONS $BOOTSTRAP_CLASS  $CDMSERVER_ARGS
 
     sleep 5
     if start-stop-daemon --test --start --pidfile "$PIDFILE" \
       --user $CDM_USER --startas "$JAVA" >/dev/null; then
-      log_daemon_msg "$DESC did not start, please check ${LOGDIR}/out.log"
+      log_daemon_msg "$DESC did not start, please check $LOGFILE"
       return 2
     else
       log_daemon_msg "$DESC started, reachable on http://localhost:$CDMSERVER_PORT/."

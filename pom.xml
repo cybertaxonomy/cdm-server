@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.14.0</version>
+  <version>5.15.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
@@ -19,7 +19,7 @@
     <url>https://dev.e-taxonomy.eu/gitweb/cdm-server.git/tree</url>
   </scm>
   <prerequisites>
-    <maven>3.0.5</maven>
+    <maven>3.2.3</maven>
   </prerequisites>
   <mailingLists>
     <mailingList>
@@ -70,8 +70,8 @@
   <!-- contributors> <contributor> <name>Test-Contributor</name> </contributor> 
     </contributors -->
   <issueManagement>
-    <system>Trac</system>
-    <url>http://dev.e-taxonomy.eu/trac/</url>
+    <system>Redmine</system>
+    <url>http://dev.e-taxonomy.eu/redmine/</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
@@ -648,7 +648,7 @@
     <!-- maven 3 no longer supports uniqueVersions for SNAPSHOT artifacts. 
       The cdm-server Bootlader however relies on a specific name of the cdm-webapp 
       war file. In order to achieve this with maven 3 the below dependency is now 
-      handled more explicitely by utilizing the dependency:copy-dependencies gloal 
+      handled more explicitely by utilizing the dependency:copy-dependencies goal 
       in the build/plugins section -->
       <!-- <dependency> -->
       <!--   <groupId>eu.etaxonomy</groupId>  -->
@@ -662,6 +662,12 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
       <version>${jetty-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-webapp-logging</artifactId>
+        <version>9.4.20.v20190813</version><!-- versioning independent of jetty core -->
+        <type>pom</type><!-- we only need the dependencies like jul-to-slf4j managed in this pom! -->
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

@@ -62,14 +62,6 @@ public class CommandOptions{
             .create("httpPort") ;
 
     @SuppressWarnings("static-access")
-    public static final Option LOG_DIR = OptionBuilder
-            .withArgName("file")
-            .hasArg()
-            .withDescription( "Alternative location to write logs to. " +
-                    "By default the cdm server will use ${user.home}/.cdmLibrary/logs/" )
-            .create("logdir");
-
-    @SuppressWarnings("static-access")
     public static final Option DATASOURCES_FILE = OptionBuilder
         .withArgName("datasourcesfile")
         .hasArg()
@@ -99,7 +91,6 @@ public class CommandOptions{
             options.addOption(WEBAPP);
             options.addOption(WEBAPP_CLASSPATH);
             options.addOption(HTTP_PORT);
-            options.addOption(LOG_DIR);
             options.addOption(DATASOURCES_FILE);
             options.addOption(JMX);
             options.addOption(WIN32SERVICE);
@@ -108,6 +99,4 @@ public class CommandOptions{
         }
         return options;
     }
-
-
 }

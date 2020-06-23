@@ -16,7 +16,6 @@ import static eu.etaxonomy.cdm.server.CommandOptions.FORCE_SCHEMA_UPDATE;
 import static eu.etaxonomy.cdm.server.CommandOptions.HELP;
 import static eu.etaxonomy.cdm.server.CommandOptions.HTTP_PORT;
 import static eu.etaxonomy.cdm.server.CommandOptions.JMX;
-import static eu.etaxonomy.cdm.server.CommandOptions.LOG_DIR;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP;
 import static eu.etaxonomy.cdm.server.CommandOptions.WEBAPP_CLASSPATH;
 import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
@@ -34,6 +33,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -50,6 +50,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.SimpleInstanceManager;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -59,6 +61,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -68,6 +72,7 @@ import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
 import eu.etaxonomy.cdm.server.instance.SharedAttributes;
 import eu.etaxonomy.cdm.server.instance.Status;
+import eu.etaxonomy.cdm.server.logging.LoggingConfigurator;
 import eu.etaxonomy.cdm.server.win32service.Win32Service;
 
 
@@ -77,28 +82,16 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  * @version $Revision$
  */
 public final class Bootloader {
-    /**
-     *
-     */
-    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-
-    /**
-     *
-     */
-    private static final String VERSION_PROPERTIES_FILE = "version.properties";
-
-    //private static final String DEFAULT_WARFILE = "target/";
-
-
 
     private static final Logger logger = Logger.getLogger(Bootloader.class);
+
+    //private static final String DEFAULT_WARFILE = "target/";
 
     private static final String DATASOURCE_BEANDEF_FILE = "datasources.xml";
     private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
 
     private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
     private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
-    private static final String LOG_PATH = USERHOME_CDM_LIBRARY_PATH + "log" + File.separator;
 
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
@@ -109,6 +102,9 @@ public final class Bootloader {
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
     private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+
+    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
+    private static final String VERSION_PROPERTIES_FILE = "version.properties";
 
     private final InstanceManager instanceManager = new InstanceManager(new File(USERHOME_CDM_LIBRARY_PATH, DATASOURCE_BEANDEF_FILE));
 
@@ -123,8 +119,6 @@ public final class Bootloader {
     private File cdmRemoteWebAppFile = null;
     private File defaultWebAppFile = null;
 
-    private String logPath = null;
-
     private String webAppClassPath = null;
 
     /**
@@ -135,6 +129,7 @@ public final class Bootloader {
 
     private Server server = null;
     private final ContextHandlerCollection contexts = new ContextHandlerCollection();
+    private final LoggingConfigurator loggingConfigurator = new LoggingConfigurator();
 
     private CommandLine cmdLine;
 
@@ -188,7 +183,8 @@ public final class Bootloader {
 
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
-        cmdLine = parser.parse( CommandOptions.getOptions(), args );
+
+         cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
          // print the help message
          if(cmdLine.hasOption(HELP.getOpt())){
@@ -351,24 +347,7 @@ public final class Bootloader {
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {
 
-
-        if(cmdLine.hasOption(LOG_DIR.getOpt())){
-            logPath = cmdLine.getOptionValue(LOG_DIR.getOpt());
-        } else {
-            logPath = LOG_PATH;
-        }
-
-
-        //assure LOG_PATH exists
-        File logPathFile = new File(logPath);
-        if(!logPathFile.exists()){
-            FileUtils.forceMkdir(new File(logPath));
-        }
-
-        //append logger
-//        configureFileLogger();
-
-        logger.info("Starting "+APPLICATION_NAME);
+        logger.info("Starting " + APPLICATION_NAME);
         logger.info("Using  " + System.getProperty("user.home") + " as home directory. Can be specified by -Duser.home=<FOLDER>");
 
         //assure TMP_PATH exists and clean it up
@@ -474,14 +453,23 @@ public final class Bootloader {
 
         jdk8MemleakFixServer();
 
+        loggingConfigurator.configureServer();
+
         server.addLifeCycleListener(instanceManager);
-        ServerConnector connector=new ServerConnector(server);
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpPort);
+        logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
 
         org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-        classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-        classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+        classlist.addAfter(
+                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
+                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
+                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
+                );
+        classlist.addBefore(
+                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
+                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
 
 
         // JMX support
@@ -499,43 +487,7 @@ public final class Bootloader {
             server.addBean(win32Service);
         }
 
-        // add default servlet context
-        logger.info("preparing default WebAppContext");
-        WebAppContext defaultWebappContext = new WebAppContext();
-
-        setWebApp(defaultWebappContext, defaultWebAppFile);
-
-        // JSP
-        //
-        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
-        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
-        // Set the ContainerIncludeJarPattern so that jetty examines these
-        // container-path jars for tlds, web-fragments etc.
-        // If you omit the jar that contains the jstl .tlds, the jsp engine will
-        // scan for them instead.
-        defaultWebappContext.setAttribute(
-                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
-                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
-
-        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
-
-        // Context path
-        //
-        defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
-        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
-        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
-
-        // configure security context
-        // see for reference * http://docs.codehaus.org/display/JETTY/Realms
-        //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
-        HashLoginService loginService = new HashLoginService();
-        loginService.setConfig(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
-        defaultWebappContext.getSecurityHandler().setLoginService(loginService);
-
-        // Important:
-        // the defaultWebappContext MUST USE the super classloader
-        // otherwise the status page (index.jsp) might not work
-        defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
+        WebAppContext defaultWebappContext = createDefaultWebappContext();
         contexts.addHandler(defaultWebappContext);
 
         logger.info("setting contexts ...");
@@ -566,6 +518,57 @@ public final class Bootloader {
             logger.info(APPLICATION_NAME+" stopped.");
             System.exit(0);
         }
+    }
+
+    private WebAppContext createDefaultWebappContext() throws FileNotFoundException {
+        // add default servlet context
+        logger.info("preparing default WebAppContext");
+
+        WebAppContext defaultWebappContext = new WebAppContext();
+        setWebApp(defaultWebappContext, defaultWebAppFile);
+
+        // JSP
+        //
+        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
+        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
+        // Set the ContainerIncludeJarPattern so that jetty examines these
+        // container-path jars for tlds, web-fragments etc.
+        // If you omit the jar that contains the jstl .tlds, the jsp engine will
+        // scan for them instead.
+        defaultWebappContext.setAttribute(
+                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
+                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
+
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
+        defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
+
+        // Context path
+        //
+        defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
+        logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
+        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
+
+        // configure security context
+        // see for reference * http://docs.codehaus.org/display/JETTY/Realms
+        //                   * http://wiki.eclipse.org/Jetty/Starting/Porting_to_Jetty_7
+        HashLoginService loginService = new HashLoginService();
+        File realmConfigFile = new File(USERHOME_CDM_LIBRARY_PATH + REALM_PROPERTIES_FILE);
+        if(!realmConfigFile.canRead()) {
+            throw new FileNotFoundException("Unable to find or read the realm file at " + realmConfigFile.getPath());
+        }
+        loginService.setConfig(realmConfigFile.getPath());
+        defaultWebappContext.getSecurityHandler().setLoginService(loginService);
+
+        // Set Classloader of Context to be sane (needed for JSTL)
+        // JSP requires a non-System classloader, this simply wraps the
+        // embedded System classloader in a way that makes it suitable
+        // for JSP to use
+        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
+        defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
+        // JspStarter to solve java.lang.IllegalStateException: No org.apache.tomcat.InstanceManager set in ServletContext problems
+        // when running not from within the IDE (see https://issues.apache.org/jira/browse/KNOX-1639)
+        defaultWebappContext.addBean(new JspStarter(defaultWebappContext));
+        return defaultWebappContext;
     }
 
     /**
@@ -638,6 +641,40 @@ public final class Bootloader {
         return initializers;
     }
 
+    /**
+     * JspStarter for embedded ServletContextHandlers
+     *
+     * This is added as a bean that is a jetty LifeCycle on the ServletContextHandler.
+     * This bean's doStart method will be called as the ServletContextHandler starts,
+     * and will call the ServletContainerInitializer for the jsp engine.
+     *
+     */
+    public static class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
+      JettyJasperInitializer sci;
+      ServletContextHandler context;
+
+      public JspStarter (ServletContextHandler context) {
+        this.sci = new JettyJasperInitializer();
+        this.context = context;
+        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
+      }
+
+      @Override
+      protected void doStart() throws Exception
+      {
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(context.getClassLoader());
+        try
+        {
+          sci.onStartup(null, context.getServletContext());
+          super.doStart();
+        }
+        finally
+        {
+          Thread.currentThread().setContextClassLoader(old);
+        }
+      }
+    }
 
 
     private void verifySystemResources() {
@@ -661,31 +698,6 @@ public final class Bootloader {
             logger.info("verifySystemResources only implemented for linux");
         }
     }
-
-
-    /**
-     * Configures and adds a {@link RollingFileAppender} to the root logger
-     *
-     * The log files of the cdm-remote instances are configured by the
-     * {@link eu.etaxonomy.cdm.api.config.LoggingConfigurer}
-     *
-     *
-     */
-//   ===== removing useless RollingFileAppender logger === see #6287
-//    private void configureFileLogger() {
-//
-//        PatternLayout layout = new PatternLayout("%d %p [%c] - %m%n");
-//        try {
-//            String logFile = logPath + File.separator + "cdmserver.log";
-//            RollingFileAppender appender = new RollingFileAppender(layout, logFile);
-//            appender.setMaxBackupIndex(3);
-//            appender.setMaxFileSize("2MB");
-//            Logger.getRootLogger().addAppender(appender);
-//            logger.info("logging to :" + logFile);
-//        } catch (IOException e) {
-//            logger.error("Creating RollingFileAppender failed:", e);
-//        }
-//    }
 
 
     /**
@@ -747,10 +759,6 @@ public final class Bootloader {
         }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
 
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_CDM_LOGFILE,
-                logPath + File.separator + "cdm-"
-                        + conf.getInstanceName() + ".log");
-
         if( isRunningFromSource ){
 
             /*
@@ -777,7 +785,7 @@ public final class Bootloader {
             cdmWebappContext.setClassLoader(classLoader);
         }
 
-        contexts.addHandler(cdmWebappContext);
+        contexts.addHandler(loggingConfigurator.configureWebApp(cdmWebappContext, instance));
         instance.setWebAppContext(cdmWebappContext);
         cdmWebappContext.addLifeCycleListener(instance);
         instance.setStatus(Status.stopped);
