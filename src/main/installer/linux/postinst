@@ -92,7 +92,7 @@ case "$1" in
     if [ ! -d $ETC_CDMSERVER ]
     then
       mkdir -p $ETC_CDMSERVER
-      cp -r $TEMPLATE_DIR/etc/cdmserver/* $ETC_CDMSERVER/
+      cp -r $TEMPLATE_DIR/.cdmLibrary/* $ETC_CDMSERVER/
     fi
     
     if [ ! -e /etc/default/cdmserver ]
