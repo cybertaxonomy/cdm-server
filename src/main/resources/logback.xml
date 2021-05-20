@@ -43,9 +43,12 @@ by which custom configuration files can be specified for production and test env
     </layout>
   </appender>
   
+  <!-- ~~~~~~ INFO level for all major components ~~~~~~ -->
+  <logger name="org.eclipse.jetty" level="INFO" />
   <logger name="eu.etaxonomy.cdm.server" level="INFO" />
-
   <logger name="eu.etaxonomy.cdm" level="INFO" />
+  
+  <!-- ~~~~~~ "disabling" loggers unwanted at INFO level ~~~~~~ -->
   <!-- avoid vast amount of "getCitation not yet implemented" & "getProblems not yet implemented" messages -->
   <logger name="eu.etaxonomy.cdm.model.name.TaxonNameBase" level="ERROR" />
   <logger name="eu.etaxonomy.cdm.persistence.dao.initializer" level="ERROR" />
@@ -59,18 +62,19 @@ by which custom configuration files can be specified for production and test env
   <logger name="org.hibernate" level="WARN" />
   <logger name="org.hibernate.search" level="ERROR" />
   <logger name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog" level="ERROR" />
-  <!--      > supress HHH90000003 -->
+  <!--  suppress HHH90000003 -->
   <logger name="org.hibernate.orm.deprecation" level="ERROR" />
   <!--  connection pool -->
   <logger name="com.mchange.v2.c3p0" level="WARN" />
-  
   <!-- suppress nasty ehcache OutOfMemory warnings -->
   <logger name="net.sf.ehcache.config.CacheConfiguration" level="WARN" />
   
-  <logger name="org.eclipse.jetty" level="INFO" />
-
+  <!-- ~~~~~~ logging of all requests to web service controllers with performance measures ~~~~~~ -->
+  <logger name="eu.etaxonomy.cdm.api.remoting.DebuggingRemoteInvocationExecutor" level="DEBUG" />
+  
+  <!-- ~~~~~~ root logger ~~~~~~ -->
   <root level="WARN">
     <appender-ref ref="FILE" />
-<!--     <appender-ref ref="STDOUT" /> -->
+<!--  disabled for production : <appender-ref ref="STDOUT" /> -->
   </root>
 </configuration>

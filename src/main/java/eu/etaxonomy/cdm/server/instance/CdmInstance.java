@@ -44,8 +44,8 @@ public class CdmInstance implements Listener {
         return problems;
     }
 
-    public void setProblems(List<String> problems) {
-        this.problems = problems;
+    public void clearProblems() {
+        getProblems().clear();
     }
 
     public boolean onError() {
@@ -147,7 +147,6 @@ public class CdmInstance implements Listener {
     public void lifeCycleStarting(LifeCycle event) {
         logger.info("lifeCycleStarting");
         setStatus(Status.starting);
-        setProblems(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -213,7 +212,7 @@ public class CdmInstance implements Listener {
                 connection = datasource.getConnection();
                 connection.close();
             } catch (SQLException e) {
-                sqlerror = e.getMessage() + "["+ e.getSQLState() + "]";
+                sqlerror = "Can not establish connection to data base " + configuration.getDataSourceUrl() + " [sql error code: "+ e.getSQLState() + "]";
                 getProblems().add(sqlerror);
                 setStatus(Status.error);
                 if(connection !=  null){
