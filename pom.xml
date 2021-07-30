@@ -4,15 +4,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.26.0-SNAPSHOT</version>
+  <version>5.26.0-PRE</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.4.26.v20200117</jetty-version>
-    <javadoc.opts>-Xdoclint:none</javadoc.opts>
-  </properties>
+	<javadoc.opts>-Xdoclint:none</javadoc.opts>
+	<cdm.version>5.26.0-SNAPSHOT</cdm.version>
+</properties>
 
   <scm>
     <!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html 
@@ -156,7 +157,7 @@
     <resources>
       <!-- ${basedir}/src/main/resources -->
       <resource>
-        <!-- replace the project-version placeholder in the version.properties 
+        <!-- replace the cdm.version placeholder in the version.properties 
           file. This property can then be used to retrieve the version number in the 
           Bootloader -->
         <targetPath>${project.build.directory}/classes</targetPath>
@@ -339,15 +340,15 @@
               <overWriteReleases>true</overWriteReleases>
               <artifactItems>
                 <artifactItem>
-                  <!-- copy the cdm-webapp-${project.version}.war 
+                  <!-- copy the cdm-webapp-${cdm.version}.war 
                     to the build dir -->
                   <groupId>eu.etaxonomy</groupId>
                   <artifactId>cdm-webapp</artifactId>
-                  <version>${project.version}</version>
+                  <version>${cdm.version}</version>
                   <type>war</type>
                   <!-- <classifier> [classifier - optional] </classifier> -->
                   <overWrite>true</overWrite>
-                  <destFileName>cdm-webapp-${project.version}.war</destFileName>
+                  <destFileName>cdm-webapp-${cdm.version}.war</destFileName>
                   <outputDirectory>
                     ${project.build.directory}
                   </outputDirectory>
@@ -422,8 +423,8 @@
             <phase>install</phase>
             <configuration>
               <tasks>
-                <property name="project.fullversionstring" value="${project.version}" />
-                <property name="project.version" value="${project.version}" />
+                <property name="project.fullversionstring" value="${cdm.version}" />
+                <property name="cdm.version" value="${cdm.version}" />
                 <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
               </tasks>
             </configuration>
@@ -440,7 +441,7 @@
         <version>1.3.2</version>
         <executions>
           <execution>
-            <phase>install</phase>
+            <!-- <phase>install</phase> --><!-- DISABLED -->
             <goals>
               <goal>exec</goal>
             </goals>
@@ -480,8 +481,8 @@
                     <descriptorRef>artifact</descriptorRef>
                     <!--
                          1. The maven plugin copies the jar to the artifacts assembly location at:
-                            ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
-                         2. a tar is being created at target/docker/eu.etaxonomy/cdm-server/${project.version}/tmp/docker-build.tar 
+                            ./target/docker/eu.etaxonomy/cdm-server/${cdm.version}/build/maven/cdm-server-${cdm.version}.jar
+                         2. a tar is being created at target/docker/eu.etaxonomy/cdm-server/${cdm.version}/tmp/docker-build.tar 
                             which contains all files located in /target/docker/production and the artifacts. 
                             Artifacts are put into the folder maven/ inside the tar archive
                          3. The tar archive is passed to the docker daemon and is used as working directory for the build 
@@ -551,8 +552,8 @@
         </executions>
         <configuration>
           <fromDir>target</fromDir>
-          <includes>*${project.version}*.deb,*${project.version}*.jar,*${project.version}*.exe</includes>
-          <url>scpexe://wp5.e-taxonomy.eu/var/www/download/cdmserver/${project.version}</url>
+          <includes>*${cdm.version}*.deb,*${cdm.version}*.jar,*${cdm.version}*.exe</includes>
+          <url>scpexe://wp5.e-taxonomy.eu/var/www/download/cdmserver/${cdm.version}</url>
           <serverId>wp5.e-taxonomy.eu</serverId>
         </configuration>
       </plugin>
@@ -658,7 +659,7 @@
       <!-- <dependency> -->
       <!--   <groupId>eu.etaxonomy</groupId>  -->
       <!--   <artifactId>cdm-webapp</artifactId> -->
-      <!--   <version>${project.version}</version>  -->
+      <!--   <version>${cdm.version}</version>  -->
       <!--   <type>war</type> -->
       <!-- </dependency> -->
       
@@ -769,7 +770,7 @@
     <dependency>
       <groupId>eu.etaxonomy</groupId>
       <artifactId>cdmlib-db</artifactId>
-      <version>${project.version}</version>
+      <version>${cdm.version}</version>
     </dependency>
   </dependencies>
 
