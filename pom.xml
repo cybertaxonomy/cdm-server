@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.27.0</version>
+  <version>5.28.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
