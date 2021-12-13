@@ -45,7 +45,7 @@ CDMSERVER_PORT=8080
 
 CDMSERVER_ARGS=""
 
-JAVA_OPTIONS="-Xmx1024M -XX:PermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME -Dcdm.logDir=$LOGDIR"
+JAVA_OPTIONS="-Xmx1024M -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -Duser.home=$CDM_HOME"
 
 JSVC_JVM="server"
 
