@@ -23,10 +23,8 @@ import org.apache.log4j.Logger;
  * This utility extracts files and directories of a standard zip file to
  * a destination directory.
  * @author www.codejava.net
- *
  */
 public class UnzipUtility {
-
 
     private static final Logger logger = Logger.getLogger(UnzipUtility.class);
 

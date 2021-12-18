@@ -3,6 +3,7 @@ package eu.etaxonomy.cdm.server.instance;
 import org.eclipse.jetty.util.component.LifeCycle;
 
 public enum Status{
+
     /**
      * New instances are uninitialized
      */

@@ -7,7 +7,7 @@
  * ------------------------------------------------------------------------
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,71 +16,55 @@
  * limitations under the License.
  * ========================================================================
  */
-
 package eu.etaxonomy.cdm.server.win32service;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
-
 /**
  * @author a.kohlbecker
  * @date 26.10.2010
- *
  */
-public class Win32Service extends AbstractLifeCycle implements Runnable
-{
-	public static final Logger logger = Logger.getLogger(Win32Service.class);
-	
+public class Win32Service extends AbstractLifeCycle implements Runnable {
+
+	private static final Logger logger = Logger.getLogger(Win32Service.class);
+
     private Server server;
-    
-    public void doStart()
-    {
+
+    @Override
+    public void doStart() {
     	logger.info("doStart");
         CDMServerWrapperListener.setServer(server);
     }
-    
-    public void doStop()
-    {
-    	logger.info("Listener is stopping CDM Server Instance!!!"); 
-    }
-    
-    public void run()
-    {
-        doStop();
-        
+
+    @Override
+    public void doStop() {
+    	logger.info("Listener is stopping CDM Server Instance!!!");
     }
 
-    public void stopServer()
-    {
-        try
-        {
+    @Override
+    public void run() {
+        doStop();
+
+    }
+
+    public void stopServer() {
+        try {
         	logger.info("Thread Test Stopper!!!");
             server.stop();
             //WrapperManager.stop(0);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    
-    public Server getServer()
-    {
+
+    public Server getServer() {
         return server;
     }
 
-    public void setServer(Server server)
-    {
+    public void setServer(Server server) {
         this.server = server;
     }
-    
-   
-
-   
-    
-    
-    
 }

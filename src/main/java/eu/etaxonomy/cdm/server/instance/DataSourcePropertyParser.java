@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
 /**
  * @author a.kohlbecker
  * @date 30.03.2010
- *
  */
 public class DataSourcePropertyParser {
 
@@ -39,8 +38,8 @@ public class DataSourcePropertyParser {
     public static List<Configuration> parseDataSourceConfigs(File datasourcesFile){
 
         logger.info("loading bean definition file: " + datasourcesFile.getAbsolutePath());
-        List<Configuration> configList = new ArrayList<Configuration>();
-        Set<String> idSet = new HashSet<String>();
+        List<Configuration> configList = new ArrayList<>();
+        Set<String> idSet = new HashSet<>();
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(datasourcesFile);
@@ -80,9 +79,7 @@ public class DataSourcePropertyParser {
                 } else {
                     logger.error("instance with name '"+ conf.getInstanceName() + "' alreaddy exists");
                 }
-
             }
-
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -108,7 +105,4 @@ public class DataSourcePropertyParser {
         }
         return null;
     }
-
-
-
 }

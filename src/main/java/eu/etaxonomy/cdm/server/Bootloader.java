@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.server;
 
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.KB;
@@ -74,7 +73,6 @@ import eu.etaxonomy.cdm.server.instance.SharedAttributes;
 import eu.etaxonomy.cdm.server.instance.Status;
 import eu.etaxonomy.cdm.server.logging.LoggingConfigurator;
 import eu.etaxonomy.cdm.server.win32service.Win32Service;
-
 
 /**
  * A bootstrap class for starting Jetty Runner using an embedded war.
@@ -158,14 +156,6 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
-
-    /**
-     * @param input
-     * @param output
-     * @param bufferSize
-     * @return
-     * @throws IOException
-     */
     public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
@@ -178,8 +168,6 @@ public final class Bootloader {
         }
         return answer;
     }
-
-
 
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
@@ -194,7 +182,6 @@ public final class Bootloader {
              System.exit(0);
          }
     }
-
 
     /**
      * Finds the named war file either in the resources known to the class loader
@@ -311,11 +298,7 @@ public final class Bootloader {
     public String getCdmlibServicesLastModified() {
         return cdmlibServicesLastModified;
     }
-    /**
-     * @param extractWar
-     * @return
-     * @throws IOException
-     */
+
     private File unzip(File extractWar) throws IOException {
         UnzipUtility unzip = new UnzipUtility();
 
@@ -324,8 +307,6 @@ public final class Bootloader {
         unzip.unzip(extractWar, destDirectory);
         return destDirectory;
     }
-
-
 
     /**
      * MAIN METHOD
@@ -336,13 +317,9 @@ public final class Bootloader {
     public static void main(String[] args) throws Exception {
 
         Bootloader bootloader = Bootloader.getBootloader();
-
         bootloader.parseCommandOptions(args);
-
         bootloader.startServer();
     }
-
-
 
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {

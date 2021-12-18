@@ -24,7 +24,6 @@ import org.slf4j.MDC;
  */
 public class InstanceLogWrapper extends HandlerWrapper {
 
-
     /**
      * Key under which the instance name stored in the
      * Mapped Diagnostic Context (MDC)
@@ -38,19 +37,17 @@ public class InstanceLogWrapper extends HandlerWrapper {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
-    {
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
+
         // Collect Info for NDC/MDC
         MDC.put(CDM_INSTANCE, instanceName);
-        try
-        {
+        try {
             super.handle(target, baseRequest, request, response);
         }
-        finally
-        {
+        finally {
             // Pop info out / clear the NDC/MDC
             MDC.clear();
         }
     }
-
 }

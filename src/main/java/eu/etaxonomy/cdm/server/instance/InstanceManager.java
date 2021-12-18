@@ -106,7 +106,7 @@ public class InstanceManager implements LifeCycle.Listener {
             // instance.bindJndiDataSource();
             if (!instance.bindJndiDataSource()) {
                 // a problem with the datasource occurred skip this webapp
-                logger.error("a problem with the datasource occurred -> aboarding startup of /" + instance.getName());
+                logger.error("a problem with the datasource occurred -> aborting startup of /" + instance.getName());
                 instance.setStatus(Status.error);
             } else {
                 // ready for startup add to queue
