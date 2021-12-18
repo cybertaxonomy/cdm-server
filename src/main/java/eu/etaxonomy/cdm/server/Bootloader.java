@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -170,7 +170,7 @@ public final class Bootloader {
     }
 
     public void parseCommandOptions(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();
+        CommandLineParser parser = new DefaultParser();
 
          cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
