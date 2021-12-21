@@ -172,15 +172,15 @@ public final class Bootloader {
     public void parseCommandOptions(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
 
-         cmdLine = parser.parse( CommandOptions.getOptions(), args );
+        cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
-         // print the help message
-         if(cmdLine.hasOption(HELP.getOpt())){
-             HelpFormatter formatter = new HelpFormatter();
-             formatter.setWidth(200);
-             formatter.printHelp( "java .. ", CommandOptions.getOptions() );
-             System.exit(0);
-         }
+        // print the help message
+        if(cmdLine.hasOption(HELP.getOpt())){
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.setWidth(200);
+            formatter.printHelp( "java .. ", CommandOptions.getOptions() );
+            System.exit(0);
+        }
     }
 
     /**
