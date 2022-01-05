@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.server.logging.InstanceLogWrapper;
 /**
  * @author a.kohlbecker
  * @date Jul 29, 2015
- *
  */
 public class StartupQueue extends LinkedList<CdmInstance> {
 

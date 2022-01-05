@@ -26,13 +26,12 @@ import org.tanukisoftware.wrapper.WrapperManager;
 /**
  * @author a.kohlbecker
  * @date 26.10.2010
- *
  */
 public class CDMServerWrapperListener implements WrapperListener {
 
     private static final Logger logger = Logger.getLogger(CDMServerWrapperListener.class);
 
-    private static Server __server = null;
+    private static Server mServer = null;
 
     public CDMServerWrapperListener(){
     }
@@ -66,7 +65,7 @@ public class CDMServerWrapperListener implements WrapperListener {
     public int stop(int code) {
         try {
         	logger.info("Stopping CDM Server!!!");
-            __server.stop();
+            mServer.stop();
             logger.info("CDM Server Stopped!!!");
             return code;
         }
@@ -77,11 +76,11 @@ public class CDMServerWrapperListener implements WrapperListener {
     }
 
     public static void setServer(Server server) {
-        __server = server;
+        mServer = server;
     }
 
     public static Server getServer() {
-        return __server;
+        return mServer;
     }
 
     public static void main(String[] args) {
