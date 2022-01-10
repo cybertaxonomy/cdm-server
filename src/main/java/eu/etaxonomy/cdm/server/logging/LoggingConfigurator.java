@@ -33,7 +33,6 @@ public class LoggingConfigurator {
     public void configureServer() {
         // Configure logging (1)
 
-
         // > jetty-webapp-logging-9.4.20.v20190813-config/etc/jetty-jul-to-slf4j.xml
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();

@@ -126,7 +126,7 @@ public class InstanceManager implements LifeCycle.Listener {
             instance.getWebAppContext().stop();
         }
         instance.unbindJndiDataSource();
-        instance.getProblems().clear();
+        instance.getProblems().clear();  //resets the UI
         // explicitly set status stopped here to clear up prior error states
         instance.setStatus(Status.stopped);
     }

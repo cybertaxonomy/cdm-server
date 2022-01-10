@@ -770,12 +770,7 @@ public final class Bootloader {
         return cdmWebappContext;
     }
 
-    /**
-     * @param conf
-     * @return
-     */
     public String constructContextPath(Configuration conf) {
-
         return "/" + contextPathPrefix + conf.getInstanceName();
     }
 
@@ -837,7 +832,6 @@ public final class Bootloader {
         isRunningfromTargetFolder = webappPathNormalized.endsWith("cdm-webapp/target/cdmserver");
         isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
-
 
     public Server getServer() {
         return server;
