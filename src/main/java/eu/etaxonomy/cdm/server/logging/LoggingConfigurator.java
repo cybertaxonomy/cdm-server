@@ -50,9 +50,9 @@ public class LoggingConfigurator {
         // (from jetty-webapp-logging-9.4.20.v20190813.jar) to the DeploymentManager,
         // in the  cdm-server we are not using the DeploymentManager so
         // this needs to be done per web app explicitely:
-        cdmWebappContext.addSystemClass("org.apache.log4j.");
-        cdmWebappContext.addSystemClass("org.slf4j.");
-        cdmWebappContext.addSystemClass("org.apache.commons.logging.");
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.log4j.");
+        cdmWebappContext.getSystemClasspathPattern().add("org.slf4j.");
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.commons.logging.");
 
         // > jetty-webapp-logging-9.4.20.v20190813-config/etc/jetty-mdc-handler.xml
         InstanceLogWrapper mdcHandler = new InstanceLogWrapper(instance.getName());
