@@ -51,6 +51,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
 import org.apache.tomcat.util.scan.StandardJarScanner;
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -763,7 +764,16 @@ public final class Bootloader {
             cdmWebappContext.setClassLoader(classLoader);
         }
 
-        contexts.addHandler(loggingConfigurator.configureWebApp(cdmWebappContext, instance));
+        // --- configure centralized logging
+        // 1. remove the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
+        //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
+        //    --> exclude the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer
+        String regexEcludePattern = ".*LogbackServletContainerInitializer";
+        cdmWebappContext.setAttribute(AnnotationConfiguration.SERVLET_CONTAINER_INITIALIZER_EXCLUSION_PATTERN, regexEcludePattern);
+        // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
+        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance);
+
+        contexts.addHandler(contextWithCentralizedLogging);
         instance.setWebAppContext(cdmWebappContext);
         cdmWebappContext.addLifeCycleListener(instance);
         instance.setStatus(Status.stopped);
