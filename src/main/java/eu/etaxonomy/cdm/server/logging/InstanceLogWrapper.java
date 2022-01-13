@@ -19,6 +19,8 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.slf4j.MDC;
 
 /**
+ * see also https://github.com/jetty-project/jetty-webapp-logging/blob/master/jetty-webapp-logging/src/main/java/org/eclipse/jetty/webapp/logging/ContextLogHandler.java
+ *
  * @author a.kohlbecker
  * @since Jun 9, 2020
  */

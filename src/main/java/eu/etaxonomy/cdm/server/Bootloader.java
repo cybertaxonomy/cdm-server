@@ -430,6 +430,7 @@ public final class Bootloader {
 
         jdk8MemleakFixServer();
 
+
         loggingConfigurator.configureServer();
 
         server.addLifeCycleListener(instanceManager);
