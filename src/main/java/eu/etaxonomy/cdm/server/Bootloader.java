@@ -51,7 +51,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
 import org.apache.tomcat.util.scan.StandardJarScanner;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
@@ -67,6 +66,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import ch.qos.logback.core.CoreConstants;
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
@@ -765,11 +765,12 @@ public final class Bootloader {
         }
 
         // --- configure centralized logging
-        // 1. remove the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
+        //
+        // for details, please see eu.etaxonomy.cdm.server.logging.LoggingConfigurator
+        //
+        // 1. disable the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
         //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
-        //    --> exclude the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer
-        String regexEcludePattern = ".*LogbackServletContainerInitializer";
-        cdmWebappContext.setAttribute(AnnotationConfiguration.SERVLET_CONTAINER_INITIALIZER_EXCLUSION_PATTERN, regexEcludePattern);
+        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
         // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
         Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance);
 
