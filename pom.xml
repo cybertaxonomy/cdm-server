@@ -562,12 +562,12 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>1.0</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>1.0</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
@@ -588,7 +588,7 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav-jackrabbit</artifactId>
-        <version>1.0</version>
+        <version>3.5.1</version>
       </extension>
     </extensions>
   </build>
