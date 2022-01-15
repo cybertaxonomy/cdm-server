@@ -421,11 +421,11 @@
           <execution>
             <phase>install</phase>
             <configuration>
-              <tasks>
+              <target>
                 <property name="project.fullversionstring" value="${project.version}" />
                 <property name="project.version" value="${project.version}" />
                 <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
