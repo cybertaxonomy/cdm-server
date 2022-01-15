@@ -223,6 +223,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
+        <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
         <version>3.2.0</version>
       </plugin>
       <plugin>
@@ -326,6 +327,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.2.0</version>
         <executions>
+          <!-- "compile" error in IDE since upgrading maven-resources-plugin from 3.1.0 to 3.2.0 (see above) -->
           <execution>
             <id>copy</id>
             <goals>
