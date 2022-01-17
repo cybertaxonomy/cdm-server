@@ -15,7 +15,7 @@
   </properties>
 
   <scm>
-    <!-- see section Provider Configuration in http://maven.apache.org/scm/subversion.html 
+    <!-- see section Provider Configuration in https://maven.apache.org/scm/subversion.html 
       for instructions on how to externalize credentials in $user.home/.scm/svn-settings.xml -->
     <connection>scm:git:https://dev.e-taxonomy.eu/git/cdm-server.git</connection>
     <developerConnection>scm:git:ssh://git@dev.e-taxonomy.eu/var/git/cdm-server.git</developerConnection>
@@ -49,7 +49,7 @@
   <licenses>
     <license>
       <name>Mozilla Public License Version 1.1</name>
-      <url>http://www.mozilla.org/MPL/MPL-1.1.html</url>
+      <url>https://www.mozilla.org/MPL/MPL-1.1.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -77,11 +77,11 @@
     </contributors -->
   <issueManagement>
     <system>Redmine</system>
-    <url>http://dev.e-taxonomy.eu/redmine/</url>
+    <url>https://dev.e-taxonomy.eu/redmine/</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://int.e-taxonomy.eu/jenkins</url>
+    <url>https://int.e-taxonomy.eu/jenkins</url>
   </ciManagement>
   <!-- **** REPOSITORIES **** -->
   <profiles>
@@ -134,7 +134,7 @@
     <!-- the EDIT Maven Repository -->
     <repository>
       <id>EditRepository</id>
-      <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
+      <url>https://cybertaxonomy.eu/mavenrepo/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
@@ -147,7 +147,7 @@
     <!-- apache incubating repository -->
     <repository>
       <id>ApacheIncubating</id>
-      <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+      <url>https://people.apache.org/repo/m2-incubating-repository/</url>
     </repository>
   </repositories>
 
