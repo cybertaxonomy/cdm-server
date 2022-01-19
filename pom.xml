@@ -437,7 +437,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.3.2</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <phase>install</phase>
@@ -460,7 +460,7 @@
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.28.0</version>
+        <version>0.38.1</version>
         <configuration>
            <images>
              <image>
@@ -513,9 +513,9 @@
         <version>2.8.2</version>
       </plugin> 
       <plugin>
-        <groupId>external.atlassian.jgitflow</groupId>
+        <groupId>ch.dvbern.oss.maven.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
-        <version>1.0-m6</version>
+        <version>1.0-m8</version>
         <configuration>
           <pushHotfixes>true</pushHotfixes>
           <pushReleases>true</pushReleases> 
