@@ -223,7 +223,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
+        <version>3.2.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -326,6 +327,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.2.0</version>
         <executions>
+          <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
           <execution>
             <id>copy</id>
             <goals>
@@ -723,9 +725,11 @@
     </dependency>
     <!-- JSON -->
     <dependency>
-       <groupId>com.fasterxml.jackson.core</groupId>
-       <artifactId>jackson-databind</artifactId>
-       <version>2.0.0</version>
+      <!-- according to maven repo this artifact moved to com.fasterxml.jackson.core » jackson-databind
+        but changing to next higher version 2.0.0 throws exceptions on the jsp pages (e.g. .../cdmserver/instances.jsp) -->
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.13</version>
     </dependency>
     <!-- windows service -->
     <dependency>
