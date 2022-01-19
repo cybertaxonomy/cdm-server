@@ -562,33 +562,33 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>1.0-beta-6</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>1.0-beta-6</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh-external</artifactId>
-        <version>1.0-beta-6</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
         <artifactId>maven-scm-manager-plexus</artifactId>
-        <version>1.0</version>
+        <version>1.12.2</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
         <artifactId>maven-scm-provider-svnexe</artifactId>
-        <version>1.0</version>
+        <version>1.12.2</version>
       </extension>
       <!-- WebDAV plugin to upload snapshots -->
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-webdav</artifactId>
-        <version>1.0-beta-2</version>
+        <artifactId>wagon-webdav-jackrabbit</artifactId>
+        <version>3.5.1</version>
       </extension>
     </extensions>
   </build>
