@@ -267,7 +267,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
         <executions>
           <execution>
             <!--<phase>deploy</phase> -->
@@ -416,16 +416,16 @@
         <!-- Build a Debian package -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <phase>install</phase>
             <configuration>
-              <tasks>
+              <target>
                 <property name="project.fullversionstring" value="${project.version}" />
                 <property name="project.version" value="${project.version}" />
                 <ant antfile="${project.basedir}/src/main/installer/linux/build-deb.xml" dir="${project.basedir}" />
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
