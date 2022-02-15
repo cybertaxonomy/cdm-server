@@ -515,9 +515,12 @@
         <version>2.8.2</version>
       </plugin> 
       <plugin>
-        <groupId>ch.dvbern.oss.maven.jgitflow</groupId>
+        <!-- groupId>ch.dvbern.oss.maven.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
-        <version>1.0-m8</version>
+        <version>1.0-m8</version>  -->
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m6</version>
         <configuration>
           <pushHotfixes>true</pushHotfixes>
           <pushReleases>true</pushReleases> 
