@@ -11,7 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.4.26.v20200117</jetty-version>
-    <javadoc.opts>-Xdoclint:none</javadoc.opts>
+    <doclint>none</doclint>
   </properties>
 
   <scm>
@@ -317,7 +317,7 @@
           <aggregate>true</aggregate>
           <stylesheet>maven</stylesheet>
           <failOnError>false</failOnError>
-          <additionalparam>${javadoc.opts}</additionalparam>
+          <doclint>${doclint}</doclint>
         </configuration>
       </plugin>
 
@@ -601,8 +601,9 @@
         <!-- you will want to start by publishing your classes' Javadocs -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.1</version>
         <configuration>    
-          <additionalparam>${javadoc.opts}</additionalparam>
+          <doclint>${doclint}</doclint>
         </configuration>
       </plugin>
       <plugin>
