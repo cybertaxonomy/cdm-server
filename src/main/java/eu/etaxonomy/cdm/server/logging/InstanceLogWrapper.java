@@ -19,11 +19,12 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.slf4j.MDC;
 
 /**
+ * see also https://github.com/jetty-project/jetty-webapp-logging/blob/master/jetty-webapp-logging/src/main/java/org/eclipse/jetty/webapp/logging/ContextLogHandler.java
+ *
  * @author a.kohlbecker
  * @since Jun 9, 2020
  */
 public class InstanceLogWrapper extends HandlerWrapper {
-
 
     /**
      * Key under which the instance name stored in the
@@ -38,19 +39,17 @@ public class InstanceLogWrapper extends HandlerWrapper {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
-    {
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
+
         // Collect Info for NDC/MDC
         MDC.put(CDM_INSTANCE, instanceName);
-        try
-        {
+        try {
             super.handle(target, baseRequest, request, response);
         }
-        finally
-        {
+        finally {
             // Pop info out / clear the NDC/MDC
             MDC.clear();
         }
     }
-
 }

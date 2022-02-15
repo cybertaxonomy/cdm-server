@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.component.LifeCycle;
 
@@ -38,7 +38,7 @@ public class InstanceManager implements LifeCycle.Listener {
 
     private static final Logger logger = Logger.getLogger(InstanceManager.class);
 
-    private ListOrderedMap instances = new ListOrderedMap();
+    private ListOrderedMap<String,CdmInstance> instances = new ListOrderedMap<>();
 
     private final StartupQueue queue = new StartupQueue();
 
@@ -81,19 +81,18 @@ public class InstanceManager implements LifeCycle.Listener {
      *
      * @return the instances
      */
-    @SuppressWarnings("unchecked")
     public List<CdmInstance> getInstances() {
         return instances.valueList();
     }
 
     public CdmInstance getInstance(String instanceName) {
-        return (CdmInstance) instances.get(instanceName);
+        return instances.get(instanceName);
     }
 
     /**
      * Starts the instance
      *
-     * Rebinds the JndiDataSource and starts the given instance. The method
+     * Re-binds the JndiDataSource and starts the given instance. The method
      * returns once the instance is fully started up.
      *
      * @param instance
@@ -106,7 +105,7 @@ public class InstanceManager implements LifeCycle.Listener {
             // instance.bindJndiDataSource();
             if (!instance.bindJndiDataSource()) {
                 // a problem with the datasource occurred skip this webapp
-                logger.error("a problem with the datasource occurred -> aboarding startup of /" + instance.getName());
+                logger.error("a problem with the datasource occurred -> aborting startup of /" + instance.getName());
                 instance.setStatus(Status.error);
             } else {
                 // ready for startup add to queue
@@ -126,7 +125,7 @@ public class InstanceManager implements LifeCycle.Listener {
             instance.getWebAppContext().stop();
         }
         instance.unbindJndiDataSource();
-        instance.getProblems().clear();
+        instance.getProblems().clear();  //resets the UI
         // explicitly set status stopped here to clear up prior error states
         instance.setStatus(Status.stopped);
     }
@@ -163,8 +162,8 @@ public class InstanceManager implements LifeCycle.Listener {
      */
     synchronized public void reLoadInstanceConfigurations() {
 
-        ListOrderedMap currentInstances = instances;
-        ListOrderedMap updatedInstances = new ListOrderedMap();
+        ListOrderedMap<String,CdmInstance> currentInstances = instances;
+        ListOrderedMap<String,CdmInstance> updatedInstances = new ListOrderedMap<>();
 
         List<Configuration> configList = DataSourcePropertyParser.parseDataSourceConfigs(datasourcesFile);
         logger.info("cdm server instance names loaded: " + configList.toString());
@@ -172,7 +171,7 @@ public class InstanceManager implements LifeCycle.Listener {
         for (Configuration config : configList) {
             String key = config.getInstanceName();
             if (currentInstances.containsKey(key)) {
-                CdmInstance existingInstance = (CdmInstance) currentInstances.get(key);
+                CdmInstance existingInstance = currentInstances.get(key);
                 if (!(existingInstance.getStatus().equals(Status.removed) && existingInstance.getWebAppContext() == null)) {
                     // re-added instance if not already removed (removed
                     // instances will not be re-added if they have been stopped
@@ -202,9 +201,9 @@ public class InstanceManager implements LifeCycle.Listener {
         }
 
         // find removed instances
-        for (Object keyOfExisting : currentInstances.keyList()) {
+        for (String keyOfExisting : currentInstances.keyList()) {
             if (!updatedInstances.containsKey(keyOfExisting)) {
-                CdmInstance removedInstance = (CdmInstance) currentInstances.get(keyOfExisting);
+                CdmInstance removedInstance = currentInstances.get(keyOfExisting);
 
                 if (removedInstance.getStatus().equals(Status.removed)) {
                     // instance already is removed, forget it now
@@ -220,7 +219,6 @@ public class InstanceManager implements LifeCycle.Listener {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-
             }
         }
 

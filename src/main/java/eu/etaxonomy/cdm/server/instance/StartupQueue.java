@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.server.logging.InstanceLogWrapper;
 /**
  * @author a.kohlbecker
  * @date Jul 29, 2015
- *
  */
 public class StartupQueue extends LinkedList<CdmInstance> {
 
@@ -30,28 +29,17 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
     private final Logger logger = Logger.getLogger(InstanceManager.class);
 
-    Set<CdmInstance> instancesStartingUp = new HashSet<CdmInstance>();
+    Set<CdmInstance> instancesStartingUp = new HashSet<>();
 
     private int parallelStartUps = 1;
 
-    /**
-     * @return the parallelStartUps
-     */
     public int getParallelStartUps() {
         return parallelStartUps;
     }
-
-    /**
-     * @param parallelStartUps
-     *            the parallelStartUps to set
-     */
     public void setParallelStartUps(int parallelStartUps) {
         this.parallelStartUps = parallelStartUps;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean add(CdmInstance e) {
         boolean result = super.add(e);
@@ -59,18 +47,12 @@ public class StartupQueue extends LinkedList<CdmInstance> {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addFirst(CdmInstance e) {
         super.addFirst(e);
         registerAt(e);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addLast(CdmInstance e) {
         super.addLast(e);
@@ -89,9 +71,6 @@ public class StartupQueue extends LinkedList<CdmInstance> {
         startNextInstances();
     }
 
-    /**
-     *
-     */
     private void startNextInstances() {
         logger.debug("startNextInstances()");
         while(instancesStartingUp.size() < parallelStartUps && !isEmpty()) {
@@ -103,9 +82,6 @@ public class StartupQueue extends LinkedList<CdmInstance> {
         }
     }
 
-    /**
-     * @param e
-     */
     @SuppressWarnings("unused")
     private void registerAt(CdmInstance e) {
         new InstanceListener(e);
@@ -122,17 +98,11 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             instance.getWebAppContext().addLifeCycleListener(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void lifeCycleStarting(LifeCycle event) {
             // IGNORE
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void lifeCycleStarted(LifeCycle event) {
             notifyInstanceStartedUp(instance);
@@ -142,9 +112,6 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             instance = null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void lifeCycleFailure(LifeCycle event, Throwable cause) {
             notifyInstanceFailed(instance);
@@ -154,22 +121,15 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             instance = null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void lifeCycleStopping(LifeCycle event) {
             // IGNORE
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void lifeCycleStopped(LifeCycle event) {
             // IGNORE
         }
-
     }
 
     class StartupThread extends Thread{
@@ -213,9 +173,6 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             } finally {
                 MDC.clear();
             }
-
         }
-
     }
-
 }

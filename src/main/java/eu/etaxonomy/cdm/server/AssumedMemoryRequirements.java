@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.server;
 /**
  * @author a.kohlbecker
  * @date May 10, 2013
- *
  */
 public class AssumedMemoryRequirements {
 
@@ -40,14 +39,6 @@ public class AssumedMemoryRequirements {
      * 25% on to on the idle footprint
      */
     private static final double FREE_HEAP = 1.25;
-
-
-	/*
-	 * JAVA 7
-     * based on the PC value of the  jstat -gc output
-     */
-	public static final long PERM_GEN_SPACE_PER_INSTANCE = 55 * MB;
-    public static final long PERM_GEN_SPACE_CDMSERVER = 20 * MB;
 
     /*
      * based on the HU value of the  jstat -gc output

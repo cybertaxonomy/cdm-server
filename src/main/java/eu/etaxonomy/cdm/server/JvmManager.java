@@ -22,10 +22,10 @@ import org.apache.log4j.Logger;
  */
 public class JvmManager {
 
+    public static final Logger logger = Logger.getLogger(JvmManager.class);
+
     // Java > 8
     private static final String SUFFIX_META = "Metaspace";
-
-    public static final Logger logger = Logger.getLogger(JvmManager.class);
 
     public static MemoryUsage getMetaSpaceUsage(){
         return getMemoryPoolUsage(SUFFIX_META);
@@ -49,13 +49,13 @@ public class JvmManager {
 
     public static MemoryUsage getHeapMemoryUsage(){
 
-            MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-            if(memoryMXBean != null){
-                logger.debug("NonHeapMemoryUsage: "+memoryMXBean.getHeapMemoryUsage());
-                return memoryMXBean.getHeapMemoryUsage();
-            }
-            return null;
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        if(memoryMXBean != null){
+            logger.debug("NonHeapMemoryUsage: "+memoryMXBean.getHeapMemoryUsage());
+            return memoryMXBean.getHeapMemoryUsage();
         }
+        return null;
+    }
 
     /**
      *

@@ -19,9 +19,6 @@
     Bootloader bootloader = Bootloader.getBootloader();
     Long recommendedMinimumHeap = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.HEAP_CDMSERVER, AssumedMemoryRequirements.HEAP_PER_INSTANCE, null);
     Long recommendedMinimumPermGenSpace = null;
-    if(JvmManager.getJvmVersion() == 7){
-        recommendedMinimumPermGenSpace = bootloader.getInstanceManager().recommendedMinimumSpace(AssumedMemoryRequirements.PERM_GEN_SPACE_CDMSERVER, AssumedMemoryRequirements.PERM_GEN_SPACE_PER_INSTANCE, null);
-    } 
     
     ObjectMapper jsonMapper = new ObjectMapper();
 

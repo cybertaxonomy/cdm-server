@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.server;
 /**
  * @author andreas
  * @date Jul 17, 2012
- *
  */
 public class OsChecker {
 
@@ -35,8 +34,9 @@ public class OsChecker {
     }
 
     public boolean isLinux() {
-        if (isMac())
+        if (isMac()) {
             return false;
+        }
         try {
             Runtime.getRuntime().exec(new String[] { "sh", "-c", "ls" }).waitFor();
             return true;

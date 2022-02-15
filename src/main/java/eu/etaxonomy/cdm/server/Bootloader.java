@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.server;
 
 import static eu.etaxonomy.cdm.server.AssumedMemoryRequirements.KB;
@@ -67,6 +66,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import ch.qos.logback.core.CoreConstants;
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
@@ -74,7 +74,6 @@ import eu.etaxonomy.cdm.server.instance.SharedAttributes;
 import eu.etaxonomy.cdm.server.instance.Status;
 import eu.etaxonomy.cdm.server.logging.LoggingConfigurator;
 import eu.etaxonomy.cdm.server.win32service.Win32Service;
-
 
 /**
  * A bootstrap class for starting Jetty Runner using an embedded war.
@@ -158,14 +157,6 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
-
-    /**
-     * @param input
-     * @param output
-     * @param bufferSize
-     * @return
-     * @throws IOException
-     */
     public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
@@ -179,22 +170,19 @@ public final class Bootloader {
         return answer;
     }
 
-
-
     public void parseCommandOptions(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();
+        CommandLineParser parser = new GnuParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
 
-         cmdLine = parser.parse( CommandOptions.getOptions(), args );
+        cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
-         // print the help message
-         if(cmdLine.hasOption(HELP.getOpt())){
-             HelpFormatter formatter = new HelpFormatter();
-             formatter.setWidth(200);
-             formatter.printHelp( "java .. ", CommandOptions.getOptions() );
-             System.exit(0);
-         }
+        // print the help message
+        if(cmdLine.hasOption(HELP.getOpt())){
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.setWidth(200);
+            formatter.printHelp( "java .. ", CommandOptions.getOptions() );
+            System.exit(0);
+        }
     }
-
 
     /**
      * Finds the named war file either in the resources known to the class loader
@@ -311,11 +299,7 @@ public final class Bootloader {
     public String getCdmlibServicesLastModified() {
         return cdmlibServicesLastModified;
     }
-    /**
-     * @param extractWar
-     * @return
-     * @throws IOException
-     */
+
     private File unzip(File extractWar) throws IOException {
         UnzipUtility unzip = new UnzipUtility();
 
@@ -324,8 +308,6 @@ public final class Bootloader {
         unzip.unzip(extractWar, destDirectory);
         return destDirectory;
     }
-
-
 
     /**
      * MAIN METHOD
@@ -336,13 +318,9 @@ public final class Bootloader {
     public static void main(String[] args) throws Exception {
 
         Bootloader bootloader = Bootloader.getBootloader();
-
         bootloader.parseCommandOptions(args);
-
         bootloader.startServer();
     }
-
-
 
     public void startServer() throws IOException,
             FileNotFoundException, Exception, InterruptedException {
@@ -452,6 +430,7 @@ public final class Bootloader {
         server = new Server();
 
         jdk8MemleakFixServer();
+
 
         loggingConfigurator.configureServer();
 
@@ -785,7 +764,17 @@ public final class Bootloader {
             cdmWebappContext.setClassLoader(classLoader);
         }
 
-        contexts.addHandler(loggingConfigurator.configureWebApp(cdmWebappContext, instance));
+        // --- configure centralized logging
+        //
+        // for details, please see eu.etaxonomy.cdm.server.logging.LoggingConfigurator
+        //
+        // 1. disable the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
+        //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
+        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
+        // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
+        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance);
+
+        contexts.addHandler(contextWithCentralizedLogging);
         instance.setWebAppContext(cdmWebappContext);
         cdmWebappContext.addLifeCycleListener(instance);
         instance.setStatus(Status.stopped);
@@ -793,12 +782,7 @@ public final class Bootloader {
         return cdmWebappContext;
     }
 
-    /**
-     * @param conf
-     * @return
-     */
     public String constructContextPath(Configuration conf) {
-
         return "/" + contextPathPrefix + conf.getInstanceName();
     }
 
@@ -860,7 +844,6 @@ public final class Bootloader {
         isRunningfromTargetFolder = webappPathNormalized.endsWith("cdm-webapp/target/cdmserver");
         isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
-
 
     public Server getServer() {
         return server;

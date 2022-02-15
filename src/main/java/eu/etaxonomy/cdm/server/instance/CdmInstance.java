@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2009 EDIT
+ * European Distributed Institute of Taxonomy
+ * http://www.e-taxonomy.eu
+ *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * See LICENSE.TXT at the top of this package for the full license terms.
+ */
 package eu.etaxonomy.cdm.server.instance;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +27,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.mchange.v2.c3p0.DataSources;
 
-
 public class CdmInstance implements Listener {
 
     private static final Logger logger = Logger.getLogger(CdmInstance.class);
@@ -39,7 +46,7 @@ public class CdmInstance implements Listener {
 
     public List<String> getProblems() {
         if (problems == null) {
-            problems = new ArrayList<String>();
+            problems = new ArrayList<>();
         }
         return problems;
     }
@@ -52,17 +59,9 @@ public class CdmInstance implements Listener {
         return status.equals(Status.error);
     }
 
-    /**
-     * @param status
-     *            the status to set
-     */
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    /**
-     * @return the status
-     */
     public Status getStatus() {
         return status;
     }
@@ -80,10 +79,6 @@ public class CdmInstance implements Listener {
     public Configuration getConfiguration() {
         return configuration;
     }
-
-    /**
-     * @return the configuration
-     */
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
@@ -94,10 +89,6 @@ public class CdmInstance implements Listener {
     public WebAppContext getWebAppContext() {
         return webAppContext;
     }
-
-    /**
-     * @return the webAppContext
-     */
     public void setWebAppContext(WebAppContext webAppContext) {
         this.webAppContext = webAppContext;
     }
@@ -140,7 +131,6 @@ public class CdmInstance implements Listener {
             // never override Status.removed !!!
             setStatus(Status.stopped);
         }
-
     }
 
     @Override
@@ -199,12 +189,12 @@ public class CdmInstance implements Listener {
 
     public boolean bindJndiDataSource() {
         try {
-            Class<DataSource> dsCass = (Class<DataSource>) Thread.currentThread().getContextClassLoader().loadClass("com.mchange.v2.c3p0.ComboPooledDataSource");
-            DataSource datasource = dsCass.newInstance();
-            dsCass.getMethod("setDriverClass", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDriverClass()});
-            dsCass.getMethod("setJdbcUrl", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDataSourceUrl()});
-            dsCass.getMethod("setUser", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getUsername()});
-            dsCass.getMethod("setPassword", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getPassword()});
+            Class<DataSource> datasourceClass = (Class<DataSource>) Thread.currentThread().getContextClassLoader().loadClass("com.mchange.v2.c3p0.ComboPooledDataSource");
+            DataSource datasource = datasourceClass.newInstance();
+            datasourceClass.getMethod("setDriverClass", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDriverClass()});
+            datasourceClass.getMethod("setJdbcUrl", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDataSourceUrl()});
+            datasourceClass.getMethod("setUser", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getUsername()});
+            datasourceClass.getMethod("setPassword", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getPassword()});
 
             Connection connection = null;
             String sqlerror = null;
@@ -212,7 +202,7 @@ public class CdmInstance implements Listener {
                 connection = datasource.getConnection();
                 connection.close();
             } catch (SQLException e) {
-                sqlerror = "Can not establish connection to data base " + configuration.getDataSourceUrl() + " [sql error code: "+ e.getSQLState() + "]";
+                sqlerror = "Can not establish connection to database " + configuration.getDataSourceUrl() + " [sql error code: "+ e.getSQLState() + "]";
                 getProblems().add(sqlerror);
                 setStatus(Status.error);
                 if(connection !=  null){
