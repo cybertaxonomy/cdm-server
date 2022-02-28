@@ -134,7 +134,7 @@
     <!-- the EDIT Maven Repository -->
     <repository>
       <id>EditRepository</id>
-      <url>https://cybertaxonomy.eu/mavenrepo/</url>
+      <url>https://cybertaxonomy.org/mavenrepo/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>

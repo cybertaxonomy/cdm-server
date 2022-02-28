@@ -44,7 +44,7 @@ NOTE: If you are using **symlinks** in the `.cdmLibrary` these must be use path 
         --env-file=src/main/docker/production/cdm-server-dev.env \
         --mount type=bind,source=$HOME/.cdmLibrary,destination=/data/.cdmLibrary \
         --mount type=bind,source=$(pwd)/,destination=/var/log/cdmserver \
-        cybertaxonomy.eu/cdm-server:${version}
+        cybertaxonomy.org/cdm-server:${version}
     
 ### with docker-compose
 
