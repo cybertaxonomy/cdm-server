@@ -56,7 +56,7 @@
           </div><!-- /content-wrapper -->
 
           <div id="footer" class="clearfix">
-          The CDM Server is a component of the <a href="http://cybertaxonomy.eu/">EDIT Platform for Cybertaxonomy</a>.
+          The CDM Server is a component of the <a href="http://cybertaxonomy.org/">EDIT Platform for Cybertaxonomy</a>.
           </div><!-- /footer -->
 
         </div><!-- /main -->

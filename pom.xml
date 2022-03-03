@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.29.0</version>
+  <version>5.30.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.4.26.v20200117</jetty-version>
-    <javadoc.opts>-Xdoclint:none</javadoc.opts>
+    <doclint>none</doclint>
   </properties>
   <scm>
     <!-- see section Provider Configuration in https://maven.apache.org/scm/subversion.html 
@@ -128,7 +128,7 @@
     <!-- the EDIT Maven Repository -->
     <repository>
       <id>EditRepository</id>
-      <url>https://cybertaxonomy.eu/mavenrepo/</url>
+      <url>https://cybertaxonomy.org/mavenrepo/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
@@ -312,7 +312,7 @@
           <aggregate>true</aggregate>
           <stylesheet>maven</stylesheet>
           <failOnError>false</failOnError>
-          <additionalparam>${javadoc.opts}</additionalparam>
+          <doclint>${doclint}</doclint>
         </configuration>
       </plugin>
       <!-- ====== PROCESS-SOURCES ====== -->
@@ -602,8 +602,9 @@
         <!-- you will want to start by publishing your classes' Javadocs -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <additionalparam>${javadoc.opts}</additionalparam>
+        <version>3.3.1</version>
+        <configuration>    
+          <doclint>${doclint}</doclint>
         </configuration>
       </plugin>
       <plugin>

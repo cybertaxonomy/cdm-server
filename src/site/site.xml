@@ -10,8 +10,8 @@
       <item name="Overview" href="index.html"/>
       <!--item name="FAQ" href="faq.html"/-->
       <item name="Releases" href="https://dev.e-taxonomy.eu/redmine/projects/edit/wiki/CdmPlatformRoadmap"/>
-      <item name="Download" href="https://cybertaxonomy.eu/download/cdmserver/stable/"/>
-      <item name="Installation" href="https://cybertaxonomy.eu/cdmserver/installation/"/>
+      <item name="Download" href="https://cybertaxonomy.org/download/cdmserver/stable/"/>
+      <item name="Installation" href="https://cybertaxonomy.org/cdmserver/installation/"/>
     </menu>
     <menu name="Developer">
       <item name="FAQ &amp; Troubleshooting" href="troubleshooting.html"/>
