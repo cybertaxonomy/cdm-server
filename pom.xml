@@ -436,7 +436,8 @@
         </executions>
       </plugin>
       <!-- Build windows installer -->
-      <plugin>
+      <!-- temporarily switched off due to problems with jenkins build after upgrading to debian 10 (#9972)  -->
+ <!--     <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
@@ -451,13 +452,13 @@
         <configuration>
           <executable>makensis</executable>
           <!-- optional -->
-          <workingDirectory>/tmp</workingDirectory>
+    <!--      <workingDirectory>/tmp</workingDirectory>
           <arguments>
             <!-- <argument>-V3</argument> -->
-            <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
+ <!--           <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
           </arguments>
         </configuration>
-      </plugin>
+      </plugin> -->
       <!-- Build Docker image -->
       <plugin>
         <groupId>io.fabric8</groupId>
