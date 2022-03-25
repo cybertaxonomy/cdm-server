@@ -450,13 +450,13 @@
           </execution>
         </executions>
         <configuration>
-          <executable>makensis</executable>
+          <executable>makensis</executable>   -->
           <!-- optional -->
     <!--      <workingDirectory>/tmp</workingDirectory>
-          <arguments>
+          <arguments>    -->
             <!-- <argument>-V3</argument> -->
  <!--           <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
-          </arguments>
+          </arguments>s
         </configuration>
       </plugin> -->
       <!-- Build Docker image -->
