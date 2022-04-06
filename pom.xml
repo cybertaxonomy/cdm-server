@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.30.0</version>
+  <version>5.31.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
@@ -432,7 +432,8 @@
         </executions>
       </plugin>
       <!-- Build windows installer -->
-      <plugin>
+      <!-- temporarily switched off due to problems with jenkins build after upgrading to debian 10 (#9972)  -->
+ <!--     <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
@@ -445,15 +446,15 @@
           </execution>
         </executions>
         <configuration>
-          <executable>makensis</executable>
+          <executable>makensis</executable>   -->
           <!-- optional -->
-          <workingDirectory>/tmp</workingDirectory>
-          <arguments>
+    <!--      <workingDirectory>/tmp</workingDirectory>
+          <arguments>    -->
             <!-- <argument>-V3</argument> -->
-            <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
-          </arguments>
+ <!--           <argument>${project.basedir}/target/installer/win32/setup.nsi</argument>
+          </arguments>s
         </configuration>
-      </plugin>
+      </plugin> -->
       <!-- Build Docker image -->
       <plugin>
         <groupId>io.fabric8</groupId>
