@@ -35,6 +35,7 @@ public class Win32Service extends AbstractLifeCycle implements Runnable {
 
     @Override
     public void doStart() {
+
     	logger.info("doStart");
         CDMServerWrapperListener.setServer(server);
     }
@@ -47,7 +48,6 @@ public class Win32Service extends AbstractLifeCycle implements Runnable {
     @Override
     public void run() {
         doStop();
-
     }
 
     public void stopServer() {

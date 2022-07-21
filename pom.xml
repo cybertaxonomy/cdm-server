@@ -502,7 +502,6 @@
                 -->
              </image>
            </images>
-
         </configuration>
 
         <!-- Connect start/stop to pre- and
@@ -788,7 +787,7 @@
       <version>2.11.0</version>
     </dependency>
     <dependency>
-      <!-- only used in InstanceManger class -->
+      <!-- only used in InstanceManager class -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
