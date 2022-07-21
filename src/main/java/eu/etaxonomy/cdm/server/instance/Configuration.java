@@ -8,7 +8,8 @@
  */
 package eu.etaxonomy.cdm.server.instance;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author a.kohlbecker
@@ -16,7 +17,8 @@ import org.apache.log4j.Logger;
  */
 public class Configuration {
 
-	private static final Logger logger = Logger.getLogger(Configuration.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger();
 
 	private String instanceName;
 	private String password;

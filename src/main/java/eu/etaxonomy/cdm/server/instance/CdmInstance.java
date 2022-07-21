@@ -18,7 +18,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.handler.ContextHandler.Context;
 import org.eclipse.jetty.util.component.LifeCycle;
@@ -29,7 +30,7 @@ import com.mchange.v2.c3p0.DataSources;
 
 public class CdmInstance implements Listener {
 
-    private static final Logger logger = Logger.getLogger(CdmInstance.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private WebAppContext webAppContext = null;
 

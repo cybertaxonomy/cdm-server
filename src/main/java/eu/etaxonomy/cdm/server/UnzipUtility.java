@@ -17,7 +17,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This utility extracts files and directories of a standard zip file to
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class UnzipUtility {
 
-    private static final Logger logger = Logger.getLogger(UnzipUtility.class);
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Size of the buffer to read/write data

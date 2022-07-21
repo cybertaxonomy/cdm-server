@@ -48,7 +48,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
@@ -82,7 +83,7 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  */
 public final class Bootloader {
 
-    private static final Logger logger = Logger.getLogger(Bootloader.class);
+    private static final Logger logger = LogManager.getLogger();
 
     //private static final String DEFAULT_WARFILE = "target/";
 
