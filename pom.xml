@@ -690,7 +690,8 @@
         <artifactId>jetty-webapp-logging</artifactId>
         <version>9.4.20.v20190813</version><!-- versioning independent of jetty core -->
         <type>pom</type><!-- we only need the dependencies like jul-to-slf4j managed in this pom! -->
-        <!-- this is for log4j12 , still need to check if this is really needed by jetty 
+        <!-- this is for log4j12 ,el-api
+         still need to check if this is really needed by jetty 
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
