@@ -730,11 +730,11 @@
       <version>${jetty-version}</version>
       <type>pom</type>
     </dependency>
-    <dependency>
+ <!--   <dependency>
        <groupId>jakarta.el</groupId>
        <artifactId>jakarta.el-api</artifactId>
        <version>4.0.0</version>
-    </dependency>
+    </dependency>   -->
 
     <dependency>
       <groupId>javax.transaction</groupId>
