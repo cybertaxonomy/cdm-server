@@ -27,6 +27,8 @@ import eu.etaxonomy.cdm.server.instance.CdmInstance;
  * @author a.kohlbecker
  * @since Jun 10, 2020
  */
+//TODO AM check if we can do something similar with log4j (https://logging.apache.org/log4j/2.x/manual/webapp.html) to remove additional dependency
+//     if yes, the slf4j dependencies need to be adapted to not send log4j2 to slf4j but the other way round.
 public class LoggingConfigurator {
 
     public void configureServer() {
