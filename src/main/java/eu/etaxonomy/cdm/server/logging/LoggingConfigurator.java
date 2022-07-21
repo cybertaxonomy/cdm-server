@@ -65,8 +65,8 @@ public class LoggingConfigurator {
 
         // v20190813  > https://github.com/jetty-project/jetty-webapp-logging/blob/jetty-webapp-logging-9.4.20.v20190813/jetty-webapp-logging/src/etc/jetty-mdc-handler.xml
         // Apr 2, 2020 > https://github.com/jetty-project/jetty-webapp-logging/blob/master/jetty-webapp-logging/src/main/config/etc/jetty-mdc-handler.xml
-        InstanceLogWrapper mdcHandler = new InstanceLogWrapper(instance.getName());
-        mdcHandler.setHandler(cdmWebappContext); // wrap context handler
-        return mdcHandler;
+        InstanceLogWrapper instanceLogger = new InstanceLogWrapper(instance.getName());
+        instanceLogger.setHandler(cdmWebappContext); // wrap context handler
+        return instanceLogger;
     }
 }
