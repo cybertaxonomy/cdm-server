@@ -690,12 +690,13 @@
         <artifactId>jetty-webapp-logging</artifactId>
         <version>9.4.20.v20190813</version><!-- versioning independent of jetty core -->
         <type>pom</type><!-- we only need the dependencies like jul-to-slf4j managed in this pom! -->
+        <!-- this is for log4j12 , still need to check if this is really needed by jetty 
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
           </exclusion>
-        </exclusions>
+        </exclusions> -->
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -760,10 +761,17 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <dependency>
-      <!-- move all logging to log4j 2-->
+    <!-- move all logging to log4j 2-->
+    <!-- <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>  -->
+    <!-- move all log4j2 logging to the current slf4j implementor,
+         !!! never use together with log4j-slf4j-impl on classpath => endless circle -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
       <version>${log4j.version}</version>
     </dependency>
     <dependency>
