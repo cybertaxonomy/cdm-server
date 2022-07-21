@@ -33,7 +33,7 @@ by which custom configuration files can be specified for production and test env
       <totalSizeCap>3GB</totalSizeCap>
     </rollingPolicy>
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%X{cdmInstance}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+      <pattern>%d{dd-MM HH:mm:ss.SSS} [%X{cdmInstance}] [%thread] %cn %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 
