@@ -50,13 +50,15 @@ public class LoggingConfigurator {
         // (from jetty-webapp-logging-9.4.20.v20190813.jar) to the DeploymentManager,
         // in the  cdm-server we are not using the DeploymentManager so
         // this needs to be done per web app explicitly:
-        cdmWebappContext.getSystemClasspathPattern().add("org.apache.log4j.");
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.log4j.");  //log4j12  probably not needed anymore
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.logging.log4j."); //log4j2
         cdmWebappContext.getSystemClasspathPattern().add("org.slf4j.");
         cdmWebappContext.getSystemClasspathPattern().add("org.apache.commons.logging.");
 
         // UPDATE:
         // in the latest version of the jetty-webapp-logging (Apr 2, 2020) the classnames are also removed from the ServerClasspathPatterns:
         cdmWebappContext.getServerClasspathPattern().add("-org.apache.log4j.");
+        cdmWebappContext.getServerClasspathPattern().add("-org.apache.logging.log4j.");
         cdmWebappContext.getServerClasspathPattern().add("-org.slf4j.");
         cdmWebappContext.getServerClasspathPattern().add("-org.apache.commons.logging.");
 
