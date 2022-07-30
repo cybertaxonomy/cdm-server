@@ -27,6 +27,8 @@ import eu.etaxonomy.cdm.server.instance.CdmInstance;
  * @author a.kohlbecker
  * @since Jun 10, 2020
  */
+//TODO AM check if we can do something similar with log4j (https://logging.apache.org/log4j/2.x/manual/webapp.html) to remove additional dependency
+//     if yes, the slf4j dependencies need to be adapted to not send log4j2 to slf4j but the other way round.
 public class LoggingConfigurator {
 
     public void configureServer() {
@@ -50,21 +52,23 @@ public class LoggingConfigurator {
         // (from jetty-webapp-logging-9.4.20.v20190813.jar) to the DeploymentManager,
         // in the  cdm-server we are not using the DeploymentManager so
         // this needs to be done per web app explicitly:
-        cdmWebappContext.getSystemClasspathPattern().add("org.apache.log4j.");
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.log4j.");  //log4j12  probably not needed anymore
+        cdmWebappContext.getSystemClasspathPattern().add("org.apache.logging.log4j."); //log4j2
         cdmWebappContext.getSystemClasspathPattern().add("org.slf4j.");
         cdmWebappContext.getSystemClasspathPattern().add("org.apache.commons.logging.");
 
         // UPDATE:
         // in the latest version of the jetty-webapp-logging (Apr 2, 2020) the classnames are also removed from the ServerClasspathPatterns:
         cdmWebappContext.getServerClasspathPattern().add("-org.apache.log4j.");
+        cdmWebappContext.getServerClasspathPattern().add("-org.apache.logging.log4j.");
         cdmWebappContext.getServerClasspathPattern().add("-org.slf4j.");
         cdmWebappContext.getServerClasspathPattern().add("-org.apache.commons.logging.");
 
 
         // v20190813  > https://github.com/jetty-project/jetty-webapp-logging/blob/jetty-webapp-logging-9.4.20.v20190813/jetty-webapp-logging/src/etc/jetty-mdc-handler.xml
         // Apr 2, 2020 > https://github.com/jetty-project/jetty-webapp-logging/blob/master/jetty-webapp-logging/src/main/config/etc/jetty-mdc-handler.xml
-        InstanceLogWrapper mdcHandler = new InstanceLogWrapper(instance.getName());
-        mdcHandler.setHandler(cdmWebappContext); // wrap context handler
-        return mdcHandler;
+        InstanceLogWrapper instanceLogger = new InstanceLogWrapper(instance.getName());
+        instanceLogger.setHandler(cdmWebappContext); // wrap context handler
+        return instanceLogger;
     }
 }

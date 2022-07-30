@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.util.component.LifeCycle;
 
 import eu.etaxonomy.cdm.server.Bootloader;
@@ -36,7 +37,7 @@ import eu.etaxonomy.cdm.server.JvmManager;
  */
 public class InstanceManager implements LifeCycle.Listener {
 
-    private static final Logger logger = Logger.getLogger(InstanceManager.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private ListOrderedMap<String,CdmInstance> instances = new ListOrderedMap<>();
 

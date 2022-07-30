@@ -14,7 +14,8 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author a.kohlbecker
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class JvmManager {
 
-    public static final Logger logger = Logger.getLogger(JvmManager.class);
+    private static final Logger logger = LogManager.getLogger();
 
     // Java > 8
     private static final String SUFFIX_META = "Metaspace";

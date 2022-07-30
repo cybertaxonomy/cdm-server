@@ -18,18 +18,19 @@
  */
 package eu.etaxonomy.cdm.server.win32service;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.tanukisoftware.wrapper.WrapperListener;
 import org.tanukisoftware.wrapper.WrapperManager;
+
 /**
  * @author a.kohlbecker
  * @date 26.10.2010
  */
 public class CDMServerWrapperListener implements WrapperListener {
 
-    private static final Logger logger = Logger.getLogger(CDMServerWrapperListener.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private static Server mServer = null;
 

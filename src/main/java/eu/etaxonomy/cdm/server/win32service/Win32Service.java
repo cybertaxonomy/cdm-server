@@ -18,7 +18,8 @@
  */
 package eu.etaxonomy.cdm.server.win32service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
@@ -28,12 +29,13 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
  */
 public class Win32Service extends AbstractLifeCycle implements Runnable {
 
-	private static final Logger logger = Logger.getLogger(Win32Service.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private Server server;
 
     @Override
     public void doStart() {
+
     	logger.info("doStart");
         CDMServerWrapperListener.setServer(server);
     }
@@ -46,7 +48,6 @@ public class Win32Service extends AbstractLifeCycle implements Runnable {
     @Override
     public void run() {
         doStop();
-
     }
 
     public void stopServer() {
