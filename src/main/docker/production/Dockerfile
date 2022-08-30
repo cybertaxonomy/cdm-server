@@ -23,6 +23,12 @@ ENV HEAP_SIZE=$HEAP_SIZE_ARG
 ENV CPU_CORES=1
 ENV DATASOURCES=$CDM_HOME/.cdmLibrary/datasources.xml
 
+#set encoding
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 # java options which can be overwritten
 ENV JAVA_OPTIONS="-Dspring.profiles.active=remoting"
 
@@ -39,5 +45,6 @@ EXPOSE $CDMSERVER_PORT
 
 RUN apt-get update; apt-get install -y openjdk-8-jre-headless libjemalloc1; apt-get clean
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+
 
 CMD java $JAVA_OPTS $JAVA_OPTIONS  -jar /root/cdm-server.jar $SERVER_ARGS $CDMSERVER_ARGS
