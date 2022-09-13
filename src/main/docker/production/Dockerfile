@@ -23,11 +23,7 @@ ENV HEAP_SIZE=$HEAP_SIZE_ARG
 ENV CPU_CORES=1
 ENV DATASOURCES=$CDM_HOME/.cdmLibrary/datasources.xml
 
-#set encoding
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+
 
 
 
@@ -46,6 +42,13 @@ ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -datasources $DATASOURCES"
 EXPOSE $CDMSERVER_PORT
 
 RUN apt-get update; apt-get install -y openjdk-8-jre-headless libjemalloc1; apt-get clean
+#set encoding
+RUN apt-get clean && apt-get update && apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 
 
