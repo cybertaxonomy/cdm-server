@@ -24,9 +24,12 @@ ENV CPU_CORES=1
 ENV DATASOURCES=$CDM_HOME/.cdmLibrary/datasources.xml
 
 #set encoding
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+
 
 # java options which can be overwritten
 ENV JAVA_OPTIONS="-Dspring.profiles.active=remoting"
