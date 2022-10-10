@@ -38,6 +38,24 @@ ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -datasources $DATASOURCES"
 EXPOSE $CDMSERVER_PORT
 
 RUN apt-get update; apt-get install -y openjdk-8-jre-headless libjemalloc1; apt-get clean
+#set encoding
+#RUN apt-get clean && apt-get update && apt-get install -y locales locales-all
+#RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+#    locale-gen
+#RUN export LC_ALL=en_US.UTF-8
+#RUN export LANG=en_US.UTF-8
+#RUN locale-gen en_US.UTF-8
+#ENV LANG en_US.UTF-8
+#ENV LANGUAGE en_US:en
+#ENV LC_ALL en_US.UTF-8
+
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+ && locale-gen "en_US.UTF-8"
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+
 
 CMD java $JAVA_OPTS $JAVA_OPTIONS  -jar /root/cdm-server.jar $SERVER_ARGS $CDMSERVER_ARGS
