@@ -34,6 +34,7 @@ ENV JAVA_OPTS="-Xmx$HEAP_SIZE \
 
 ENV SERVER_ARGS="-forceSchemaUpdate -jmx"
 ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -datasources $DATASOURCES"
+ENV TZ=CET
 
 EXPOSE $CDMSERVER_PORT
 
@@ -56,6 +57,14 @@ ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+
+RUN apt-get update && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
+
+COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
+
+RUN apt-get update && apt-get install -y iproute2 && rm -rf /var/lib/apt/lists/*
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
 CMD java $JAVA_OPTS $JAVA_OPTIONS  -jar /root/cdm-server.jar $SERVER_ARGS $CDMSERVER_ARGS
