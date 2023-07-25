@@ -45,7 +45,7 @@ src/main/jenkins-ci/cdmserver-deploy-index-single.sh -text
 src/main/jenkins-ci/cdmserver-deploy-index.sh -text
 src/main/jenkins-ci/copy-cdmserver-and-restart.sh -text
 src/main/resources/c3p0.properties -text
-src/main/resources/log4j.properties -text
+src/main/resources/log4j2.xml -text
 src/main/resources/version.properties -text
 src/main/webapp/WEB-INF/web.xml -text
 src/main/webapp/css/server.css -text
