@@ -273,9 +273,9 @@ public final class Bootloader {
                             // always result in a higher value than the previous last modified time
                             // of any bundle"
                             cdmlibServicesVersion = attributes.getValue("Bundle-Version");
-                            logger.warn("cdmlib-services version : " + cdmlibServicesVersion);
+                            logger.info("cdmlib-services version : " + cdmlibServicesVersion);
                             cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
-                            logger.warn("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+                            logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
 
                             if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
                                 throw new IllegalStateException("Invalid cdmlib-services manifest file");
