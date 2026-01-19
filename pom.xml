@@ -521,6 +521,7 @@
         <artifactId>gitflow-maven-plugin</artifactId>
         <version>1.21.0</version>
         <configuration>
+          <allowSnapshots>true</allowSnapshots>
           <verbose>true</verbose>
           <!-- Optional: configure as needed -->
           <gitFlowConfig>
