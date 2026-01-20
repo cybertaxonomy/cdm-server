@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.54.0</version>
+  <version>5.55.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>9.4.26.v20200117</jetty-version>
     <doclint>none</doclint>
-    <log4j.version>2.19.0</log4j.version>
+    <log4j.version>2.25.3</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
   </properties>
   <scm>
@@ -106,11 +106,11 @@
   </profiles>
   <repositories>
     <!-- sun repository -->
-    <repository>
+    <!--<repository>
       <id>java.net-Public</id>
       <name>Maven Java Net Snapshots and Releases</name>
       <url>https://maven.java.net/content/groups/public/</url>
-    </repository>
+    </repository>-->
     <!-- the localhost Maven Repository -->
     <repository>
       <id>EditLocalRepository</id>
