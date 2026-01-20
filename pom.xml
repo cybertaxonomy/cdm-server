@@ -525,7 +525,6 @@
           <verbose>true</verbose>
           <!-- Optional: configure as needed -->
           <gitFlowConfig>
-              <allowSnapshots>true</allowSnapshots>
               <productionBranch>master</productionBranch>
               <developmentBranch>develop</developmentBranch>
             </gitFlowConfig>
