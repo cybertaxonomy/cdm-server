@@ -790,7 +790,7 @@
     <dependency>
       <groupId>eu.etaxonomy</groupId>
       <artifactId>cdmlib-db</artifactId>
-      <version>5.5.1</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
