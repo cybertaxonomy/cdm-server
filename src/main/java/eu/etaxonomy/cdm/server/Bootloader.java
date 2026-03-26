@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +42,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -172,7 +171,7 @@ public final class Bootloader {
     }
 
     public void parseCommandOptions(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
+        CommandLineParser parser = new DefaultParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
 
         cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
@@ -227,6 +226,7 @@ public final class Bootloader {
         if (resource == null) {
             // no way finding the war file :-(
             System.exit(1);
+            return null;
         }
 
 
@@ -257,12 +257,10 @@ public final class Bootloader {
                     File warLibDir = new File(warLibDirAbsolutePath);
                     if(warLibDir.exists()) {
                         // get the cdmlib-services jar
-                        File [] files = warLibDir.listFiles(new FilenameFilter() {
-                            @Override
-                            public boolean accept(File dir, String name) {
+                        File [] files = warLibDir.listFiles((dir, name)->{
                                 return name.startsWith("cdmlib-services") && name.endsWith(".jar");
-                            }
-                        });
+                            });
+
                         if(files != null && files.length > 0) {
                             // get the relevant info from the jar manifest
                             JarFile jarFile = new JarFile(files[0]);
@@ -277,6 +275,7 @@ public final class Bootloader {
                             cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
                             logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
 
+                            jarFile.close();
                             if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
                                 throw new IllegalStateException("Invalid cdmlib-services manifest file");
                             }
