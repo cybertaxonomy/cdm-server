@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -171,7 +171,7 @@ public final class Bootloader {
     }
 
     public void parseCommandOptions(String[] args) throws ParseException {
-        CommandLineParser parser = new DefaultParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
+        CommandLineParser parser = new GnuParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
 
         cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
