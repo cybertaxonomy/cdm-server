@@ -171,7 +171,9 @@ public final class Bootloader {
     }
 
     public void parseCommandOptions(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();  //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
+        //TODO using DefaultParser instead currently still throws "org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -httpPort=8080"
+        //     it should be --httpPort=8080 which is POSIX-conform. But unclear where this arg is created
+        CommandLineParser parser = new GnuParser();
 
         cmdLine = parser.parse( CommandOptions.getOptions(), args );
 
