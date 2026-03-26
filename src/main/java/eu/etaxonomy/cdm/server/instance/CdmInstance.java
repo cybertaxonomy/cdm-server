@@ -98,13 +98,6 @@ public class CdmInstance implements Listener {
         return getConfiguration().getInstanceName();
     }
 
-    /**
-     * @param <T>
-     * @param webAppContext
-     * @param attributeName
-     * @param type
-     * @return
-     */
     @SuppressWarnings("unchecked")
     private <T> T getServletContextAttribute(WebAppContext webAppContext, String attributeName, Class<T> type) {
 
