@@ -364,9 +364,6 @@
           <packagingExcludes>
             cdm-webapp-*.war
           </packagingExcludes>
-        
-        
-        
           <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdm-webapp</artifactId> 
             <!- - version is set in dependency - -> <skip>true</skip> <!- - Do Not overlay 
             - -> </overlay> </overlays> -->
@@ -476,9 +473,6 @@
                 <filter>@</filter>
                 <assembly>
                   <descriptorRef>artifact</descriptorRef>
-                
-                
-                
                     <!--
                          1. The maven plugin copies the jar to the artifacts assembly location at:
                             ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
@@ -489,10 +483,6 @@
                      -->
                   </assembly>
               </build>
-            
-            
-            
-               
                <!-- TODO the run configuration if needed, see src/main/docker/production/README for examples -->
                <!-- 
                <run>
