@@ -8,7 +8,7 @@
   <name>CDM Community Standalone Server</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty-version>9.4.26.v20200117</jetty-version>
+    <jetty-version>10.0.26</jetty-version>
     <doclint>none</doclint>
     <log4j.version>2.25.3</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
@@ -681,20 +681,20 @@
       <artifactId>jetty-webapp</artifactId>
       <version>${jetty-version}</version>
     </dependency>
-    <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp-logging</artifactId>
-        <version>9.4.20.v20190813</version><!-- versioning independent of jetty core -->
-        <type>pom</type><!-- we only need the dependencies like jul-to-slf4j managed in this pom! -->
-        <!-- this is for log4j12 ,el-api
-         still need to check if this is really needed by jetty 
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-          </exclusion>
-        </exclusions> -->
-    </dependency>
+<!--    <dependency>-->
+<!--        <groupId>org.eclipse.jetty</groupId>-->
+<!--        <artifactId>jetty-webapp-logging</artifactId>-->
+<!--        <version>9.4.27</version> versioning independent of jetty core -->
+<!--        <type>pom</type> we only need the dependencies like jul-to-slf4j managed in this pom! -->
+<!--         this is for log4j12 ,el-api-->
+<!--         still need to check if this is really needed by jetty -->
+<!--        <exclusions>-->
+<!--          <exclusion>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>log4j-over-slf4j</artifactId>-->
+<!--          </exclusion>-->
+<!--        </exclusions> -->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
