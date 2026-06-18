@@ -30,7 +30,7 @@ import com.mchange.v2.c3p0.DataSources;
 
 public class CdmInstance implements Listener {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(CdmInstance.class);
 
     private WebAppContext webAppContext = null;
 
