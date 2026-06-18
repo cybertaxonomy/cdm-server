@@ -11,7 +11,7 @@
     <jetty-version>10.0.26</jetty-version>
     <doclint>none</doclint>
     <log4j.version>2.25.3</log4j.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.18</slf4j.version>
   </properties>
   <scm>
     <!-- see section Provider Configuration in https://maven.apache.org/scm/subversion.html 
@@ -318,7 +318,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.11.0</version>
         <executions>
           <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
           <execution>
@@ -660,6 +660,11 @@
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -681,20 +686,6 @@
       <artifactId>jetty-webapp</artifactId>
       <version>${jetty-version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--        <groupId>org.eclipse.jetty</groupId>-->
-<!--        <artifactId>jetty-webapp-logging</artifactId>-->
-<!--        <version>9.4.27</version> versioning independent of jetty core -->
-<!--        <type>pom</type> we only need the dependencies like jul-to-slf4j managed in this pom! -->
-<!--         this is for log4j12 ,el-api-->
-<!--         still need to check if this is really needed by jetty -->
-<!--        <exclusions>-->
-<!--          <exclusion>-->
-<!--            <groupId>org.slf4j</groupId>-->
-<!--            <artifactId>log4j-over-slf4j</artifactId>-->
-<!--          </exclusion>-->
-<!--        </exclusions> -->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
@@ -757,7 +748,10 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j2-impl</artifactId>
@@ -771,11 +765,11 @@
     </dependency>  -->
     <!-- move all log4j2 logging to the current slf4j implementor,
          !!! never use together with log4j-slf4j-impl on classpath => endless circle -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-to-slf4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.apache.logging.log4j</groupId>-->
+<!--      <artifactId>log4j-to-slf4j</artifactId>-->
+<!--      <version>${log4j.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>

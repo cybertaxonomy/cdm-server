@@ -66,7 +66,6 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import ch.qos.logback.core.CoreConstants;
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
@@ -436,19 +435,20 @@ public final class Bootloader {
 
         loggingConfigurator.configureServer();
 
-        server.addLifeCycleListener(instanceManager);
+        server.addEventListener(instanceManager);
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpPort);
         logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
 
-        org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-        classlist.addAfter(
+        org.eclipse.jetty.webapp.Configurations classlist =
+                org.eclipse.jetty.webapp.Configurations.setServerDefault(server);
+        classlist.add( //originally was addAfter in jetty 9
                 org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
                 org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
                 org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
                 );
-        classlist.addBefore(
+        classlist.add(  //originally was addBefore in jetty 9
                 org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
                 org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
 
@@ -772,13 +772,15 @@ public final class Bootloader {
         //
         // 1. disable the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
         //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
-        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
+
+        // removed for now to check if ch.qos.logback is still needed at all
+        //        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
         // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
-        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance);
+        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance, server);
 
         contexts.addHandler(contextWithCentralizedLogging);
         instance.setWebAppContext(cdmWebappContext);
-        cdmWebappContext.addLifeCycleListener(instance);
+        cdmWebappContext.addEventListener(instance);
         instance.setStatus(Status.stopped);
 
         return cdmWebappContext;
