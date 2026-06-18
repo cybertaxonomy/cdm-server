@@ -62,7 +62,8 @@ CDMSERVER_SHUTDOWN=30
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in /etc/default/jetty). Should contain a list of space separated directories.
 JDK_DIRS="
-    /usr/lib/jvm/java-8-openjdk-amd64
+    /usr/lib/jvm/java-11-openjdk-amd64 \
+    /usr/lib/jvm/java-8-openjdk-amd64 \
     /usr/lib/jvm/default-java \
     /usr/lib/jvm/java-gcj \
     /usr/lib/kaffe/ \
