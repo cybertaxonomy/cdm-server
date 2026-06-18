@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class Configuration {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Configuration.class);
 
 	private String instanceName;
 	private String password;

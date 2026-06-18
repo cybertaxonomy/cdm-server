@@ -28,7 +28,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
     private static final long serialVersionUID = -8173521573512154767L;
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(StartupQueue.class);
 
     private Set<CdmInstance> instancesStartingUp = new HashSet<>();
 

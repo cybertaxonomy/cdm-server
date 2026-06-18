@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class UnzipUtility {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(UnzipUtility.class);
 
     /**
      * Size of the buffer to read/write data

@@ -31,8 +31,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -53,7 +51,6 @@ import org.apache.tomcat.SimpleInstanceManager;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -62,7 +59,6 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -81,7 +77,7 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  */
 public final class Bootloader {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Bootloader.class);
 
     //private static final String DEFAULT_WARFILE = "target/";
 
@@ -99,7 +95,7 @@ public final class Bootloader {
 
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+//    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
 
     private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
@@ -458,7 +454,6 @@ public final class Bootloader {
             logger.info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mBeanContainer);
-            server.addBean(Log.getLog());
         }
 
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
@@ -520,7 +515,9 @@ public final class Bootloader {
                 "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                 ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
 
-        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
+        defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
+        //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
+
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
         // Context path
@@ -540,11 +537,11 @@ public final class Bootloader {
         loginService.setConfig(realmConfigFile.getPath());
         defaultWebappContext.getSecurityHandler().setLoginService(loginService);
 
-        // Set Classloader of Context to be sane (needed for JSTL)
+        // Set classloader of Context to be sane (needed for JSTL)
         // JSP requires a non-System classloader, this simply wraps the
         // embedded System classloader in a way that makes it suitable
         // for JSP to use
-        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
+//        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
         defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
         // JspStarter to solve java.lang.IllegalStateException: No org.apache.tomcat.InstanceManager set in ServletContext problems
         // when running not from within the IDE (see https://issues.apache.org/jira/browse/KNOX-1639)
@@ -608,18 +605,6 @@ public final class Bootloader {
             version = versionProperties.getProperty(CDM_WEBAPP_VERSION, version);
         }
         return version;
-    }
-
-    /**
-    * Ensure the jsp engine is initialized correctly
-    */
-    private List<ContainerInitializer> jspInitializers()
-    {
-        JettyJasperInitializer sci = new JettyJasperInitializer();
-        ContainerInitializer initializer = new ContainerInitializer(sci, null);
-        List<ContainerInitializer> initializers = new ArrayList<ContainerInitializer>();
-        initializers.add(initializer);
-        return initializers;
     }
 
     /**

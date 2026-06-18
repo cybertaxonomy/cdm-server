@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.server;
 
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 public class CommandOptions{
@@ -24,11 +23,10 @@ public class CommandOptions{
             "   -Dcom.sun.management.jmxremote.port=9999" );
     public static final Option WIN32SERVICE= new Option("win32service", "ONLY USED INTERNALLY - prepare for running as win32 service, the server will not be started automatically!");
 
-    @SuppressWarnings("static-access")
-    public static final Option WEBAPP = OptionBuilder
-            .withArgName("file")
+    public static final Option WEBAPP = Option.builder("webapp")
+            .argName("file")
             .hasArg()
-            .withDescription( "Defines the webapplication to run from, this either can be a compressed war or extracted file.\n" +
+            .desc( "Defines the webapplication to run from, this either can be a compressed war or extracted file.\n" +
                     "Defaults to the cdm-remote-webapp.war which is found in cdm-server/traget\n" +
                     "If this option is used extracting the war from the cdmserver jar file is omitted.\n \n" +
                     "DEVELOPMENT MODE:\n" +
@@ -42,39 +40,35 @@ public class CommandOptions{
                     "   - run from source: '{cdmlib-project-root}/cdm-webapp/src/main/webapp'\n" +
                     "     When running from source you must also set the webapp-classpath option: \n" +
                     "     -webappClasspath=${project_classpath:cdm-webapp} " )
-            .create("webapp");
+            .build();
 
-  @SuppressWarnings("static-access")
-    public static final Option WEBAPP_CLASSPATH = OptionBuilder
-            .withArgName("classpath")
+    public static final Option WEBAPP_CLASSPATH = Option.builder("webappClasspath")
+            .argName("classpath")
             .hasArg()
-            .withDescription("Sets the classpath for the cdm-webapp instance when running from source code,\n" +
+            .desc("Sets the classpath for the cdm-webapp instance when running from source code,\n" +
                     "e.g: ${project_classpath:cdm-webapp}\n" +
                     "See option -webapp")
-            .create("webappClasspath");
+            .build();
 
-    @SuppressWarnings("static-access")
-    public static final Option HTTP_PORT = OptionBuilder
-            .withArgName("httpPortNumber")
+    public static final Option HTTP_PORT = Option.builder("httpPort")
+            .argName("httpPortNumber")
             .hasArg()
-            .withDescription( "set the http listening port. Default is 8080")
-            .create("httpPort") ;
+            .desc( "set the http listening port. Default is 8080")
+            .build() ;
 
-    @SuppressWarnings("static-access")
-    public static final Option DATASOURCES_FILE = OptionBuilder
-        .withArgName("datasourcesfile")
+    public static final Option DATASOURCES_FILE = Option.builder("datasources")
+        .argName("datasourcesfile")
         .hasArg()
-        .withDescription( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
-        .create("datasources");
+        .desc( "use the specified datasources file. Default is {user.home}/.cdmLibrary/datasources.xml")
+        .build();
 
-    @SuppressWarnings("static-access")
-    public static final Option CONTEXT_PATH_PREFIX = OptionBuilder
-            .withArgName("url path element")
+    public static final Option CONTEXT_PATH_PREFIX = Option.builder("contextPathPrefix")
+            .argName("url path element")
             .hasArg()
-            .withDescription(
+            .desc(
                     "The url path element to use as prefix for all cdm-server instances.\n" +
                     "Per default the instances are running at the server root.")
-            .create("contextPathPrefix") ;
+            .build() ;
 
     public static final Option FORCE_SCHEMA_UPDATE = new Option( "forceSchemaUpdate",
             "USE THIS OPTION WITH CARE!"
