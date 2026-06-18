@@ -135,7 +135,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
     class StartupThread extends Thread{
 
-        private final Logger logger = LogManager.getLogger();
+        private final Logger logger = LogManager.getLogger(StartupThread.class);
 
         private CdmInstance instance;
 

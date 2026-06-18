@@ -30,7 +30,7 @@ import org.tanukisoftware.wrapper.WrapperManager;
  */
 public class CDMServerWrapperListener implements WrapperListener {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(CDMServerWrapperListener.class);
 
     private static Server mServer = null;
 

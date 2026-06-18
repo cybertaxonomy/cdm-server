@@ -29,7 +29,7 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
  */
 public class Win32Service extends AbstractLifeCycle implements Runnable {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Win32Service.class);
 
     private Server server;
 
