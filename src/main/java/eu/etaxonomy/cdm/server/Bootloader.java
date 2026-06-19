@@ -622,6 +622,7 @@ public final class Bootloader {
       public JspStarter (ServletContextHandler context) {
         this.sci = new JettyJasperInitializer();
         this.context = context;
+        this.context.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
         this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
       }
 
