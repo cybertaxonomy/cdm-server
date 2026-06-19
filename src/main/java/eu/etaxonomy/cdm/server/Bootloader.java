@@ -48,11 +48,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -62,13 +59,8 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
 import org.eclipse.jetty.webapp.ClassMatcher;
 import org.eclipse.jetty.webapp.Configurations;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebInfConfiguration;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
@@ -713,16 +705,17 @@ public final class Bootloader {
             instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
         setWebApp(instanceContext, getCdmRemoteWebAppFile());
-        instanceContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
-                new WebXmlConfiguration(),
-                new WebInfConfiguration(),
-                new MetaInfConfiguration(),
-                new FragmentConfiguration(),
-                new JettyWebXmlConfiguration(),
-                new AnnotationConfiguration(),
-                new PlusConfiguration(),
-                new EnvConfiguration()
-            });
+
+//        instanceContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
+//                new WebXmlConfiguration(),
+//                new WebInfConfiguration(),
+//                new MetaInfConfiguration(),
+//                new FragmentConfiguration(),
+//                new JettyWebXmlConfiguration(),
+//                new AnnotationConfiguration(),
+//                new PlusConfiguration(),
+//                new EnvConfiguration()
+//            });
 
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
