@@ -432,7 +432,7 @@ public final class Bootloader {
                 "org.eclipse.jetty.plus.webapp.PlusConfiguration",
                 "org.eclipse.jetty.plus.webapp.EnvConfiguration"
             );
-        server.addBean(configurations);
+//        server.addBean(configurations);
 
         jdk8MemleakFixServer();
 
