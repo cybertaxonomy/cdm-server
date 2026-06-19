@@ -48,7 +48,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
-import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.security.HashLoginService;
@@ -57,8 +56,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
+import org.eclipse.jetty.servlet.listener.ContainerInitializer;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -543,9 +541,12 @@ public final class Bootloader {
         // for JSP to use
 //        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
         defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
-        // JspStarter to solve java.lang.IllegalStateException: No org.apache.tomcat.InstanceManager set in ServletContext problems
-        // when running not from within the IDE (see https://issues.apache.org/jira/browse/KNOX-1639)
-        defaultWebappContext.addBean(new JspStarter(defaultWebappContext));
+
+        //force Apache Jasper to use platform independent compiler and modern scanner
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
+        defaultWebappContext.setAttribute("org.apache.tomcat.JarScanner", new org.apache.tomcat.util.scan.StandardJarScanner());
+        //registers the JSP-Initializer native via the official jetty interface
+        defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
         return defaultWebappContext;
     }
 
@@ -606,43 +607,6 @@ public final class Bootloader {
         }
         return version;
     }
-
-    /**
-     * JspStarter for embedded ServletContextHandlers
-     *
-     * This is added as a bean that is a jetty LifeCycle on the ServletContextHandler.
-     * This bean's doStart method will be called as the ServletContextHandler starts,
-     * and will call the ServletContainerInitializer for the jsp engine.
-     *
-     */
-    public static class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
-      JettyJasperInitializer sci;
-      ServletContextHandler context;
-
-      public JspStarter (ServletContextHandler context) {
-        this.sci = new JettyJasperInitializer();
-        this.context = context;
-        this.context.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
-        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
-      }
-
-      @Override
-      protected void doStart() throws Exception
-      {
-        ClassLoader old = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(context.getClassLoader());
-        try
-        {
-          sci.onStartup(null, context.getServletContext());
-          super.doStart();
-        }
-        finally
-        {
-          Thread.currentThread().setContextClassLoader(old);
-        }
-      }
-    }
-
 
     private void verifySystemResources() {
 
