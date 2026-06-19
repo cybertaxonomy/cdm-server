@@ -518,7 +518,6 @@ public final class Bootloader {
 
         defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
         //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
-//        defaultWebappContext.setClassLoader(Thread.currentThread().getContextClassLoader());
 
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
@@ -542,16 +541,16 @@ public final class Bootloader {
         // JSP requires a non-System classloader, this simply wraps the
         // embedded System classloader in a way that makes it suitable
         // for JSP to use
-//        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
         defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
 
+        //JSP support
         //force Apache Jasper to use platform independent compiler and modern scanner
         defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
         defaultWebappContext.setAttribute("org.apache.tomcat.JarScanner", new org.apache.tomcat.util.scan.StandardJarScanner());
         //registers the JSP-Initializer native via the official jetty interface
         defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
 
-        WebAppContext.addSystemClasses(server, "-org.eclipse.jetty.jndi.");
+//        WebAppContext.addSystemClasses(server, "-org.eclipse.jetty.jndi.");
         return defaultWebappContext;
     }
 
