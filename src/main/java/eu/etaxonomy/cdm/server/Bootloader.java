@@ -435,6 +435,8 @@ public final class Bootloader {
             cdmRemoteWebAppFile = extractWar(CDM_WEBAPP + "-" + version, true);
             defaultWebAppFile = extractWar(DEFAULT_WEBAPP_WAR_NAME, false);
         }
+        logger.info("cdmRemoteWebAppFile: " + cdmRemoteWebAppFile.getAbsolutePath());
+        logger.info("defaultWebAppFile: " + defaultWebAppFile.getAbsolutePath());
 
 
         // HTTP Port
@@ -728,6 +730,9 @@ public final class Bootloader {
         instanceContext.setContextPath(constructContextPath(conf));
         logger.info("contextPath: " + instanceContext.getContextPath());
 
+        // set single base resource
+        instanceContext.setBaseResource(Resource.newResource(cdmRemoteWebAppFile));
+
         //temp dir
         File instanceTempDir = new File(CDM_WEBAPP_TEMP_FOLDER + instanceContext.getContextPath().replaceAll("/", "_"));
         if (!instanceTempDir.exists()) {
@@ -735,17 +740,9 @@ public final class Bootloader {
         }
         instanceContext.setTempDirectory(instanceTempDir);
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
-        // since this behavior can cause conflicts during parallel start up  of instances.
+        // since this behavior can cause conflicts during parallel start up of instances.
+        // NOTE: removed in 2026-06 when moving to jetty 10
         instanceContext.setPersistTempDirectory(false);
-
-        //TODO needed?
-//        if(!instance.bindJndiDataSource()){
-//            // a problem with the datasource occurred skip this webapp
-//            cdmWebappContext = null;
-//            logger.error("a problem with the datasource occurred -> skipping /" + conf.getInstanceName());
-//            instance.setStatus(Status.error);
-//            return cdmWebappContext;
-//        }
 
         instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
         instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
@@ -848,10 +845,10 @@ public final class Bootloader {
     private void setWebApp(WebAppContext context, File webApplicationResource) {
         if(webApplicationResource.isDirectory()){
             context.setResourceBase(webApplicationResource.getAbsolutePath());
-            logger.debug("setting directory " + webApplicationResource.getAbsolutePath() + " as webapplication");
+            logger.info("setting directory " + webApplicationResource.getAbsolutePath() + " as webapplication");
         } else {
             context.setWar(webApplicationResource.getAbsolutePath());
-            logger.debug("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
+            logger.info("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
         }
     }
 
