@@ -689,6 +689,13 @@ public final class Bootloader {
 
         instanceContext.setParentLoaderPriority(true);
 
+        //set temp dir
+        File instanceTempDir = new File(System.getProperty("java.io.tmpdir"), "jetty-" + instanceContext.getContextPath().replaceAll("/", "_"));
+        if (!instanceTempDir.exists()) {
+            instanceTempDir.mkdirs();
+        }
+        instanceContext.setTempDirectory(instanceTempDir);
+
         instanceContext.setContextPath(constructContextPath(conf));
         logger.info("contextPath: " + instanceContext.getContextPath());
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
