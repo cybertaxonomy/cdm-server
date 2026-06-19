@@ -427,13 +427,7 @@ public final class Bootloader {
         server = new Server();
 
         Configurations configurations = Configurations.getServerDefault(server);
-
         configurations.add(
-                "org.eclipse.jetty.webapp.WebXmlConfiguration",
-                "org.eclipse.jetty.webapp.WebInfConfiguration",
-                "org.eclipse.jetty.webapp.MetaInfConfiguration",
-                "org.eclipse.jetty.webapp.FragmentConfiguration",
-                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
                 "org.eclipse.jetty.annotations.AnnotationConfiguration",
                 "org.eclipse.jetty.plus.webapp.PlusConfiguration",
                 "org.eclipse.jetty.plus.webapp.EnvConfiguration"
@@ -450,18 +444,6 @@ public final class Bootloader {
         connector.setPort(httpPort);
         logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
-
-//        org.eclipse.jetty.webapp.Configurations classlist =
-//                org.eclipse.jetty.webapp.Configurations.setServerDefault(server);
-//        classlist.add( //originally was addAfter in jetty 9
-//                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
-//                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
-//                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
-//                );
-//        classlist.add(  //originally was addBefore in jetty 9
-//                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
-//                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
-
 
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
