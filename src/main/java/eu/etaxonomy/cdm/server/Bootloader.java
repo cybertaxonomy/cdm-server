@@ -718,8 +718,7 @@ public final class Bootloader {
         instanceContext.setTempDirectory(instanceTempDir);
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
         // since this behavior can cause conflicts during parallel start up of instances.
-        // NOTE: removed in 2026-06 when moving to jetty 10
-        instanceContext.setPersistTempDirectory(false);
+        instanceContext.setPersistTempDirectory(true);
 
         instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
         instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
