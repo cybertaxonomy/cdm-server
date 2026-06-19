@@ -428,11 +428,16 @@ public final class Bootloader {
 
         Configurations configurations = Configurations.getServerDefault(server);
         configurations.add(
+                "org.eclipse.jetty.webapp.WebXmlConfiguration",
+                "org.eclipse.jetty.webapp.WebInfConfiguration",
+                "org.eclipse.jetty.webapp.MetaInfConfiguration",
+                "org.eclipse.jetty.webapp.FragmentConfiguration",
+                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
                 "org.eclipse.jetty.annotations.AnnotationConfiguration",
                 "org.eclipse.jetty.plus.webapp.PlusConfiguration",
                 "org.eclipse.jetty.plus.webapp.EnvConfiguration"
             );
-//        server.addBean(configurations);
+        server.addBean(configurations);
 
         jdk8MemleakFixServer();
 
