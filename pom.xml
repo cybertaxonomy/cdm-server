@@ -378,36 +378,60 @@
         </executions>
       </plugin>
       <plugin>
-        <!-- Assemble the runnable server jar test with: mvn assembly:single -->
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/main/assembly/assembly.xml</descriptor>
-          </descriptors>
-          <archive>
-            <manifest>
-              <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-            <manifestEntries>
-                <Multi-Release>true</Multi-Release>
-            </manifestEntries>
-          </archive>
-        </configuration>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.2</version>
         <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
+            <execution>
+                <id>make-shade</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+                <configuration>
+                    <!-- Replaces the main project artifact directly (equivalent to appendAssemblyId=false) -->
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    
+                    <!-- Prevents security and signature errors caused by signed third-party dependency JARs -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    
+                    <transformers>
+                        <!-- Configures the MANIFEST.MF file with your Bootloader main class and Multi-Release support -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>eu.etaxonomy.cdm.server.Bootloader</mainClass>
+                            <manifestEntries>
+                                <Multi-Release>true</Multi-Release>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Specification-Title>${project.name}</Specification-Title>
+                                <Specification-Version>${project.version}</Specification-Version>
+                            </manifestEntries>
+                        </transformer>
+                        
+                        <!-- Appends and merges identical Spring configuration files instead of overwriting them -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.handlers</resource>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.schemas</resource>
+                        </transformer>
+                        
+                        <!-- Relocates and merges Service Provider Interface (SPI) files under META-INF/services/ -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
+                </configuration>
+            </execution>
         </executions>
-      </plugin>
+    </plugin>
       <plugin>
         <!-- ====== INSTALL ====== -->
         <!-- Build a Debian package -->
