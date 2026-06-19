@@ -741,12 +741,11 @@ public final class Bootloader {
         //
         // for details, please see eu.etaxonomy.cdm.server.logging.LoggingConfigurator
         //
-        // 1. disable the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
-        //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
-
-        // removed for now to check if ch.qos.logback is still needed at all
-        //        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
-        // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
+        // The following line seems to be not necessary anymore. It was added was solving
+        //      https://dev.e-taxonomy.eu/redmine/issues/9236
+        // cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
+        //
+        //wrap the context with the InstanceLogWrapper and modify class path patterns
         Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(instanceContext, instance, server);
 
         contexts.addHandler(contextWithCentralizedLogging);
@@ -810,10 +809,6 @@ public final class Bootloader {
             context.setWar(webApplicationResource.getAbsolutePath());
             logger.debug("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
         }
-
-        //To avoid bug that webdefault.xml included in jetty still contains "IntrospectorCleaner"
-        //This forces jetty to use the hardcoded default values.
-//        context.setDefaultsDescriptor(null);
     }
 
     private void updateServerRunMode() {
