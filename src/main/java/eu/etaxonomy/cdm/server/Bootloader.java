@@ -707,7 +707,8 @@ public final class Bootloader {
         // remove exclusion of server classes / use the following server classes
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
-                "-org.eclipse.jetty.servlet.DefaultServlet"
+                "-org.eclipse.jetty.servlet.DefaultServlet",
+                "-org.eclipse.jetty.servlet.NoJspServlet"
             ));
 
         if( isRunningFromSource ){
