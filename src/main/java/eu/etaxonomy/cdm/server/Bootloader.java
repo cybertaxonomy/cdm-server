@@ -95,7 +95,7 @@ public final class Bootloader {
 
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
     private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-//    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
 
     private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
@@ -695,7 +695,9 @@ public final class Bootloader {
         instanceContext.setParentLoaderPriority(true);
 
         //set temp dir
-        File instanceTempDir = new File(System.getProperty("java.io.tmpdir"), "jetty-" + instanceContext.getContextPath().replaceAll("/", "_"));
+        //File instanceTempDir = new File(System.getProperty("java.io.tmpdir"), "jetty-" + instanceContext.getContextPath().replaceAll("/", "_"));
+        File instanceTempDir = CDM_WEBAPP_TEMP_FOLDER;
+
         if (!instanceTempDir.exists()) {
             instanceTempDir.mkdirs();
         }
