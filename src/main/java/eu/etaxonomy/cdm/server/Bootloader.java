@@ -58,6 +58,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.webapp.Configurations;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.MetaInfConfiguration;
@@ -430,6 +431,17 @@ public final class Bootloader {
 //        server = new Server(threadPool);
         server = new Server();
 
+        Configurations configurations = Configurations.getServerDefault(server);
+
+        configurations.add(
+                "org.eclipse.jetty.webapp.WebXmlConfiguration",
+                "org.eclipse.jetty.webapp.WebInfConfiguration",
+                "org.eclipse.jetty.webapp.MetaInfConfiguration",
+                "org.eclipse.jetty.webapp.FragmentConfiguration",
+                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+                "org.eclipse.jetty.annotations.AnnotationConfiguration"
+            );
+
         jdk8MemleakFixServer();
 
 
@@ -506,14 +518,6 @@ public final class Bootloader {
 
         WebAppContext defaultWebappContext = new WebAppContext();
         setWebApp(defaultWebappContext, defaultWebAppFile);
-
-        defaultWebappContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
-                new WebXmlConfiguration(),
-                new WebInfConfiguration(),
-                new MetaInfConfiguration(),
-                new FragmentConfiguration(),
-                new AnnotationConfiguration()
-            });
 
         // JSP
         //
@@ -688,7 +692,6 @@ public final class Bootloader {
         // since this behaviour can cause conflicts during parallel start up  of instances.
         instanceContext.setPersistTempDirectory(true);
 
-
 //        if(!instance.bindJndiDataSource()){
 //            // a problem with the datasource occurred skip this webapp
 //            cdmWebappContext = null;
@@ -711,7 +714,6 @@ public final class Bootloader {
                 new JettyWebXmlConfiguration(),
                 new AnnotationConfiguration()
             });
-
 
         if( isRunningFromSource ){
 
