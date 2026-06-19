@@ -30,6 +30,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -55,6 +57,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.ClassMatcher;
 import org.eclipse.jetty.webapp.Configurations;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
@@ -180,10 +183,11 @@ public final class Bootloader {
     }
 
     private File extractWar(String warName, boolean unpack) throws IOException {
+
         String warFileName = warName + WAR_POSTFIX;
         URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(warFileName);
 
-        //fallback for IDE (maven target)
+        // 1. Fallback for the Maven development environment
         if (resourceUrl == null) {
             File mavenWar = new File("target" + File.separator + warFileName);
             if (mavenWar.canRead()) {
@@ -197,20 +201,25 @@ public final class Bootloader {
             return null;
         }
 
-        //Use jetty Resource-API (does copying and caching into the temp-folder)
-        org.eclipse.jetty.util.resource.Resource warResource = org.eclipse.jetty.util.resource.Resource.newResource(resourceUrl);
+        // 2. Define target file path in the temp directory
+        File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
+        logger.info("Extracting " + resourceUrl + " to " + extractedWarFile + " ...");
 
-        if (!unpack) {
-            //returns the copied and cached .war file
-            return warResource.getFile();
+        // 3. Copy file using modern Java NIO API (fully replaces the old writeStreamTo method)
+        try (InputStream in = resourceUrl.openStream()) {
+            Files.copy(in, extractedWarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // 3. Unpack via jetty (automatically creates an "exploded" folder in temp folder
-        // Jetty cares to make it writable and valid
-        org.eclipse.jetty.util.resource.Resource explodedResource = warResource.addPath("");
-        File explodedDir = explodedResource.getFile();
+        if (!unpack) {
+            // Returns the physical .war file to prevent NullPointerExceptions in follow-up code
+            return extractedWarFile;
+        }
 
-        // OPTIONAL: Manifest-Check (keep only, if cdmlibServicesVersion is definitely needed in code)
+        // 4. Extract using Jetty 10 to obtain an exploded webapp directory
+        Resource warResource = Resource.newResource(extractedWarFile.toURI().toURL());
+        File explodedDir = warResource.getFile();
+
+        // Retrieve mandatory manifest version tags for the application
         tryToReadManifestInfo(explodedDir);
 
         return explodedDir;
