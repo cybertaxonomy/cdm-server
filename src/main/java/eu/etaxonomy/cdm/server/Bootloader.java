@@ -674,6 +674,8 @@ public final class Bootloader {
     public WebAppContext addCdmInstanceContext(CdmInstance instance) throws IOException {
 
         Configuration conf = instance.getConfiguration();
+
+        //check
         if(!instance.isEnabled()){
             logger.info(conf.getInstanceName() + " is disabled, possibly due to JVM memory limitations");
             return null;
@@ -683,10 +685,13 @@ public final class Bootloader {
             return null;
         }
 
+        //initialize
         instance.setStatus(Status.initializing);
         logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
         WebAppContext instanceContext = new WebAppContext();
 
+        //parent loader priority
+        //allow instance classloader to use server classes
         instanceContext.setParentLoaderPriority(true);
 
         //set temp dir
@@ -715,6 +720,7 @@ public final class Bootloader {
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
             instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
+
         setWebApp(instanceContext, getCdmRemoteWebAppFile());
 
         instanceContext.addServerClassMatcher(new ClassMatcher(
