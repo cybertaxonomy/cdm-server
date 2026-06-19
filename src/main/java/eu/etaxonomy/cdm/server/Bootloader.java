@@ -438,6 +438,7 @@ public final class Bootloader {
                 "org.eclipse.jetty.plus.webapp.PlusConfiguration",
                 "org.eclipse.jetty.plus.webapp.EnvConfiguration"
             );
+        server.addBean(configurations);
 
         jdk8MemleakFixServer();
 
@@ -530,6 +531,7 @@ public final class Bootloader {
 
         defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
         //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
+        defaultWebappContext.setClassLoader(Thread.currentThread().getContextClassLoader());
 
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
@@ -685,6 +687,8 @@ public final class Bootloader {
         logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
         WebAppContext instanceContext = new WebAppContext();
 
+        instanceContext.setParentLoaderPriority(true);
+
         instanceContext.setContextPath(constructContextPath(conf));
         logger.info("contextPath: " + instanceContext.getContextPath());
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
@@ -708,8 +712,8 @@ public final class Bootloader {
 
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
-                "-org.eclipse.jetty.jndi.",
-                "-org.eclipse.jetty.jsp."
+                "-org.eclipse.jetty.jndi."
+               // ,"-org.eclipse.jetty.jsp."
             ));
 //        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
 
