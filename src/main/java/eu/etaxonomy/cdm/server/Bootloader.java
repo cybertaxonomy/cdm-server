@@ -518,12 +518,11 @@ public final class Bootloader {
 
         defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
         //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
-        defaultWebappContext.setClassLoader(Thread.currentThread().getContextClassLoader());
+//        defaultWebappContext.setClassLoader(Thread.currentThread().getContextClassLoader());
 
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
         // Context path
-        //
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
         defaultWebappContext.setTempDirectory(new File(DEFAULT_WEBAPP_TEMP_FOLDER));
