@@ -381,7 +381,7 @@
         <!-- Assemble the runnable server jar test with: mvn assembly:single -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.8.0</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptors>
@@ -393,6 +393,9 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
+            <manifestEntries>
+                <Multi-Release>true</Multi-Release>
+            </manifestEntries>
           </archive>
         </configuration>
         <executions>
