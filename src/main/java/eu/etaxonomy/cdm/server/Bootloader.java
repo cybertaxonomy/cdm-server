@@ -708,9 +708,7 @@ public final class Bootloader {
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
                 "-org.eclipse.jetty.servlet.DefaultServlet",
-                "-org.eclipse.jetty.servlet.NoJspServlet"
             ));
-//        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
 
         if( isRunningFromSource ){
 
