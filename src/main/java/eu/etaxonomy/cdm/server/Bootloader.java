@@ -152,7 +152,7 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
-    public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
+    private int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
         int answer = 0;
@@ -844,8 +844,14 @@ public final class Bootloader {
         isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
 
-    public Server getServer() {
-        return server;
+    public void stopServer() throws Exception {
+        logger.info("stopping " + APPLICATION_NAME + " ...");
+        server.stop();
+    }
+
+    public void destroyServer() throws Exception {
+        logger.info("destroying " + APPLICATION_NAME + " ...");
+        server.destroy();
     }
 
     public ContextHandler getContextFor(Configuration conf) {
