@@ -480,7 +480,7 @@ public final class Bootloader {
             server.addBean(win32Service);
         }
 
-        WebAppContext defaultWebappContext = createDefaultWebappContext(server);
+        WebAppContext defaultWebappContext = createDefaultWebappContext();
         contexts.addHandler(defaultWebappContext);
 
         logger.info("setting contexts ...");
