@@ -815,7 +815,7 @@ public final class Bootloader {
 
         //To avoid bug that webdefault.xml included in jetty still contains "IntrospectorCleaner"
         //This forces jetty to use the hardcoded default values.
-        context.setDefaultsDescriptor(null);
+//        context.setDefaultsDescriptor(null);
     }
 
     private void updateServerRunMode() {
