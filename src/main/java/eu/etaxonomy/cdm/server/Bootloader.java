@@ -51,6 +51,7 @@ import org.apache.tomcat.SimpleInstanceManager;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
@@ -59,6 +60,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.webapp.ClassMatcher;
 import org.eclipse.jetty.webapp.Configurations;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
@@ -441,7 +443,8 @@ public final class Bootloader {
                 "org.eclipse.jetty.webapp.FragmentConfiguration",
                 "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
                 "org.eclipse.jetty.annotations.AnnotationConfiguration",
-                "org.eclipse.jetty.plus.webapp.PlusConfiguration"
+                "org.eclipse.jetty.plus.webapp.PlusConfiguration",
+                "org.eclipse.jetty.plus.webapp.EnvConfiguration"
             );
 
         jdk8MemleakFixServer();
@@ -568,7 +571,7 @@ public final class Bootloader {
         //registers the JSP-Initializer native via the official jetty interface
         defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
 
-        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
+        WebAppContext.addSystemClasses(server, "-org.eclipse.jetty.jndi.");
         return defaultWebappContext;
     }
 
@@ -717,10 +720,15 @@ public final class Bootloader {
                 new FragmentConfiguration(),
                 new JettyWebXmlConfiguration(),
                 new AnnotationConfiguration(),
-                new PlusConfiguration()
+                new PlusConfiguration(),
+                new EnvConfiguration()
             });
 
-        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
+        instanceContext.addServerClassMatcher(new ClassMatcher(
+                "-org.eclipse.jetty.servlet.listener.",
+                "-org.eclipse.jetty.jndi."
+            ));
+//        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
 
         if( isRunningFromSource ){
 
