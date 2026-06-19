@@ -674,13 +674,8 @@ public final class Bootloader {
         logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
         WebAppContext instanceContext = new WebAppContext();
 
-        //parent loader priority
-        //allow instance classloader to use server classes
-//        instanceContext.setParentLoaderPriority(true);
-
         instanceContext.setContextPath(constructContextPath(conf));
         logger.info("contextPath: " + instanceContext.getContextPath());
-
 
         //temp dir
         File instanceTempDir = new File(CDM_WEBAPP_TEMP_FOLDER + instanceContext.getContextPath().replaceAll("/", "_"));
@@ -711,7 +706,6 @@ public final class Bootloader {
 
         // remove exclusion of server classes
         instanceContext.addServerClassMatcher(new ClassMatcher(
-                "-org.eclipse.jetty.servlet.listener.",
                 "-org.eclipse.jetty.jndi.",
                 "-org.eclipse.jetty.servlet.DefaultServlet",
                 "-org.eclipse.jetty.servlet.NoJspServlet"
