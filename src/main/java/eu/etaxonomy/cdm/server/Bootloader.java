@@ -48,6 +48,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.security.HashLoginService;
@@ -57,8 +58,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
@@ -419,7 +424,7 @@ public final class Bootloader {
 
         // in jetty 9 currently each connector uses
         // 2 threads -  1 to select for IO activity and 1 to accept new connections.
-        // there fore we need to add 2 to the number of cores
+        // therefore we need to add 2 to the number of cores
 //        QueuedThreadPool threadPool = new QueuedThreadPool(JvmManager.availableProcessors() +  + 200);
 //        server = new Server(threadPool);
         server = new Server();
@@ -500,6 +505,14 @@ public final class Bootloader {
 
         WebAppContext defaultWebappContext = new WebAppContext();
         setWebApp(defaultWebappContext, defaultWebAppFile);
+
+        defaultWebappContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
+                new WebXmlConfiguration(),
+                new WebInfConfiguration(),
+                new MetaInfConfiguration(),
+                new FragmentConfiguration(),
+                new AnnotationConfiguration()
+            });
 
         // JSP
         //
@@ -780,7 +793,6 @@ public final class Bootloader {
      * @param context
      * @param webApplicationResource the resource can either be a directory containing
      * a Java web application or *.war file.
-     *
      */
     private void setWebApp(WebAppContext context, File webApplicationResource) {
         if(webApplicationResource.isDirectory()){
