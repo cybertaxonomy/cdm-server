@@ -59,6 +59,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -702,6 +703,15 @@ public final class Bootloader {
             cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
         setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
+        cdmWebappContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
+                new WebXmlConfiguration(),
+                new WebInfConfiguration(),
+                new MetaInfConfiguration(),
+                new FragmentConfiguration(),
+                new JettyWebXmlConfiguration(),
+                new AnnotationConfiguration()
+            });
+
 
         if( isRunningFromSource ){
 
