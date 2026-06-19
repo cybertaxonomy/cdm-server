@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -504,9 +503,6 @@ public final class Bootloader {
             );
         server.addBean(configurations);
 
-        jdk8MemleakFixServer();
-
-
         loggingConfigurator.configureServer();
 
         server.addEventListener(instanceManager);
@@ -616,25 +612,6 @@ public final class Bootloader {
         defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
 
         return defaultWebappContext;
-    }
-
-    /**
-     * jdk8 memleak workaround: disable url caching
-     *  see https://dev.e-taxonomy.eu/redmine/issues/5048
-     *
-     * @throws IOException
-     * @throws MalformedURLException
-     */
-    private void jdk8MemleakFixServer() throws IOException, MalformedURLException {
-        String javaVersion = System.getProperty("java.version");
-        if(javaVersion.startsWith("1.8")){
-            logger.info("jdk8 memory leak fix: jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
-            org.eclipse.jetty.util.resource.Resource.setDefaultUseCaches(false);
-            File tmpio = new File(System.getProperty("java.io.tmpdir"));
-            tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
-        } else {
-            logger.info("jdk8 memory leak fix: unaffected jdk " + javaVersion + " detected");
-        }
     }
 
     /**
