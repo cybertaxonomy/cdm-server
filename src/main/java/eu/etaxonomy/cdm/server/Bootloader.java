@@ -704,10 +704,10 @@ public final class Bootloader {
 
         setWebApp(instanceContext, getCdmRemoteWebAppFile());
 
-        // remove exclusion of server classes
+        // remove exclusion of server classes / use the following server classes
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
-                "-org.eclipse.jetty.servlet.DefaultServlet",
+                "-org.eclipse.jetty.servlet.DefaultServlet"
             ));
 
         if( isRunningFromSource ){
