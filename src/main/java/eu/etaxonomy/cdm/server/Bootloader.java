@@ -22,7 +22,6 @@ import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
@@ -181,112 +179,169 @@ public final class Bootloader {
         }
     }
 
-    /**
-     * Finds the named war file either in the resources known to the class loader
-     * or in a target folder if the bootloader is started from within a maven project.
-     * Once found the war file is copied to the temp folder defined by {@link TMP_PATH}.
-     *
-     * The war file can optionally be unpacked.
-     *
-     * @param warName
-     * @param unpack
-     *  unzip the war file after extraction
-     * @return
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    private File extractWar(String warName, boolean unpack) throws IOException, FileNotFoundException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private File extractWar(String warName, boolean unpack) throws IOException {
         String warFileName = warName + WAR_POSTFIX;
+        URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(warFileName);
 
-        // 1. find in classpath
-        URL resource = classLoader.getResource(warFileName);
-        if (resource == null) {
-            logger.error("Could not find the " + warFileName + " on classpath!");
-
-            File pomxml = new File("pom.xml");
-            if(pomxml.exists()){
-                logger.info("will try find the war in target folder of maven project");
-                // 2. try finding in target folder of maven project
-                File warFile = new File("target" + File.separator + warFileName);
-                logger.debug("looking for war file at " + warFile.getAbsolutePath());
-                if (warFile.canRead()) {
-                    resource = warFile.toURI().toURL();
-                    logger.info("Success! Using war file from " + resource.toString());
-                } else {
-                    logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
-                }
+        //fallback for IDE (maven target)
+        if (resourceUrl == null) {
+            File mavenWar = new File("target" + File.separator + warFileName);
+            if (mavenWar.canRead()) {
+                resourceUrl = mavenWar.toURI().toURL();
             }
         }
 
-
-        if (resource == null) {
-            // no way finding the war file :-(
+        if (resourceUrl == null) {
+            logger.error("Could not find " + warFileName + " on classpath or target folder!");
             System.exit(1);
             return null;
         }
 
+        //Use jetty Resource-API (does copying and caching into the temp-folder)
+        org.eclipse.jetty.util.resource.Resource warResource = org.eclipse.jetty.util.resource.Resource.newResource(resourceUrl);
 
-        File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
-        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
+        if (!unpack) {
+            //returns the copied and cached .war file
+            return warResource.getFile();
+        }
 
-        writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
+        // 3. Unpack via jetty (automatically creates an "exploded" folder in temp folder
+        // Jetty cares to make it writable and valid
+        org.eclipse.jetty.util.resource.Resource explodedResource = warResource.addPath("");
+        File explodedDir = explodedResource.getFile();
 
-        if(!unpack) {
-            // return the war file
-            return extractedWarFile;
-        } else {
-            // unpack the archive
-            File explodedWebApp = null;
-            try {
-                logger.info("Unpacking " + extractedWarFile);
-                explodedWebApp  = unzip(extractedWarFile);
+        // OPTIONAL: Manifest-Check (keep only, if cdmlibServicesVersion is definitely needed in code)
+        tryToReadManifestInfo(explodedDir);
 
-                // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
-                // manifest file in the cdmlib services jar
-                if(explodedWebApp != null && explodedWebApp.isDirectory()) {
-                    // generate the webapp lib dir path
-                    String warLibDirAbsolutePath = explodedWebApp.getAbsolutePath() +
-                            File.separator +
-                            "WEB-INF" +
-                            File.separator +
-                            "lib";
-                    File warLibDir = new File(warLibDirAbsolutePath);
-                    if(warLibDir.exists()) {
-                        // get the cdmlib-services jar
-                        File [] files = warLibDir.listFiles((dir, name)->{
-                                return name.startsWith("cdmlib-services") && name.endsWith(".jar");
-                            });
+        return explodedDir;
+    }
 
-                        if(files != null && files.length > 0) {
-                            // get the relevant info from the jar manifest
-                            JarFile jarFile = new JarFile(files[0]);
-                            Manifest manifest = jarFile.getManifest();
-                            Attributes attributes = manifest.getMainAttributes();
-                            // from the OSGI spec the LastModified value is " the number of milliseconds
-                            // since midnight Jan. 1, 1970 UTC with the condition that a change must
-                            // always result in a higher value than the previous last modified time
-                            // of any bundle"
-                            cdmlibServicesVersion = attributes.getValue("Bundle-Version");
-                            logger.info("cdmlib-services version : " + cdmlibServicesVersion);
-                            cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
-                            logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
-
-                            jarFile.close();
-                            if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
-                                throw new IllegalStateException("Invalid cdmlib-services manifest file");
-                            }
-                        } else {
-                            throw new IllegalStateException("cdmlib-services jar not found ");
-                        }
+    /** helper method, to keep the confusing Manifest code**/
+    private void tryToReadManifestInfo(File explodedDir) {
+        try {
+            File warLibDir = new File(explodedDir, "WEB-INF" + File.separator + "lib");
+            if (warLibDir.exists()) {
+                File[] files = warLibDir.listFiles((dir, name) -> name.startsWith("cdmlib-services") && name.endsWith(".jar"));
+                if (files != null && files.length > 0) {
+                    try (JarFile jarFile = new JarFile(files[0])) {
+                        Attributes attrs = jarFile.getManifest().getMainAttributes();
+                        cdmlibServicesVersion = attrs.getValue("Bundle-Version");
+                        cdmlibServicesLastModified = attrs.getValue("Bnd-LastModified");
+                        logger.info("cdmlib-services version : " + cdmlibServicesVersion);
                     }
                 }
-            } catch (IOException e) {
-                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
             }
-            return explodedWebApp;
+        } catch (Exception e) {
+            logger.warn("Could not read manifest info, skipping...", e);
         }
     }
+
+//    /**
+//     * Finds the named war file either in the resources known to the class loader
+//     * or in a target folder if the bootloader is started from within a maven project.
+//     * Once found the war file is copied to the temp folder defined by {@link TMP_PATH}.
+//     *
+//     * The war file can optionally be unpacked.
+//     *
+//     * @param warName
+//     * @param unpack
+//     *  unzip the war file after extraction
+//     * @return
+//     * @throws IOException
+//     * @throws FileNotFoundException
+//     */
+//    private File extractWar(String warName, boolean unpack) throws IOException, FileNotFoundException {
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        String warFileName = warName + WAR_POSTFIX;
+//
+//        // 1. find in classpath
+//        URL resource = classLoader.getResource(warFileName);
+//        if (resource == null) {
+//            logger.error("Could not find the " + warFileName + " on classpath!");
+//
+//            File pomxml = new File("pom.xml");
+//            if(pomxml.exists()){
+//                logger.info("will try find the war in target folder of maven project");
+//                // 2. try finding in target folder of maven project
+//                File warFile = new File("target" + File.separator + warFileName);
+//                logger.debug("looking for war file at " + warFile.getAbsolutePath());
+//                if (warFile.canRead()) {
+//                    resource = warFile.toURI().toURL();
+//                    logger.info("Success! Using war file from " + resource.toString());
+//                } else {
+//                    logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
+//                }
+//            }
+//        }
+//
+//
+//        if (resource == null) {
+//            // no way finding the war file :-(
+//            System.exit(1);
+//            return null;
+//        }
+//
+//
+//        File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
+//        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
+//
+//        writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
+//
+//        if(!unpack) {
+//            // return the war file
+//            return extractedWarFile;
+//        } else {
+//            // unpack the archive
+//            File explodedWebApp = null;
+//            try {
+//                logger.info("Unpacking " + extractedWarFile);
+//                explodedWebApp  = unzip(extractedWarFile);
+//
+//                // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
+//                // manifest file in the cdmlib services jar
+//                if(explodedWebApp != null && explodedWebApp.isDirectory()) {
+//                    // generate the webapp lib dir path
+//                    String warLibDirAbsolutePath = explodedWebApp.getAbsolutePath() +
+//                            File.separator +
+//                            "WEB-INF" +
+//                            File.separator +
+//                            "lib";
+//                    File warLibDir = new File(warLibDirAbsolutePath);
+//                    if(warLibDir.exists()) {
+//                        // get the cdmlib-services jar
+//                        File [] files = warLibDir.listFiles((dir, name)->{
+//                                return name.startsWith("cdmlib-services") && name.endsWith(".jar");
+//                            });
+//
+//                        if(files != null && files.length > 0) {
+//                            // get the relevant info from the jar manifest
+//                            JarFile jarFile = new JarFile(files[0]);
+//                            Manifest manifest = jarFile.getManifest();
+//                            Attributes attributes = manifest.getMainAttributes();
+//                            // from the OSGI spec the LastModified value is " the number of milliseconds
+//                            // since midnight Jan. 1, 1970 UTC with the condition that a change must
+//                            // always result in a higher value than the previous last modified time
+//                            // of any bundle"
+//                            cdmlibServicesVersion = attributes.getValue("Bundle-Version");
+//                            logger.info("cdmlib-services version : " + cdmlibServicesVersion);
+//                            cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
+//                            logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+//
+//                            jarFile.close();
+//                            if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
+//                                throw new IllegalStateException("Invalid cdmlib-services manifest file");
+//                            }
+//                        } else {
+//                            throw new IllegalStateException("cdmlib-services jar not found ");
+//                        }
+//                    }
+//                }
+//            } catch (IOException e) {
+//                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
+//            }
+//            return explodedWebApp;
+//        }
+//    }
 
 
     public String getCdmlibServicesVersion() {
