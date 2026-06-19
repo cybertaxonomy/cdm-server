@@ -680,13 +680,13 @@ public final class Bootloader {
 
         instance.setStatus(Status.initializing);
         logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
-        WebAppContext cdmWebappContext = new WebAppContext();
+        WebAppContext instanceContext = new WebAppContext();
 
-        cdmWebappContext.setContextPath(constructContextPath(conf));
-        logger.info("contextPath: " + cdmWebappContext.getContextPath());
+        instanceContext.setContextPath(constructContextPath(conf));
+        logger.info("contextPath: " + instanceContext.getContextPath());
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
         // since this behaviour can cause conflicts during parallel start up  of instances.
-        cdmWebappContext.setPersistTempDirectory(true);
+        instanceContext.setPersistTempDirectory(true);
 
 
 //        if(!instance.bindJndiDataSource()){
@@ -697,13 +697,13 @@ public final class Bootloader {
 //            return cdmWebappContext;
 //        }
 
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
+        instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
-            cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
+            instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
-        setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
-        cdmWebappContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
+        setWebApp(instanceContext, getCdmRemoteWebAppFile());
+        instanceContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
                 new WebXmlConfiguration(),
                 new WebInfConfiguration(),
                 new MetaInfConfiguration(),
@@ -722,7 +722,7 @@ public final class Bootloader {
              * dependencies of the webapplication can be found. Otherwise
              * the system classloader would load these resources.
              */
-            WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
+            WebAppClassLoader classLoader = new WebAppClassLoader(instanceContext);
             if(webAppClassPath != null){
                 logger.info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
@@ -736,7 +736,7 @@ public final class Bootloader {
             } else {
                 throw new RuntimeException("Classpath cdm-webapp for missing while running cdm-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
             }
-            cdmWebappContext.setClassLoader(classLoader);
+            instanceContext.setClassLoader(classLoader);
         }
 
         // --- configure centralized logging
@@ -749,14 +749,14 @@ public final class Bootloader {
         // removed for now to check if ch.qos.logback is still needed at all
         //        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
         // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
-        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance, server);
+        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(instanceContext, instance, server);
 
         contexts.addHandler(contextWithCentralizedLogging);
-        instance.setWebAppContext(cdmWebappContext);
-        cdmWebappContext.addEventListener(instance);
+        instance.setWebAppContext(instanceContext);
+        instanceContext.addEventListener(instance);
         instance.setStatus(Status.stopped);
 
-        return cdmWebappContext;
+        return instanceContext;
     }
 
     public String constructContextPath(Configuration conf) {
