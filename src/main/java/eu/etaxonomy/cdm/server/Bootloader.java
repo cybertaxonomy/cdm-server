@@ -439,7 +439,8 @@ public final class Bootloader {
                 "org.eclipse.jetty.webapp.MetaInfConfiguration",
                 "org.eclipse.jetty.webapp.FragmentConfiguration",
                 "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-                "org.eclipse.jetty.annotations.AnnotationConfiguration"
+                "org.eclipse.jetty.annotations.AnnotationConfiguration",
+                "org.eclipse.jetty.plus.webapp.PlusConfiguration"
             );
 
         jdk8MemleakFixServer();
