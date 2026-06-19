@@ -480,7 +480,7 @@ public final class Bootloader {
             server.addBean(win32Service);
         }
 
-        WebAppContext defaultWebappContext = createDefaultWebappContext();
+        WebAppContext defaultWebappContext = createDefaultWebappContext(server);
         contexts.addHandler(defaultWebappContext);
 
         logger.info("setting contexts ...");
@@ -566,6 +566,8 @@ public final class Bootloader {
         defaultWebappContext.setAttribute("org.apache.tomcat.JarScanner", new org.apache.tomcat.util.scan.StandardJarScanner());
         //registers the JSP-Initializer native via the official jetty interface
         defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
+
+        WebAppContext.addSystemClasses(server, "org.eclipse.jetty.jndi.");
         return defaultWebappContext;
     }
 
