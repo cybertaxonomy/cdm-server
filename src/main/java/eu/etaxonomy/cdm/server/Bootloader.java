@@ -51,6 +51,7 @@ import org.apache.tomcat.SimpleInstanceManager;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -715,8 +716,11 @@ public final class Bootloader {
                 new MetaInfConfiguration(),
                 new FragmentConfiguration(),
                 new JettyWebXmlConfiguration(),
-                new AnnotationConfiguration()
+                new AnnotationConfiguration(),
+                new PlusConfiguration()
             });
+
+        WebAppContext.addSystemClasses(server, "org.eclipse.jetty.jndi.");
 
         if( isRunningFromSource ){
 
