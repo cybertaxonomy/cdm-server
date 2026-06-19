@@ -814,6 +814,10 @@ public final class Bootloader {
             context.setWar(webApplicationResource.getAbsolutePath());
             logger.debug("setting war file " + webApplicationResource.getAbsolutePath() + " as webapplication");
         }
+
+        //To avoid bug that webdefault.xml included in jetty still contains "IntrospectorCleaner"
+        //This forces jetty to use the hardcoded default values.
+        context.setDefaultsDescriptor(null);
     }
 
     private void updateServerRunMode() {
