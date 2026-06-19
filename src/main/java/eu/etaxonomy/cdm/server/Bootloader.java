@@ -736,7 +736,7 @@ public final class Bootloader {
         instanceContext.setTempDirectory(instanceTempDir);
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
         // since this behavior can cause conflicts during parallel start up  of instances.
-        instanceContext.setPersistTempDirectory(true);
+        instanceContext.setPersistTempDirectory(false);
 
         //TODO needed?
 //        if(!instance.bindJndiDataSource()){
