@@ -455,7 +455,7 @@
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.38.1</version>
+        <version>0.48.1</version>
         <configuration>
           <images>
             <image>
@@ -501,7 +501,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
+        <version>3.1.4</version>
       </plugin>
       <plugin>
         <groupId>com.amashchenko.maven.plugin</groupId>
@@ -743,38 +743,50 @@
       <artifactId>wrapper</artifactId>
       <version>3.2.3</version>
     </dependency>
+    
     <!-- Logging -->
     <dependency>
+      <!-- The slf4j API.
+           Not necesarily needed as it is a dependency of 
+           jetty-server (since v.10) or logback already -->
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
+        <!-- move all java commons logging to slf4j -->
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j2-impl</artifactId>
-        <version>${log4j.version}</version>
-    </dependency>
-    <!-- move all logging to log4j 2-->
-    <!-- <dependency>
+        <!-- move all log4j2 logging to slf4j
+             !!! never use together with log4j-slf4j-impl on classpath 
+             => endless circle-->
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-to-slf4j</artifactId>
       <version>${log4j.version}</version>
-    </dependency>  -->
-    <!-- move all log4j2 logging to the current slf4j implementor,
-         !!! never use together with log4j-slf4j-impl on classpath => endless circle -->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.logging.log4j</groupId>-->
-<!--      <artifactId>log4j-to-slf4j</artifactId>-->
-<!--      <version>${log4j.version}</version>-->
-<!--    </dependency>-->
+    </dependency>
+   <dependency>
+        <!-- We currently use logback for final logging / slf4j implementator -->
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.34</version>
+    </dependency>
     <dependency>
+      <!-- To allow using log4j in code -> will be send to 
+           slf4j via log4j-to-slf4j-->
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>${log4j.version}</version>
     </dependency>
+    <!-- <dependency> -->
+        <!-- Use log4j as final implementator, not in use as we currently use logback 
+             Requires a configuration file in resources if we start using -->
+        <!-- !!! never use together with log4j-slf4j-impl on classpath => endless circle --><!--
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>  -->
+    <!-- END Logging-->
 
     <dependency>
       <groupId>commons-cli</groupId>
