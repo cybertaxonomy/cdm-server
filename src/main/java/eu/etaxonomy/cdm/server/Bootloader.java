@@ -85,7 +85,7 @@ public final class Bootloader {
     private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
 
     private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
-    private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
+    private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator + "tmp" + File.separator;
 
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
@@ -94,8 +94,8 @@ public final class Bootloader {
     private static final String CDM_WEBAPP_VERSION = "cdm-webapp.version";
 
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
-    private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+    private static final String DEFAULT_WEBAPP_TEMP_FOLDER = TMP_PATH + DEFAULT_WEBAPP_WAR_NAME;
+    private static final String CDM_WEBAPP_TEMP_FOLDER = TMP_PATH; //+ CDM_WEBAPP;
 
     private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
@@ -539,7 +539,7 @@ public final class Bootloader {
         //
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
-        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
+        defaultWebappContext.setTempDirectory(new File(DEFAULT_WEBAPP_TEMP_FOLDER));
 
         // configure security context
         // see for reference * http://docs.codehaus.org/display/JETTY/Realms
@@ -694,21 +694,21 @@ public final class Bootloader {
         //allow instance classloader to use server classes
         instanceContext.setParentLoaderPriority(true);
 
-        //set temp dir
-        //File instanceTempDir = new File(System.getProperty("java.io.tmpdir"), "jetty-" + instanceContext.getContextPath().replaceAll("/", "_"));
-        File instanceTempDir = CDM_WEBAPP_TEMP_FOLDER;
+        instanceContext.setContextPath(constructContextPath(conf));
+        logger.info("contextPath: " + instanceContext.getContextPath());
 
+
+        //temp dir
+        File instanceTempDir = new File(CDM_WEBAPP_TEMP_FOLDER + instanceContext.getContextPath().replaceAll("/", "_"));
         if (!instanceTempDir.exists()) {
             instanceTempDir.mkdirs();
         }
         instanceContext.setTempDirectory(instanceTempDir);
-
-        instanceContext.setContextPath(constructContextPath(conf));
-        logger.info("contextPath: " + instanceContext.getContextPath());
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
-        // since this behaviour can cause conflicts during parallel start up  of instances.
+        // since this behavior can cause conflicts during parallel start up  of instances.
         instanceContext.setPersistTempDirectory(true);
 
+        //TODO needed?
 //        if(!instance.bindJndiDataSource()){
 //            // a problem with the datasource occurred skip this webapp
 //            cdmWebappContext = null;
