@@ -110,7 +110,7 @@ export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 #BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.Bootloader"
 BOOTSTRAP_CLASS="eu.etaxonomy.cdm.server.jsvc.ServiceWrapper"
 
-JSVC_CLASSPATH="/usr/share/java/commons-daemon.jar:${JAVA_HOME}/lib/tools.jar:$CDM_HOME/cdm-server.jar"
+JSVC_CLASSPATH="/usr/share/java/commons-daemon.jar:$CDM_HOME/cdm-server.jar"
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
