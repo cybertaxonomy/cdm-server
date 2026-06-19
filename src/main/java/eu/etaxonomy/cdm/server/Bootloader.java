@@ -450,16 +450,16 @@ public final class Bootloader {
         logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
 
-        org.eclipse.jetty.webapp.Configurations classlist =
-                org.eclipse.jetty.webapp.Configurations.setServerDefault(server);
-        classlist.add( //originally was addAfter in jetty 9
-                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
-                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
-                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
-                );
-        classlist.add(  //originally was addBefore in jetty 9
-                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
-                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
+//        org.eclipse.jetty.webapp.Configurations classlist =
+//                org.eclipse.jetty.webapp.Configurations.setServerDefault(server);
+//        classlist.add( //originally was addAfter in jetty 9
+//                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
+//                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
+//                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
+//                );
+//        classlist.add(  //originally was addBefore in jetty 9
+//                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
+//                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
 
 
         // JMX support
@@ -706,20 +706,10 @@ public final class Bootloader {
         }
         setWebApp(instanceContext, getCdmRemoteWebAppFile());
 
-//        instanceContext.setConfigurations(new org.eclipse.jetty.webapp.Configuration[] {
-//                new WebXmlConfiguration(),
-//                new WebInfConfiguration(),
-//                new MetaInfConfiguration(),
-//                new FragmentConfiguration(),
-//                new JettyWebXmlConfiguration(),
-//                new AnnotationConfiguration(),
-//                new PlusConfiguration(),
-//                new EnvConfiguration()
-//            });
-
         instanceContext.addServerClassMatcher(new ClassMatcher(
                 "-org.eclipse.jetty.servlet.listener.",
-                "-org.eclipse.jetty.jndi."
+                "-org.eclipse.jetty.jndi.",
+                "-org.eclipse.jetty.jsp."
             ));
 //        WebAppContext.addSystemClasses(server, "+org.eclipse.jetty.jndi.");
 
