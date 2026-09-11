@@ -3,15 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.etaxonomy</groupId>
   <artifactId>cdm-server</artifactId>
-  <version>5.59.0</version>
+  <version>6.0.0</version>
   <packaging>jar</packaging>
   <name>CDM Community Standalone Server</name>
   <properties>
+    <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty-version>9.4.26.v20200117</jetty-version>
+    <jetty-version>10.0.26</jetty-version>
     <doclint>none</doclint>
     <log4j.version>2.25.3</log4j.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.18</slf4j.version>
   </properties>
   <scm>
     <!-- see section Provider Configuration in https://maven.apache.org/scm/subversion.html 
@@ -20,9 +21,6 @@
     <developerConnection>scm:git:ssh://git@dev.e-taxonomy.eu/var/git/cdm-server.git</developerConnection>
     <url>https://dev.e-taxonomy.eu/gitweb/cdm-server.git/tree</url>
   </scm>
-  <prerequisites>
-    <maven>3.6.3</maven>
-  </prerequisites>
   <mailingLists>
     <mailingList>
       <name>EDIT Platform Developers</name>
@@ -223,10 +221,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.15.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -321,7 +318,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.11.0</version>
         <executions>
           <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
           <execution>
@@ -367,9 +364,6 @@
           <packagingExcludes>
             cdm-webapp-*.war
           </packagingExcludes>
-        
-        
-        
           <!-- <overlays> <overlay> <groupId>eu.etaxonomy</groupId> <artifactId>cdm-webapp</artifactId> 
             <!- - version is set in dependency - -> <skip>true</skip> <!- - Do Not overlay 
             - -> </overlay> </overlays> -->
@@ -387,7 +381,7 @@
         <!-- Assemble the runnable server jar test with: mvn assembly:single -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.8.0</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptors>
@@ -399,6 +393,9 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
+            <manifestEntries>
+                <Multi-Release>true</Multi-Release>
+            </manifestEntries>
           </archive>
         </configuration>
         <executions>
@@ -461,7 +458,7 @@
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.38.1</version>
+        <version>0.48.1</version>
         <configuration>
           <images>
             <image>
@@ -479,9 +476,6 @@
                 <filter>@</filter>
                 <assembly>
                   <descriptorRef>artifact</descriptorRef>
-                
-                
-                
                     <!--
                          1. The maven plugin copies the jar to the artifacts assembly location at:
                             ./target/docker/eu.etaxonomy/cdm-server/${project.version}/build/maven/cdm-server-${project.version}.jar
@@ -492,10 +486,6 @@
                      -->
                   </assembly>
               </build>
-            
-            
-            
-               
                <!-- TODO the run configuration if needed, see src/main/docker/production/README for examples -->
                <!-- 
                <run>
@@ -514,7 +504,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
+        <version>3.1.4</version>
       </plugin>
       <plugin>
         <groupId>com.amashchenko.maven.plugin</groupId>
@@ -550,6 +540,30 @@
           <url>scpexe://wp5.e-taxonomy.eu/var/www/download/cdmserver/${project.version}</url>
           <serverId>wp5.e-taxonomy.eu</serverId>
         </configuration>
+      </plugin>
+      <plugin>
+        <!-- Ensure minimum maven version  -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <configuration>
+              <rules>
+                <dependencyConvergence />                
+                <requireMavenVersion>
+                  <version>[3.6.3,)</version>
+                  <message>You need at least maven 3.6.3 for this project!</message>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+            <goals>
+              <goal>enforce</goal>
+              <!-- Binds by default to the lifecycle phase: validate -->
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     <!-- EXTENSIONS -->
@@ -649,6 +663,11 @@
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -669,20 +688,6 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
       <version>${jetty-version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp-logging</artifactId>
-        <version>9.4.20.v20190813</version><!-- versioning independent of jetty core -->
-        <type>pom</type><!-- we only need the dependencies like jul-to-slf4j managed in this pom! -->
-        <!-- this is for log4j12 ,el-api
-         still need to check if this is really needed by jetty 
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-          </exclusion>
-        </exclusions> -->
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -716,6 +721,11 @@
       <version>${jetty-version}</version>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jndi</artifactId>
+      <version>${jetty-version}</version>
+    </dependency>
  <!--   <dependency>
        <groupId>jakarta.el</groupId>
        <artifactId>jakarta.el-api</artifactId>
@@ -741,29 +751,50 @@
       <artifactId>wrapper</artifactId>
       <version>3.2.3</version>
     </dependency>
+    
     <!-- Logging -->
     <dependency>
+      <!-- The slf4j API.
+           Not necesarily needed as it is a dependency of 
+           jetty-server (since v.10) or logback already -->
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!-- move all logging to log4j 2-->
-    <!-- <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>  -->
-    <!-- move all log4j2 logging to the current slf4j implementor,
-         !!! never use together with log4j-slf4j-impl on classpath => endless circle -->
     <dependency>
+        <!-- move all java commons logging to slf4j -->
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <dependency>
+        <!-- move all log4j2 logging to slf4j
+             !!! never use together with log4j-slf4j-impl on classpath 
+             => endless circle-->
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-to-slf4j</artifactId>
       <version>${log4j.version}</version>
     </dependency>
+   <dependency>
+        <!-- We currently use logback for final logging / slf4j implementator -->
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.34</version>
+    </dependency>
     <dependency>
+      <!-- To allow using log4j in code -> will be send to 
+           slf4j via log4j-to-slf4j-->
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>${log4j.version}</version>
     </dependency>
+    <!-- <dependency> -->
+        <!-- Use log4j as final implementator, not in use as we currently use logback 
+             Requires a configuration file in resources if we start using -->
+        <!-- !!! never use together with log4j-slf4j-impl on classpath => endless circle --><!--
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>  -->
+    <!-- END Logging-->
 
     <dependency>
       <groupId>commons-cli</groupId>

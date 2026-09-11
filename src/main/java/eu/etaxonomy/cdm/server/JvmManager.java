@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class JvmManager {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(JvmManager.class);
 
     // Java > 8
     private static final String SUFFIX_META = "Metaspace";

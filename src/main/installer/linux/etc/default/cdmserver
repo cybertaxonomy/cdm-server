@@ -6,7 +6,7 @@
 
 # The JAVA_HOME variable
 # must point to the location of the jdk you want to run the CDM Server with
-#JAVA_HOME=/opt/java-oracle/jdk1.8
+#JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # To configure an alternative logging directory (default is /var/log/cdmserver) 
 #LOGDIR=
@@ -16,7 +16,7 @@ CPU_CORES=$(nproc)
 
 # HEAP_SIZE=5000M
 
-# jvm settings for jdk 1.8
+# jvm settings for jdk 11
 #JAVA_OPTIONS="-Xms${HEAP_SIZE} -Xmx${HEAP_SIZE} -XX:+UseG1GC -XX:ParallelGCThreads=${CPU_CORES} -XX:ConcGCThreads=${CPU_CORES} -Duser.home=$CDM_HOME -Dcdm.logDir=$LOGDIR"
 
 #

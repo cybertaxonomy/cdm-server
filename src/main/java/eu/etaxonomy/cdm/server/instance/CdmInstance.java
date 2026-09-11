@@ -30,7 +30,7 @@ import com.mchange.v2.c3p0.DataSources;
 
 public class CdmInstance implements Listener {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(CdmInstance.class);
 
     private WebAppContext webAppContext = null;
 
@@ -183,8 +183,9 @@ public class CdmInstance implements Listener {
 
     public boolean bindJndiDataSource() {
         try {
+            @SuppressWarnings("unchecked")
             Class<DataSource> datasourceClass = (Class<DataSource>) Thread.currentThread().getContextClassLoader().loadClass("com.mchange.v2.c3p0.ComboPooledDataSource");
-            DataSource datasource = datasourceClass.newInstance();
+            DataSource datasource = datasourceClass.getDeclaredConstructor().newInstance();
             datasourceClass.getMethod("setDriverClass", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDriverClass()});
             datasourceClass.getMethod("setJdbcUrl", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getDataSourceUrl()});
             datasourceClass.getMethod("setUser", new Class[] {String.class}).invoke(datasource, new Object[] {configuration.getUsername()});

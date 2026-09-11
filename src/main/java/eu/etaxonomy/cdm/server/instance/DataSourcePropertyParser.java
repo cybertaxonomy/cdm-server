@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  */
 public class DataSourcePropertyParser {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(DataSourcePropertyParser.class);
 
     public static List<Configuration> parseDataSourceConfigs(File datasourcesFile){
 

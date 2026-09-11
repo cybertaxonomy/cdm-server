@@ -22,22 +22,18 @@ import static eu.etaxonomy.cdm.server.CommandOptions.WIN32SERVICE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
@@ -50,23 +46,21 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
-import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.webapp.ClassMatcher;
+import org.eclipse.jetty.webapp.Configurations;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import ch.qos.logback.core.CoreConstants;
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
 import eu.etaxonomy.cdm.server.instance.InstanceManager;
@@ -82,7 +76,7 @@ import eu.etaxonomy.cdm.server.win32service.Win32Service;
  */
 public final class Bootloader {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Bootloader.class);
 
     //private static final String DEFAULT_WARFILE = "target/";
 
@@ -90,7 +84,7 @@ public final class Bootloader {
     private static final String REALM_PROPERTIES_FILE = "cdm-server-realm.properties";
 
     private static final String USERHOME_CDM_LIBRARY_PATH = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator;
-    private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator;
+    private static final String TMP_PATH = USERHOME_CDM_LIBRARY_PATH + "server" + File.separator + "tmp" + File.separator;
 
     private static final String APPLICATION_NAME = "CDM Server";
     private static final String WAR_POSTFIX = ".war";
@@ -99,8 +93,8 @@ public final class Bootloader {
     private static final String CDM_WEBAPP_VERSION = "cdm-webapp.version";
 
     private static final String DEFAULT_WEBAPP_WAR_NAME = "default-webapp";
-    private static final File DEFAULT_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + DEFAULT_WEBAPP_WAR_NAME);
-    private static final File CDM_WEBAPP_TEMP_FOLDER = new File(TMP_PATH + CDM_WEBAPP);
+    private static final String DEFAULT_WEBAPP_TEMP_FOLDER = TMP_PATH + DEFAULT_WEBAPP_WAR_NAME;
+    private static final String CDM_WEBAPP_TEMP_FOLDER = TMP_PATH; //+ CDM_WEBAPP;
 
     private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
@@ -157,7 +151,7 @@ public final class Bootloader {
 
     /* end of singleton implementation */
 
-    public int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
+    private int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
         int answer = 0;
@@ -186,112 +180,175 @@ public final class Bootloader {
         }
     }
 
-    /**
-     * Finds the named war file either in the resources known to the class loader
-     * or in a target folder if the bootloader is started from within a maven project.
-     * Once found the war file is copied to the temp folder defined by {@link TMP_PATH}.
-     *
-     * The war file can optionally be unpacked.
-     *
-     * @param warName
-     * @param unpack
-     *  unzip the war file after extraction
-     * @return
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    private File extractWar(String warName, boolean unpack) throws IOException, FileNotFoundException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private File extractWar(String warName, boolean unpack) throws IOException {
+
         String warFileName = warName + WAR_POSTFIX;
+        URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(warFileName);
 
-        // 1. find in classpath
-        URL resource = classLoader.getResource(warFileName);
-        if (resource == null) {
-            logger.error("Could not find the " + warFileName + " on classpath!");
-
-            File pomxml = new File("pom.xml");
-            if(pomxml.exists()){
-                logger.info("will try find the war in target folder of maven project");
-                // 2. try finding in target folder of maven project
-                File warFile = new File("target" + File.separator + warFileName);
-                logger.debug("looking for war file at " + warFile.getAbsolutePath());
-                if (warFile.canRead()) {
-                    resource = warFile.toURI().toURL();
-                    logger.info("Success! Using war file from " + resource.toString());
-                } else {
-                    logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
-                }
+        // 1. Fallback for the Maven development environment
+        if (resourceUrl == null) {
+            File mavenWar = new File("target" + File.separator + warFileName);
+            if (mavenWar.canRead()) {
+                resourceUrl = mavenWar.toURI().toURL();
             }
         }
 
-
-        if (resource == null) {
-            // no way finding the war file :-(
+        if (resourceUrl == null) {
+            logger.error("Could not find " + warFileName + " on classpath or target folder!");
             System.exit(1);
             return null;
         }
 
-
+        // 2. Define target file path in the temp directory
         File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
-        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
+        logger.info("Extracting " + resourceUrl + " to " + extractedWarFile + " ...");
 
-        writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
+        // 3. Copy file using modern Java NIO API (fully replaces the old writeStreamTo method)
+        try (InputStream in = resourceUrl.openStream()) {
+            Files.copy(in, extractedWarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        if(!unpack) {
-            // return the war file
+        if (!unpack) {
+            // Returns the physical .war file to prevent NullPointerExceptions in follow-up code
             return extractedWarFile;
-        } else {
-            // unpack the archive
-            File explodedWebApp = null;
-            try {
-                logger.info("Unpacking " + extractedWarFile);
-                explodedWebApp  = unzip(extractedWarFile);
+        }
 
-                // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
-                // manifest file in the cdmlib services jar
-                if(explodedWebApp != null && explodedWebApp.isDirectory()) {
-                    // generate the webapp lib dir path
-                    String warLibDirAbsolutePath = explodedWebApp.getAbsolutePath() +
-                            File.separator +
-                            "WEB-INF" +
-                            File.separator +
-                            "lib";
-                    File warLibDir = new File(warLibDirAbsolutePath);
-                    if(warLibDir.exists()) {
-                        // get the cdmlib-services jar
-                        File [] files = warLibDir.listFiles((dir, name)->{
-                                return name.startsWith("cdmlib-services") && name.endsWith(".jar");
-                            });
+        // 4. Extract using Jetty 10 to obtain an exploded webapp directory
+        Resource warResource = Resource.newResource(extractedWarFile.toURI().toURL());
+        File explodedDir = warResource.getFile();
 
-                        if(files != null && files.length > 0) {
-                            // get the relevant info from the jar manifest
-                            JarFile jarFile = new JarFile(files[0]);
-                            Manifest manifest = jarFile.getManifest();
-                            Attributes attributes = manifest.getMainAttributes();
-                            // from the OSGI spec the LastModified value is " the number of milliseconds
-                            // since midnight Jan. 1, 1970 UTC with the condition that a change must
-                            // always result in a higher value than the previous last modified time
-                            // of any bundle"
-                            cdmlibServicesVersion = attributes.getValue("Bundle-Version");
-                            logger.info("cdmlib-services version : " + cdmlibServicesVersion);
-                            cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
-                            logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+        // Retrieve mandatory manifest version tags for the application
+        tryToReadManifestInfo(explodedDir);
 
-                            jarFile.close();
-                            if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
-                                throw new IllegalStateException("Invalid cdmlib-services manifest file");
-                            }
-                        } else {
-                            throw new IllegalStateException("cdmlib-services jar not found ");
-                        }
+        return explodedDir;
+    }
+
+    /** helper method, to keep the confusing Manifest code**/
+    private void tryToReadManifestInfo(File explodedDir) {
+        try {
+            File warLibDir = new File(explodedDir, "WEB-INF" + File.separator + "lib");
+            if (warLibDir.exists()) {
+                File[] files = warLibDir.listFiles((dir, name) -> name.startsWith("cdmlib-services") && name.endsWith(".jar"));
+                if (files != null && files.length > 0) {
+                    try (JarFile jarFile = new JarFile(files[0])) {
+                        Attributes attrs = jarFile.getManifest().getMainAttributes();
+                        cdmlibServicesVersion = attrs.getValue("Bundle-Version");
+                        cdmlibServicesLastModified = attrs.getValue("Bnd-LastModified");
+                        logger.info("cdmlib-services version : " + cdmlibServicesVersion);
                     }
                 }
-            } catch (IOException e) {
-                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
             }
-            return explodedWebApp;
+        } catch (Exception e) {
+            logger.warn("Could not read manifest info, skipping...", e);
         }
     }
+
+//    /**
+//     * Finds the named war file either in the resources known to the class loader
+//     * or in a target folder if the bootloader is started from within a maven project.
+//     * Once found the war file is copied to the temp folder defined by {@link TMP_PATH}.
+//     *
+//     * The war file can optionally be unpacked.
+//     *
+//     * @param warName
+//     * @param unpack
+//     *  unzip the war file after extraction
+//     * @return
+//     * @throws IOException
+//     * @throws FileNotFoundException
+//     */
+//    private File extractWar(String warName, boolean unpack) throws IOException, FileNotFoundException {
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        String warFileName = warName + WAR_POSTFIX;
+//
+//        // 1. find in classpath
+//        URL resource = classLoader.getResource(warFileName);
+//        if (resource == null) {
+//            logger.error("Could not find the " + warFileName + " on classpath!");
+//
+//            File pomxml = new File("pom.xml");
+//            if(pomxml.exists()){
+//                logger.info("will try find the war in target folder of maven project");
+//                // 2. try finding in target folder of maven project
+//                File warFile = new File("target" + File.separator + warFileName);
+//                logger.debug("looking for war file at " + warFile.getAbsolutePath());
+//                if (warFile.canRead()) {
+//                    resource = warFile.toURI().toURL();
+//                    logger.info("Success! Using war file from " + resource.toString());
+//                } else {
+//                    logger.error("Also could not find the " + warFileName + " in maven project, try excuting 'mvn install'");
+//                }
+//            }
+//        }
+//
+//
+//        if (resource == null) {
+//            // no way finding the war file :-(
+//            System.exit(1);
+//            return null;
+//        }
+//
+//
+//        File extractedWarFile = new File(TMP_PATH, warName + "-" + WAR_POSTFIX);
+//        logger.info("Extracting " + resource + " to " + extractedWarFile + " ...");
+//
+//        writeStreamTo(resource.openStream(), new FileOutputStream(extractedWarFile), 8 * KB);
+//
+//        if(!unpack) {
+//            // return the war file
+//            return extractedWarFile;
+//        } else {
+//            // unpack the archive
+//            File explodedWebApp = null;
+//            try {
+//                logger.info("Unpacking " + extractedWarFile);
+//                explodedWebApp  = unzip(extractedWarFile);
+//
+//                // get the 'Bundle-Version' and 'Bnd-LastModified' properties of the
+//                // manifest file in the cdmlib services jar
+//                if(explodedWebApp != null && explodedWebApp.isDirectory()) {
+//                    // generate the webapp lib dir path
+//                    String warLibDirAbsolutePath = explodedWebApp.getAbsolutePath() +
+//                            File.separator +
+//                            "WEB-INF" +
+//                            File.separator +
+//                            "lib";
+//                    File warLibDir = new File(warLibDirAbsolutePath);
+//                    if(warLibDir.exists()) {
+//                        // get the cdmlib-services jar
+//                        File [] files = warLibDir.listFiles((dir, name)->{
+//                                return name.startsWith("cdmlib-services") && name.endsWith(".jar");
+//                            });
+//
+//                        if(files != null && files.length > 0) {
+//                            // get the relevant info from the jar manifest
+//                            JarFile jarFile = new JarFile(files[0]);
+//                            Manifest manifest = jarFile.getManifest();
+//                            Attributes attributes = manifest.getMainAttributes();
+//                            // from the OSGI spec the LastModified value is " the number of milliseconds
+//                            // since midnight Jan. 1, 1970 UTC with the condition that a change must
+//                            // always result in a higher value than the previous last modified time
+//                            // of any bundle"
+//                            cdmlibServicesVersion = attributes.getValue("Bundle-Version");
+//                            logger.info("cdmlib-services version : " + cdmlibServicesVersion);
+//                            cdmlibServicesLastModified = attributes.getValue("Bnd-LastModified");
+//                            logger.info("cdmlib-services last modified timestamp : " + cdmlibServicesLastModified);
+//
+//                            jarFile.close();
+//                            if(cdmlibServicesVersion == null || cdmlibServicesLastModified == null) {
+//                                throw new IllegalStateException("Invalid cdmlib-services manifest file");
+//                            }
+//                        } else {
+//                            throw new IllegalStateException("cdmlib-services jar not found ");
+//                        }
+//                    }
+//                }
+//            } catch (IOException e) {
+//                logger.error("extractWar() - Unziping of war file " + explodedWebApp + " failed. Will return the war file itself instead of the extracted folder.", e);
+//            }
+//            return explodedWebApp;
+//        }
+//    }
 
 
     public String getCdmlibServicesVersion() {
@@ -426,39 +483,37 @@ public final class Bootloader {
 
         // in jetty 9 currently each connector uses
         // 2 threads -  1 to select for IO activity and 1 to accept new connections.
-        // there fore we need to add 2 to the number of cores
+        // therefore we need to add 2 to the number of cores
 //        QueuedThreadPool threadPool = new QueuedThreadPool(JvmManager.availableProcessors() +  + 200);
 //        server = new Server(threadPool);
         server = new Server();
 
-        jdk8MemleakFixServer();
-
+        Configurations configurations = Configurations.getServerDefault(server);
+        configurations.add(
+                "org.eclipse.jetty.webapp.WebXmlConfiguration",
+                "org.eclipse.jetty.webapp.WebInfConfiguration",
+                "org.eclipse.jetty.webapp.MetaInfConfiguration",
+                "org.eclipse.jetty.webapp.FragmentConfiguration",
+                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+                "org.eclipse.jetty.annotations.AnnotationConfiguration",
+                "org.eclipse.jetty.plus.webapp.PlusConfiguration",
+                "org.eclipse.jetty.plus.webapp.EnvConfiguration"
+            );
+        server.addBean(configurations);
 
         loggingConfigurator.configureServer();
 
-        server.addLifeCycleListener(instanceManager);
+        server.addEventListener(instanceManager);
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpPort);
         logger.info("http port: " + connector.getPort());
         server.addConnector(connector );
-
-        org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-        classlist.addAfter(
-                org.eclipse.jetty.webapp.FragmentConfiguration.class.getName(),
-                org.eclipse.jetty.plus.webapp.EnvConfiguration.class.getName(),
-                org.eclipse.jetty.plus.webapp.PlusConfiguration.class.getName()
-                );
-        classlist.addBefore(
-                org.eclipse.jetty.webapp.JettyWebXmlConfiguration.class.getName(),
-                org.eclipse.jetty.annotations.AnnotationConfiguration.class.getName());
-
 
         // JMX support
         if(cmdLine.hasOption(JMX.getOpt())){
             logger.info("adding JMX support ...");
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mBeanContainer);
-            server.addBean(Log.getLog());
         }
 
         if(cmdLine.hasOption(WIN32SERVICE.getOpt())){
@@ -509,25 +564,15 @@ public final class Bootloader {
         setWebApp(defaultWebappContext, defaultWebAppFile);
 
         // JSP
-        //
-        // configuring jsp according to http://eclipse.org/jetty/documentation/current/configuring-jsp.html
-        // from example http://eclipse.org/jetty/documentation/current/embedded-examples.html#embedded-webapp-jsp
-        // Set the ContainerIncludeJarPattern so that jetty examines these
-        // container-path jars for tlds, web-fragments etc.
-        // If you omit the jar that contains the jstl .tlds, the jsp engine will
-        // scan for them instead.
-        defaultWebappContext.setAttribute(
-                "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
-                ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
+        defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
+        //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
 
-        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
         // Context path
-        //
         defaultWebappContext.setContextPath("/" + (contextPathPrefix.isEmpty() ? "" : contextPathPrefix.substring(0, contextPathPrefix.length() - 1)));
         logger.info("defaultWebapp (manager) context path:" + defaultWebappContext.getContextPath());
-        defaultWebappContext.setTempDirectory(DEFAULT_WEBAPP_TEMP_FOLDER);
+        defaultWebappContext.setTempDirectory(new File(DEFAULT_WEBAPP_TEMP_FOLDER));
 
         // configure security context
         // see for reference * http://docs.codehaus.org/display/JETTY/Realms
@@ -540,47 +585,20 @@ public final class Bootloader {
         loginService.setConfig(realmConfigFile.getPath());
         defaultWebappContext.getSecurityHandler().setLoginService(loginService);
 
-        // Set Classloader of Context to be sane (needed for JSTL)
+        // Set classloader of Context to be sane (needed for JSTL)
         // JSP requires a non-System classloader, this simply wraps the
         // embedded System classloader in a way that makes it suitable
         // for JSP to use
-        ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
         defaultWebappContext.setClassLoader(this.getClass().getClassLoader());
-        // JspStarter to solve java.lang.IllegalStateException: No org.apache.tomcat.InstanceManager set in ServletContext problems
-        // when running not from within the IDE (see https://issues.apache.org/jira/browse/KNOX-1639)
-        defaultWebappContext.addBean(new JspStarter(defaultWebappContext));
+
+        //JSP support
+        //force Apache Jasper to use platform independent compiler and modern scanner
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
+        defaultWebappContext.setAttribute("org.apache.tomcat.JarScanner", new org.apache.tomcat.util.scan.StandardJarScanner());
+        //registers the JSP-Initializer native via the official jetty interface
+        defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
+
         return defaultWebappContext;
-    }
-
-    /**
-     * jdk8 memleak workaround: disable url caching
-     *  see https://dev.e-taxonomy.eu/redmine/issues/5048
-     *
-     * @throws IOException
-     * @throws MalformedURLException
-     */
-    private void jdk8MemleakFixServer() throws IOException, MalformedURLException {
-        String javaVersion = System.getProperty("java.version");
-        if(javaVersion.startsWith("1.8")){
-            logger.info("jdk8 memory leak fix: jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
-            org.eclipse.jetty.util.resource.Resource.setDefaultUseCaches(false);
-            File tmpio = new File(System.getProperty("java.io.tmpdir"));
-            tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
-        } else {
-            logger.info("jdk8 memory leak fix: unaffected jdk " + javaVersion + " detected");
-        }
-    }
-
-    private void jdk8MemleakFixInstance(ClassLoader classLoader, CdmInstance instance) throws IOException, MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        String javaVersion = System.getProperty("java.version");
-        if(javaVersion.startsWith("1.8")){
-            logger.info("jdk8 memory leak fix for " + instance.getName() + ": jdk8 detected (" + javaVersion + ") disabling url caching to avoid memory leak.");
-            Class<?> fileClass = classLoader.loadClass("java.io.File");
-            File tmpio = (File) fileClass.getConstructor(String.class).newInstance("java.io.tmpdir");
-            tmpio.toURI().toURL().openConnection().setDefaultUseCaches(false);
-        } else {
-            logger.info("jdk8 memory leak fix, " + instance.getName() + "unaffected jdk " + javaVersion + " detected");
-        }
     }
 
     /**
@@ -609,54 +627,6 @@ public final class Bootloader {
         }
         return version;
     }
-
-    /**
-    * Ensure the jsp engine is initialized correctly
-    */
-    private List<ContainerInitializer> jspInitializers()
-    {
-        JettyJasperInitializer sci = new JettyJasperInitializer();
-        ContainerInitializer initializer = new ContainerInitializer(sci, null);
-        List<ContainerInitializer> initializers = new ArrayList<ContainerInitializer>();
-        initializers.add(initializer);
-        return initializers;
-    }
-
-    /**
-     * JspStarter for embedded ServletContextHandlers
-     *
-     * This is added as a bean that is a jetty LifeCycle on the ServletContextHandler.
-     * This bean's doStart method will be called as the ServletContextHandler starts,
-     * and will call the ServletContainerInitializer for the jsp engine.
-     *
-     */
-    public static class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
-      JettyJasperInitializer sci;
-      ServletContextHandler context;
-
-      public JspStarter (ServletContextHandler context) {
-        this.sci = new JettyJasperInitializer();
-        this.context = context;
-        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
-      }
-
-      @Override
-      protected void doStart() throws Exception
-      {
-        ClassLoader old = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(context.getClassLoader());
-        try
-        {
-          sci.onStartup(null, context.getServletContext());
-          super.doStart();
-        }
-        finally
-        {
-          Thread.currentThread().setContextClassLoader(old);
-        }
-      }
-    }
-
 
     private void verifySystemResources() {
 
@@ -705,6 +675,8 @@ public final class Bootloader {
     public WebAppContext addCdmInstanceContext(CdmInstance instance) throws IOException {
 
         Configuration conf = instance.getConfiguration();
+
+        //check
         if(!instance.isEnabled()){
             logger.info(conf.getInstanceName() + " is disabled, possibly due to JVM memory limitations");
             return null;
@@ -714,17 +686,25 @@ public final class Bootloader {
             return null;
         }
 
+        //initialize
         instance.setStatus(Status.initializing);
         logger.info("preparing WebAppContext for '"+ conf.getInstanceName() + "'");
-        WebAppContext cdmWebappContext = new WebAppContext();
+        WebAppContext instanceContext = new WebAppContext();
 
-        cdmWebappContext.setContextPath(constructContextPath(conf));
-        logger.info("contextPath: " + cdmWebappContext.getContextPath());
+        instanceContext.setContextPath(constructContextPath(conf));
+        logger.info("contextPath: " + instanceContext.getContextPath());
+
+        //temp dir
+        File instanceTempDir = new File(CDM_WEBAPP_TEMP_FOLDER + instanceContext.getContextPath().replaceAll("/", "_"));
+        if (!instanceTempDir.exists()) {
+            instanceTempDir.mkdirs();
+        }
+        instanceContext.setTempDirectory(instanceTempDir);
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
-        // since this behaviour can cause conflicts during parallel start up  of instances.
-        cdmWebappContext.setPersistTempDirectory(true);
+        // since this behavior can cause conflicts during parallel start up  of instances.
+        instanceContext.setPersistTempDirectory(true);
 
-
+        //TODO needed?
 //        if(!instance.bindJndiDataSource()){
 //            // a problem with the datasource occurred skip this webapp
 //            cdmWebappContext = null;
@@ -733,12 +713,20 @@ public final class Bootloader {
 //            return cdmWebappContext;
 //        }
 
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
-        cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
+        instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_DATASOURCE_NAME, conf.getInstanceName());
+        instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_JDBC_JNDI_NAME, conf.getJdbcJndiName());
         if(cmdLine.hasOption(FORCE_SCHEMA_UPDATE.getOpt())){
-            cdmWebappContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
+            instanceContext.setInitParameter(SharedAttributes.ATTRIBUTE_FORCE_SCHEMA_UPDATE, "true");
         }
-        setWebApp(cdmWebappContext, getCdmRemoteWebAppFile());
+
+        setWebApp(instanceContext, getCdmRemoteWebAppFile());
+
+        // remove exclusion of server classes / use the following server classes
+        instanceContext.addServerClassMatcher(new ClassMatcher(
+                "-org.eclipse.jetty.servlet.listener.",
+                "-org.eclipse.jetty.servlet.DefaultServlet",
+                "-org.eclipse.jetty.servlet.NoJspServlet"
+            ));
 
         if( isRunningFromSource ){
 
@@ -749,39 +737,33 @@ public final class Bootloader {
              * dependencies of the webapplication can be found. Otherwise
              * the system classloader would load these resources.
              */
-            WebAppClassLoader classLoader = new WebAppClassLoader(cdmWebappContext);
+            WebAppClassLoader classLoader = new WebAppClassLoader(instanceContext);
             if(webAppClassPath != null){
                 logger.info("Running cdm-webapp from source folder: Adding class path supplied by option '-" +  WEBAPP_CLASSPATH.getOpt() +" =" + webAppClassPath +"'  to WebAppClassLoader");
                 classLoader.addClassPath(webAppClassPath);
-                try {
-                    jdk8MemleakFixInstance(classLoader, instance);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                        | SecurityException e) {
-                    logger.error("Cannot apply jdk8MemleakFix to instance " + instance, e);
-                }
             } else {
                 throw new RuntimeException("Classpath cdm-webapp for missing while running cdm-webapp from source folder. Please supplied cdm-server option '-" +  WEBAPP_CLASSPATH.getOpt() +"");
             }
-            cdmWebappContext.setClassLoader(classLoader);
+            instanceContext.setClassLoader(classLoader);
         }
 
         // --- configure centralized logging
         //
         // for details, please see eu.etaxonomy.cdm.server.logging.LoggingConfigurator
         //
-        // 1. disable the ch.qos.logback.classic.servlet.LogbackServletContainerInitializer to prevent from stopping the
-        //    logging context when one cdm webapp is being shut down (see https://dev.e-taxonomy.eu/redmine/issues/9236)
-        cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
-        // 2. wrap the context with the InstanceLogWrapper and modify class path patterns
-        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(cdmWebappContext, instance);
+        // The following line seems to be not necessary anymore. It was added was solving
+        //      https://dev.e-taxonomy.eu/redmine/issues/9236
+        // cdmWebappContext.setInitParameter(CoreConstants.DISABLE_SERVLET_CONTAINER_INITIALIZER_KEY, "true");
+        //
+        //wrap the context with the InstanceLogWrapper and modify class path patterns
+        Handler contextWithCentralizedLogging = loggingConfigurator.configureWebApp(instanceContext, instance, server);
 
         contexts.addHandler(contextWithCentralizedLogging);
-        instance.setWebAppContext(cdmWebappContext);
-        cdmWebappContext.addLifeCycleListener(instance);
+        instance.setWebAppContext(instanceContext);
+        instanceContext.addEventListener(instance);
         instance.setStatus(Status.stopped);
 
-        return cdmWebappContext;
+        return instanceContext;
     }
 
     public String constructContextPath(Configuration conf) {
@@ -828,7 +810,6 @@ public final class Bootloader {
      * @param context
      * @param webApplicationResource the resource can either be a directory containing
      * a Java web application or *.war file.
-     *
      */
     private void setWebApp(WebAppContext context, File webApplicationResource) {
         if(webApplicationResource.isDirectory()){
@@ -847,8 +828,14 @@ public final class Bootloader {
         isRunningFromWarFile = !(isRunningFromSource || isRunningfromTargetFolder);
     }
 
-    public Server getServer() {
-        return server;
+    public void stopServer() throws Exception {
+        logger.info("stopping " + APPLICATION_NAME + " ...");
+        server.stop();
+    }
+
+    public void destroyServer() throws Exception {
+        logger.info("destroying " + APPLICATION_NAME + " ...");
+        server.destroy();
     }
 
     public ContextHandler getContextFor(Configuration conf) {

@@ -28,7 +28,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
     private static final long serialVersionUID = -8173521573512154767L;
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(StartupQueue.class);
 
     private Set<CdmInstance> instancesStartingUp = new HashSet<>();
 
@@ -96,7 +96,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
         InstanceListener(CdmInstance instance) {
             this.instance = instance;
-            instance.getWebAppContext().addLifeCycleListener(this);
+            instance.getWebAppContext().addEventListener(this);
         }
 
         @Override
@@ -109,7 +109,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             notifyInstanceStartedUp(instance);
             // release reference to the instance so
             // that the thread can be garbage collected
-            instance.getWebAppContext().removeLifeCycleListener(this);
+            instance.getWebAppContext().removeEventListener(this);
             instance = null;
         }
 
@@ -118,7 +118,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
             notifyInstanceFailed(instance);
             // release reference to the instance so
             // that the thread can be garbage collected
-            instance.getWebAppContext().removeLifeCycleListener(this);
+            instance.getWebAppContext().removeEventListener(this);
             instance = null;
         }
 
@@ -135,7 +135,7 @@ public class StartupQueue extends LinkedList<CdmInstance> {
 
     class StartupThread extends Thread{
 
-        private final Logger logger = LogManager.getLogger();
+        private final Logger logger = LogManager.getLogger(StartupThread.class);
 
         private CdmInstance instance;
 

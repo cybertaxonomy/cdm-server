@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.server.JvmManager;
  */
 public class InstanceManager implements LifeCycle.Listener {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(InstanceManager.class);
 
     private ListOrderedMap<String,CdmInstance> instances = new ListOrderedMap<>();
 
