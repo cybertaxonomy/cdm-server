@@ -11,8 +11,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jetty-version>10.0.26</jetty-version>
     <doclint>none</doclint>
-    <log4j.version>2.25.3</log4j.version>
-    <slf4j.version>2.0.18</slf4j.version>
+    <log4j.version>2.26.1</log4j.version>
+    <slf4j.version>2.0.19</slf4j.version>
   </properties>
   <scm>
     <!-- see section Provider Configuration in https://maven.apache.org/scm/subversion.html 
@@ -777,7 +777,7 @@
         <!-- We currently use logback for final logging / slf4j implementator -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.34</version>
+        <version>1.6.3</version>
     </dependency>
     <dependency>
       <!-- To allow using log4j in code -> will be send to 
@@ -799,18 +799,18 @@
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.3.1</version>
+      <version>1.11.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.21.0</version>
+      <version>2.22.0</version>
     </dependency>
     <dependency>
       <!-- only used in InstanceManager class -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>4.4</version>
+      <version>4.6.0</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jopt-simple</groupId>
