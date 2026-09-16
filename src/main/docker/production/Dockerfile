@@ -37,6 +37,10 @@ ENV CDMSERVER_ARGS=" -httpPort=$CDMSERVER_PORT -datasources $DATASOURCES"
 ENV TZ=CET
 
 EXPOSE $CDMSERVER_PORT
+RUN sed -i \
+  -e 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
+  -e 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
+  /etc/apt/sources.list
 
 RUN apt-get update; apt-get install -y openjdk-8-jre-headless libjemalloc1; apt-get clean
 #set encoding
