@@ -216,7 +216,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <!-- creates "compile" error in IDE in maven-dependency-plugin section (see below) since upgrading from 3.1.0 to 3.2.0 -->
-        <version>3.2.0</version>
+        <version>3.5.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -229,7 +229,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
+        <version>3.6.0</version>
         <configuration>
           <argLine>-Xmx512M</argLine>
           <includes>
@@ -259,7 +259,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.4</version>
+        <version>3.3.1</version>
         <executions>
           <execution>
             <!--<phase>deploy</phase> -->
@@ -281,7 +281,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.22.0</version>
         <configuration>
           <locales>en</locales>
           <outputEncoding>UTF-8</outputEncoding>
@@ -292,7 +292,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.4.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -358,7 +358,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.5.1</version>
         <configuration>
           <warName>default-webapp</warName>
           <packagingExcludes>
@@ -413,7 +413,7 @@
         <!-- Build a Debian package -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <phase>install</phase>
@@ -458,7 +458,7 @@
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.48.1</version>
+        <version>0.49.0</version>
         <configuration>
           <images>
             <image>
@@ -504,7 +504,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.1.4</version>
+        <version>3.2.0</version>
       </plugin>
       <plugin>
         <groupId>com.amashchenko.maven.plugin</groupId>
@@ -607,7 +607,7 @@
         <!-- you will want to start by publishing your classes' Javadocs -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.12.0</version>
         <configuration>    
           <doclint>${doclint}</doclint>
         </configuration>
@@ -625,7 +625,7 @@
           the items marked @todo or TODO -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.3</version>
       </plugin>
       <plugin>
         <!-- Test coverage can be a useful indication of the quality of your 
