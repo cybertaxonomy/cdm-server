@@ -767,7 +767,7 @@
     </dependency>
     <dependency>
         <!-- move all log4j2 logging to slf4j
-             !!! never use together with log4j-slf4j-impl on classpath 
+             !!! never use together with log4j-slf4j2-impl on classpath 
              => endless circle-->
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-to-slf4j</artifactId>
@@ -789,9 +789,9 @@
     <!-- <dependency> -->
         <!-- Use log4j as final implementator, not in use as we currently use logback 
              Requires a configuration file in resources if we start using -->
-        <!-- !!! never use together with log4j-slf4j-impl on classpath => endless circle --><!--
+        <!-- !!! never use together with log4j-slf4j2-impl on classpath => endless circle --><!--
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
       <version>${log4j.version}</version>
     </dependency>  -->
     <!-- END Logging-->
