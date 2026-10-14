@@ -6,7 +6,7 @@
 
 # The JAVA_HOME variable
 # must point to the location of the jdk you want to run the CDM Server with
-#JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+#JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
 
 # To configure an alternative logging directory (default is /var/log/cdmserver) 
 #LOGDIR=
