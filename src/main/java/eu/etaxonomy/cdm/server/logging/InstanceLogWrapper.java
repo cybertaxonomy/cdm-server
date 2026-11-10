@@ -8,14 +8,10 @@
 */
 package eu.etaxonomy.cdm.server.logging;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 import org.slf4j.MDC;
 
 /**
@@ -24,7 +20,7 @@ import org.slf4j.MDC;
  * @author a.kohlbecker
  * @since Jun 9, 2020
  */
-public class InstanceLogWrapper extends HandlerWrapper {
+public class InstanceLogWrapper extends Handler.Wrapper {
 
     /**
      * Key under which the instance name stored in the
@@ -39,13 +35,12 @@ public class InstanceLogWrapper extends HandlerWrapper {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException, ServletException {
+    public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
         // Collect Info for NDC/MDC
         MDC.put(CDM_INSTANCE, instanceName);
         try {
-            super.handle(target, baseRequest, request, response);
+            return super.handle(request, response, callback);
         }
         finally {
             // Pop info out / clear the NDC/MDC
