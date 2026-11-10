@@ -46,7 +46,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.SimpleInstanceManager;
-import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
+import org.eclipse.jetty.ee10.apache.jsp.JettyJasperInitializer;
+import org.eclipse.jetty.ee10.servlet.listener.ContainerInitializer;
+import org.eclipse.jetty.ee10.webapp.Configurations;
+import org.eclipse.jetty.ee10.webapp.WebAppClassLoader;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
@@ -54,12 +58,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.servlet.listener.ContainerInitializer;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.ClassMatcher;
-import org.eclipse.jetty.webapp.Configurations;
-import org.eclipse.jetty.webapp.WebAppClassLoader;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.util.ClassMatcher;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
 import eu.etaxonomy.cdm.server.instance.Configuration;
@@ -213,9 +213,9 @@ public final class Bootloader {
             return extractedWarFile;
         }
 
-        // 4. Extract using Jetty 10 to obtain an exploded webapp directory
-        Resource warResource = Resource.newResource(extractedWarFile.toURI().toURL());
-        File explodedDir = warResource.getFile();
+        // 4. Jetty unpacks the war itself when the WebAppContext starts. (The former
+        //    Jetty 10 Resource.getFile() call also just returned the war file here.)
+        File explodedDir = extractedWarFile;
 
         // Retrieve mandatory manifest version tags for the application
         tryToReadManifestInfo(explodedDir);
@@ -490,14 +490,14 @@ public final class Bootloader {
 
         Configurations configurations = Configurations.getServerDefault(server);
         configurations.add(
-                "org.eclipse.jetty.webapp.WebXmlConfiguration",
-                "org.eclipse.jetty.webapp.WebInfConfiguration",
-                "org.eclipse.jetty.webapp.MetaInfConfiguration",
-                "org.eclipse.jetty.webapp.FragmentConfiguration",
-                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-                "org.eclipse.jetty.annotations.AnnotationConfiguration",
-                "org.eclipse.jetty.plus.webapp.PlusConfiguration",
-                "org.eclipse.jetty.plus.webapp.EnvConfiguration"
+                "org.eclipse.jetty.ee10.webapp.WebXmlConfiguration",
+                "org.eclipse.jetty.ee10.webapp.WebInfConfiguration",
+                "org.eclipse.jetty.ee10.webapp.MetaInfConfiguration",
+                "org.eclipse.jetty.ee10.webapp.FragmentConfiguration",
+                "org.eclipse.jetty.ee10.webapp.JettyWebXmlConfiguration",
+                "org.eclipse.jetty.ee10.annotations.AnnotationConfiguration",
+                "org.eclipse.jetty.ee10.plus.webapp.PlusConfiguration",
+                "org.eclipse.jetty.ee10.plus.webapp.EnvConfiguration"
             );
         server.addBean(configurations);
 
@@ -565,7 +565,6 @@ public final class Bootloader {
 
         // JSP
         defaultWebappContext.addServletContainerInitializer(new JettyJasperInitializer());
-        //for jetty 11+: defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
 
         defaultWebappContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
 
@@ -582,7 +581,7 @@ public final class Bootloader {
         if(!realmConfigFile.canRead()) {
             throw new FileNotFoundException("Unable to find or read the realm file at " + realmConfigFile.getPath());
         }
-        loginService.setConfig(realmConfigFile.getPath());
+        loginService.setConfig(ResourceFactory.of(server).newResource(realmConfigFile.toPath()));
         defaultWebappContext.getSecurityHandler().setLoginService(loginService);
 
         // Set classloader of Context to be sane (needed for JSTL)
@@ -593,7 +592,7 @@ public final class Bootloader {
 
         //JSP support
         //force Apache Jasper to use platform independent compiler and modern scanner
-        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "11");
+        defaultWebappContext.setAttribute("org.eclipse.jetty.containerInitializer.compilerTarget", "17");
         defaultWebappContext.setAttribute("org.apache.tomcat.JarScanner", new org.apache.tomcat.util.scan.StandardJarScanner());
         //registers the JSP-Initializer native via the official jetty interface
         defaultWebappContext.addEventListener(ContainerInitializer.asContextListener(new JettyJasperInitializer()));
@@ -702,7 +701,7 @@ public final class Bootloader {
         instanceContext.setTempDirectory(instanceTempDir);
         // set persistTempDirectory to prevent jetty from creating and deleting this directory for each instance,
         // since this behavior can cause conflicts during parallel start up  of instances.
-        instanceContext.setPersistTempDirectory(true);
+        instanceContext.setTempDirectoryPersistent(true);
 
         //TODO needed?
 //        if(!instance.bindJndiDataSource()){
@@ -722,10 +721,10 @@ public final class Bootloader {
         setWebApp(instanceContext, getCdmRemoteWebAppFile());
 
         // remove exclusion of server classes / use the following server classes
-        instanceContext.addServerClassMatcher(new ClassMatcher(
-                "-org.eclipse.jetty.servlet.listener.",
-                "-org.eclipse.jetty.servlet.DefaultServlet",
-                "-org.eclipse.jetty.servlet.NoJspServlet"
+        instanceContext.addHiddenClassMatcher(new ClassMatcher(
+                "-org.eclipse.jetty.ee10.servlet.listener.",
+                "-org.eclipse.jetty.ee10.servlet.DefaultServlet",
+                "-org.eclipse.jetty.ee10.servlet.NoJspServlet"
             ));
 
         if( isRunningFromSource ){
@@ -813,7 +812,7 @@ public final class Bootloader {
      */
     private void setWebApp(WebAppContext context, File webApplicationResource) {
         if(webApplicationResource.isDirectory()){
-            context.setResourceBase(webApplicationResource.getAbsolutePath());
+            context.setBaseResourceAsString(webApplicationResource.getAbsolutePath());
             logger.debug("setting directory " + webApplicationResource.getAbsolutePath() + " as webapplication");
         } else {
             context.setWar(webApplicationResource.getAbsolutePath());

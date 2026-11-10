@@ -18,13 +18,14 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import jakarta.servlet.ServletContext;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.plus.jndi.Resource;
-import org.eclipse.jetty.server.handler.ContextHandler.Context;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.mchange.v2.c3p0.DataSources;
 
@@ -101,7 +102,7 @@ public class CdmInstance implements Listener {
     @SuppressWarnings("unchecked")
     private <T> T getServletContextAttribute(WebAppContext webAppContext, String attributeName, Class<T> type) {
 
-        Context servletContext = webAppContext.getServletContext();
+        ServletContext servletContext = webAppContext.getServletContext();
         Object value = servletContext.getInitParameter(attributeName);
         if (value != null && type.isAssignableFrom(value.getClass())) {
 

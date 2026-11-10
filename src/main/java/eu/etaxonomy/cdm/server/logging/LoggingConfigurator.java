@@ -8,8 +8,9 @@
 */
 package eu.etaxonomy.cdm.server.logging;
 
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.util.ClassMatcher;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import eu.etaxonomy.cdm.server.instance.CdmInstance;
@@ -48,15 +49,19 @@ public class LoggingConfigurator {
         // (from jetty-webapp-logging-9.4.20.v20190813.jar) to the DeploymentManager,
         // in the  cdm-server we are not using the DeploymentManager so
         // this needs to be done per web app explicitly:
-        WebAppContext.addSystemClasses(server, "org.apache.logging.log4j.");  //log4j2
-        WebAppContext.addSystemClasses(server, "org.slf4j.");
-        WebAppContext.addSystemClasses(server, "org.apache.commons.logging.");
+        // Jetty 12: "system classes" are now called "protected classes"
+        cdmWebappContext.addProtectedClassMatcher(new ClassMatcher(
+                "org.apache.logging.log4j.",  //log4j2
+                "org.slf4j.",
+                "org.apache.commons.logging."));
 
         // UPDATE:
         // in the latest version of the jetty-webapp-logging (Apr 2, 2020) the classnames are also removed from the ServerClasses:
-        WebAppContext.addServerClasses(server, "-org.apache.logging.log4j.");
-        WebAppContext.addServerClasses(server, "-org.slf4j.");
-        WebAppContext.addServerClasses(server, "-org.apache.commons.logging.");
+        // Jetty 12: "server classes" are now called "hidden classes"
+        cdmWebappContext.addHiddenClassMatcher(new ClassMatcher(
+                "-org.apache.logging.log4j.",
+                "-org.slf4j.",
+                "-org.apache.commons.logging."));
 
 
         // v20190813  > https://github.com/jetty-project/jetty-webapp-logging/blob/jetty-webapp-logging-9.4.20.v20190813/jetty-webapp-logging/src/etc/jetty-mdc-handler.xml
