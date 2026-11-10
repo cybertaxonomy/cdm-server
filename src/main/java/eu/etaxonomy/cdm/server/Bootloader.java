@@ -560,7 +560,17 @@ public final class Bootloader {
         // add default servlet context
         logger.info("preparing default WebAppContext");
 
-        WebAppContext defaultWebappContext = new WebAppContext();
+        // Jetty 12 wraps any class loader set via setClassLoader() into a WebAppClassLoader
+        // which loads classes from the war first. The default webapp contains its own copy of
+        // the cdm-server classes, so the JSPs would get a second Bootloader class whose static
+        // Bootloader.getBootloader() knows no instances. Use the server class loader directly
+        // (as Jetty 10 did) so the JSPs share the running Bootloader.
+        WebAppContext defaultWebappContext = new WebAppContext() {
+            @Override
+            protected ClassLoader configureClassLoader(ClassLoader loader) {
+                return loader;
+            }
+        };
         setWebApp(defaultWebappContext, defaultWebAppFile);
 
         // JSP
